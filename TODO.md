@@ -10,16 +10,16 @@
 
 ## Phase 0 — Setup
 
-- [ ] Initialiser le repo Git (`portfolio`) + repo GitHub
-- [ ] Créer le projet : `npx create-next-app@latest` (App Router, TypeScript, Tailwind, ESLint)
-- [ ] Configurer Prettier + règles ESLint
-- [ ] Mettre en place la structure de dossiers :
+- [x] Initialiser le repo Git (`portfolio`) + repo GitHub
+- [x] Créer le projet : `npx create-next-app@latest` (App Router, TypeScript, Tailwind, ESLint)
+- [x] Configurer Prettier + règles ESLint
+- [x] Mettre en place la structure de dossiers :
   - `src/components/os/` — fenêtres, dock, menu bar, bureau, springboard iOS
   - `src/components/apps/` — Notes, Finder, Corbeille, apps projets
   - `src/stores/` — stores Zustand
   - `src/lib/` — clients Supabase, helpers, registre des apps
   - `src/app/admin/` — backoffice
-- [ ] Installer les dépendances : `zustand`, `framer-motion`, `@supabase/supabase-js`, `@supabase/ssr`
+- [x] Installer les dépendances : `zustand`, `framer-motion`, `@supabase/supabase-js`, `@supabase/ssr`
 - [ ] Créer le projet Supabase + récupérer les clés → `.env.local` (et `.env.example` committé)
 - [ ] Créer le projet Vercel, lier le repo, ajouter les variables d'env
 - [ ] Configurer le domaine `elwen.dev` sur Vercel + DNS wildcard `*.elwen.dev`
