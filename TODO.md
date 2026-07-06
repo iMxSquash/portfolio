@@ -22,7 +22,7 @@
 - [x] Installer les dépendances : `zustand`, `framer-motion`, `@supabase/supabase-js`, `@supabase/ssr`
 - [x] Créer le projet Supabase + récupérer les clés → `.env.local` (et `.env.example` committé) — projet `portfolio` (`pxfauyqwldigcxjfynzz`, eu-west-3, org AlemAgency)
 - [x] Créer le projet Vercel, lier le repo, ajouter les variables d'env
-- [ ] Configurer le domaine `elwen.dev` sur Vercel + DNS wildcard `*.elwen.dev` — domaines assignés côté Vercel, reste les enregistrements DNS chez OVH
+- [x] Configurer le domaine `elwen.dev` sur Vercel + DNS wildcard `*.elwen.dev`
 
 ## Phase 1 — Fondations OS
 
