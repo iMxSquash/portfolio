@@ -26,14 +26,14 @@
 
 ## Phase 1 — Fondations OS
 
-- [ ] Détection du device : desktop → mode **macOS**, mobile/tablette → mode **iOS**
+- [x] Détection du device : desktop → mode **macOS**, mobile/tablette → mode **iOS**
   - Breakpoints + `pointer: coarse` / `hover: none` (pas seulement la largeur d'écran)
   - Composant racine `<OS>` qui rend `<MacOS>` ou `<IOS>`
-- [ ] Design tokens dans Tailwind : couleurs système macOS, radius, ombres de fenêtres, effet vibrancy (`backdrop-blur` + transparence)
-- [ ] Police : SF Pro n'est pas librement redistribuable → utiliser **Inter** ou `-apple-system` en font stack
-- [ ] Fonds d'écran macOS/iOS (plusieurs, changeables plus tard)
-- [ ] Thème clair/sombre (suivre `prefers-color-scheme` + toggle manuel façon Control Center)
-- [ ] **Registre central des apps** (`src/lib/apps.ts`) : `{ id, name, icon, type: 'component' | 'iframe' | 'external', component?, url?, showOnDesktop, showOnMobile, defaultSize, defaultPosition }`
+- [x] Design tokens dans Tailwind : couleurs système macOS, radius, ombres de fenêtres, effet vibrancy (`backdrop-blur` + transparence)
+- [x] Police : SF Pro n'est pas librement redistribuable → utiliser **Inter** ou `-apple-system` en font stack
+- [x] Fonds d'écran macOS/iOS (plusieurs, changeables plus tard, `/public/img/wallpapers/`)
+- [x] Thème clair/sombre (suivre `prefers-color-scheme` + toggle manuel façon Control Center)
+- [x] **Registre central des apps** (`src/lib/apps.ts`) : `{ id, name, icon, type: 'component' | 'iframe' | 'external', component?, url?, showOnDesktop, showOnMobile, defaultSize, defaultPosition }`
   - Les apps système (Notes, Finder, Corbeille) sont déclarées en dur ; les apps projets seront injectées depuis Supabase (Phase 7)
 - [ ] Écran de boot / login Apple au premier chargement (bonus, mais gros effet waouh)
 
