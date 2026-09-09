@@ -35,7 +35,7 @@
 - [x] Thème clair/sombre (suivre `prefers-color-scheme` + toggle manuel façon Control Center)
 - [x] **Registre central des apps** (`src/lib/apps.ts`) : `{ id, name, icon, type: 'component' | 'iframe' | 'external', component?, url?, showOnDesktop, showOnMobile, defaultSize, defaultPosition }`
   - Les apps système (Notes, Finder, Corbeille) sont déclarées en dur ; les apps projets seront injectées depuis Supabase (Phase 7)
-- [ ] Écran de boot / login Apple au premier chargement (bonus, mais gros effet waouh)
+- [x] Écran de boot / login Apple au premier chargement (bonus, mais gros effet waouh)
 
 ## Phase 2 — Window manager (cœur du projet, desktop)
 
