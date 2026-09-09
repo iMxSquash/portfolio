@@ -34,8 +34,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
-      <body className="min-h-full flex flex-col">
+    <html
+      lang="en"
+      className={`${inter.variable} h-dvh overflow-hidden antialiased`}
+      suppressHydrationWarning
+    >
+      <body className="h-full flex flex-col overflow-hidden overscroll-none">
         <Script id="theme-init" strategy="beforeInteractive">
           {themeInitScript}
         </Script>
