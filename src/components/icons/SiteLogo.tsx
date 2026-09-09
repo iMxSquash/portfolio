@@ -5,7 +5,7 @@ const VIEWBOX_HEIGHT = 176;
 const ASPECT_RATIO = VIEWBOX_HEIGHT / VIEWBOX_WIDTH;
 
 /** Site logo (public/logo.svg), used on the boot screen. `size` sets the width; height follows the logo's own aspect ratio. */
-export function AppleLogo({
+export function SiteLogo({
   size = 96,
   className,
 }: {
