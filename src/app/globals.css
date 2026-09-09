@@ -24,3 +24,118 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/*
+ * Liquid Glass material tokens.
+ *
+ * The knobs below (--glass-tint*, --glass-saturate, --glass-brightness,
+ * --blur-glass*) are the runtime-configurable ones: they mirror
+ * `DEFAULT_LIQUID_GLASS` in `src/lib/liquid-glass.ts` and get overwritten
+ * on `<html>` by `LiquidGlassProvider` from `useLiquidGlassStore` (defaults
+ * + any user override persisted in localStorage). The values here only
+ * matter for the first paint before hydration — keep them in sync with
+ * `DEFAULT_LIQUID_GLASS`, never let them drift.
+ *
+ * Radius, shadows and rim border stay static design tokens (not
+ * user-tunable): they are macOS/iOS chrome measurements, not material
+ * physics — see skill os-macos-ui for the source values.
+ */
+@theme {
+  --blur-glass-sm: 8px;
+  --blur-glass: 16px;
+  --blur-glass-lg: 24px;
+  --blur-glass-xl: 40px;
+  --blur-glass-clear: 3px;
+
+  --glass-tint: 255 255 255;
+  --glass-tint-alpha: 12%;
+  --glass-tint-dark: 0 0 0;
+  --glass-tint-alpha-dark: 40%;
+  --glass-saturate: 180%;
+  --glass-brightness: 1.1;
+  --color-glass-rim: rgb(255 255 255 / 0.2);
+
+  --radius-glass: 20px;
+  --radius-glass-lg: 28px;
+
+  --shadow-glass:
+    0 8px 24px rgb(0 0 0 / 0.12),
+    0 2px 4px rgb(0 0 0 / 0.08),
+    inset 0 1px 0 rgb(255 255 255 / 0.4),
+    inset 0 -1px 0 rgb(0 0 0 / 0.05);
+  --shadow-glass-lg:
+    0 16px 48px rgb(0 0 0 / 0.16),
+    0 4px 8px rgb(0 0 0 / 0.08),
+    inset 0 1px 1px rgb(255 255 255 / 0.55),
+    inset 0 -1px 1px rgb(255 255 255 / 0.3);
+  --shadow-glass-rim: inset 0 0 20px -5px rgb(255 255 255 / 0.7);
+}
+
+@custom-variant reduced-transparency (@media (prefers-reduced-transparency: reduce));
+
+/* Base material: regular variant, readability-first. Navigation/control layer only — never on content surfaces. */
+@utility liquid-glass {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  contain: layout paint style;
+  border-radius: var(--radius-glass);
+  background: rgb(var(--glass-tint) / var(--glass-tint-alpha));
+  border: 1px solid var(--color-glass-rim);
+  background-clip: padding-box;
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(var(--glass-saturate))
+    brightness(var(--glass-brightness));
+  backdrop-filter: blur(var(--blur-glass)) saturate(var(--glass-saturate))
+    brightness(var(--glass-brightness));
+
+  @variant dark {
+    background: rgb(var(--glass-tint-dark) / var(--glass-tint-alpha-dark));
+    border-color: rgb(255 255 255 / 0.1);
+  }
+
+  @variant reduced-transparency {
+    background: rgb(245 245 245 / 0.95);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* High-transparency variant, only over bold/bright media (never for readability-critical surfaces). */
+@utility liquid-glass-clear {
+  background: rgb(255 255 255 / 0.05);
+  -webkit-backdrop-filter: blur(var(--blur-glass-clear)) saturate(150%);
+  backdrop-filter: blur(var(--blur-glass-clear)) saturate(150%);
+}
+
+/* Top hairline highlight — cheapest specular, use on navbars/menu bar. */
+@utility glass-hairline {
+  &::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgb(255 255 255 / 0.7), transparent);
+  }
+}
+
+@media (prefers-contrast: more) {
+  .liquid-glass,
+  .liquid-glass-clear {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-glass,
+  .liquid-glass-clear {
+    transition: none;
+    animation: none;
+  }
+}
