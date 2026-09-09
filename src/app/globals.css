@@ -1,28 +1,72 @@
 @import "tailwindcss";
 
+/* Manual dark mode: `dark:` targets the `.dark` class on <html> instead of
+   the default `prefers-color-scheme` media query, so a user override (via
+   useThemeStore / the future Control Center toggle) always wins over the
+   system preference. See ThemeProvider.tsx and the blocking init script in
+   layout.tsx (anti-FOUC). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Boot/login overlay anti-flash: hides it before React/hydration even runs
+   when this browser session already played it (see the boot-init script in
+   layout.tsx and BootScreen.tsx). Pure CSS, decoupled from React timing. */
+.boot-seen .boot-screen-root {
+  display: none;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* macOS chrome measurements without a matching Tailwind utility family
+     (Tailwind v4 only exposes a single `--spacing` scalar, not named
+     `--spacing-<name>` keys — see os-macos-ui skill for the source values).
+     Consumed via arbitrary values / inline styles in Phase 2/3. */
+  --menu-bar-height: 28px;
+  --title-bar-height-min: 28px;
+  --title-bar-height-max: 38px;
+  --traffic-light-size: 12px;
+  --traffic-light-gap: 8px;
+  --traffic-light-inset: 8px;
+  --dock-icon-size-min: 48px;
+  --dock-icon-size-max: 56px;
+  --dock-margin-bottom-min: 4px;
+  --dock-margin-bottom-max: 8px;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: -apple-system, BlinkMacSystemFont, var(--font-inter), sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* `.dark` must stay after `:root` in source order: both selectors have equal
+   specificity, so the cascade (not specificity) decides which wins. */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* macOS system tokens with a real Tailwind utility family (color/radius/shadow). */
+@theme {
+  --color-traffic-red: #ff5f57;
+  --color-traffic-yellow: #febc2e;
+  --color-traffic-green: #28c840;
+  --color-traffic-inactive: #dddddd;
+
+  --radius-window: 10px;
+  --radius-dock: 20px;
+
+  --shadow-window-focused:
+    0 0 0 1px rgb(0 0 0 / 0.15),
+    0 20px 60px rgb(0 0 0 / 0.35);
+  --shadow-window-unfocused: 0 8px 24px rgb(0 0 0 / 0.2);
 }
 
 /*

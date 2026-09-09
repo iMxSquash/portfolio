@@ -44,6 +44,10 @@ Portfolio d'Elwen qui reproduit **macOS sur desktop** et **iOS sur mobile/tablet
 | `seo-geo-boost`         | Avant toute mise en prod, et pour tout travail SEO/metadata/JSON-LD/llms.txt — sur le portfolio ET sur chaque sous-domaine                   |
 | `liquid-glass-tailwind` | **Toujours** pour toute surface translucide/vibrancy (menu bar, dock, sidebars, fenêtres, springboard iOS) : seule référence pour coller au vrai matériau Liquid Glass macOS 26 / iOS 26, à charger avant d'écrire le moindre `backdrop-filter`. Les valeurs produites vont dans les constantes `src/lib/liquid-glass.ts`, jamais en dur dans un composant |
 
+## Outils disponibles
+
+- **MCP Playwright** : disponible pour tester le portfolio dans un vrai navigateur (navigation, clics, formulaires, screenshots, console/réseau). À utiliser pour vérifier une modification UI/UX (fenêtres, dock, menu bar, springboard iOS) avant de considérer une tâche terminée.
+
 ## Rappels pièges (détails dans les skills)
 
 - Les iframes capturent la souris pendant un drag → `pointer-events: none` sur le contenu des fenêtres pendant l'interaction
