@@ -7,6 +7,10 @@ description: Spécifications du mode iOS du portfolio (mobile/tablette) — dét
 
 Sur mobile et tablette, le portfolio devient iOS : pas de fenêtres flottantes, les apps s'ouvrent en plein écran depuis un springboard. Finder et Corbeille n'existent pas dans ce mode.
 
+> ⚠️ **Toujours charger le skill `liquid-glass-tailwind`** avant d'implémenter une surface translucide (status bar, dock iOS, tooltips). C'est la référence pour coller au vrai matériau Liquid Glass iOS 26.
+>
+> Les valeurs par défaut du matériau viennent des constantes `src/lib/liquid-glass.ts` (même source de vérité que macOS, voir skill `os-macos-ui`) — jamais de valeur codée en dur localement.
+
 ## Détection du device
 
 Ne pas se fier qu'à la largeur d'écran (un desktop redimensionné n'est pas un iPhone) :

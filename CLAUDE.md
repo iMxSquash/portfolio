@@ -18,6 +18,7 @@ Portfolio d'Elwen qui reproduit **macOS sur desktop** et **iOS sur mobile/tablet
 ## Architecture — points non négociables
 
 - **Registre central des apps** (`src/lib/apps.ts`) : tout ce qui s'ouvre (app système, projet iframe, lien externe) y est déclaré. Bureau, dock, Finder et springboard iOS ne font que le lire — aucune liste d'apps dupliquée.
+- **Paramètres Liquid Glass centralisés** (`src/lib/liquid-glass.ts`) : les valeurs par défaut du matériau (blur, saturation, teinte clair/sombre, bordure, etc.) sont des **constantes typées**, seule source de vérité — jamais de valeur codée en dur localement dans un composant. Menu bar, dock, sidebars, fenêtres, springboard iOS les consomment toutes. Pensé pour être surchargé plus tard par une préférence utilisateur (réglage dans l'app, persistée en `localStorage`) : à la lecture, fusionner défauts + overrides localStorage, sans jamais muter les constantes par défaut.
 - **Une seule source de vérité pour les fenêtres** : le store Zustand `useWindowStore`. Jamais de position/taille de fenêtre en state local.
 - **Jamais d'écriture dans le store pendant un drag/resize** (motion values pendant le geste, commit au `pointerup`).
 - Desktop → mode macOS fenêtré ; mobile/tablette → mode iOS plein écran (détection `pointer: coarse` + largeur, pas la largeur seule). Finder et Corbeille : desktop uniquement.
@@ -41,6 +42,7 @@ Portfolio d'Elwen qui reproduit **macOS sur desktop** et **iOS sur mobile/tablet
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | `portfolio-embed-check` | Dans le repo d'un projet à embarquer (photoshop.elwen.dev…) : valider headers, responsive fenêtre, cookies, avant de l'ajouter au backoffice |
 | `seo-geo-boost`         | Avant toute mise en prod, et pour tout travail SEO/metadata/JSON-LD/llms.txt — sur le portfolio ET sur chaque sous-domaine                   |
+| `liquid-glass-tailwind` | **Toujours** pour toute surface translucide/vibrancy (menu bar, dock, sidebars, fenêtres, springboard iOS) : seule référence pour coller au vrai matériau Liquid Glass macOS 26 / iOS 26, à charger avant d'écrire le moindre `backdrop-filter`. Les valeurs produites vont dans les constantes `src/lib/liquid-glass.ts`, jamais en dur dans un composant |
 
 ## Rappels pièges (détails dans les skills)
 

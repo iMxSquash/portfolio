@@ -7,6 +7,10 @@ description: Spécifications visuelles macOS pour le portfolio — menu bar, doc
 
 L'effet du portfolio repose sur la fidélité : quelqu'un qui connaît macOS doit s'y croire. En cas de doute sur un détail, regarder une capture d'écran de macOS (Sonoma/Sequoia) plutôt qu'inventer.
 
+> ⚠️ **Toujours charger le skill `liquid-glass-tailwind`** avant d'implémenter la moindre surface translucide (menu bar, dock, sidebars, barre de titre). C'est la référence pour coller au vrai matériau Liquid Glass macOS 26, pas les valeurs approximatives ci-dessous.
+>
+> Les valeurs par défaut du matériau (blur, saturation, teinte, bordure…) sont des constantes dans `src/lib/liquid-glass.ts` — seule source de vérité, consommée par tous les composants. Ne jamais recoder ces valeurs localement. Ce fichier est prévu pour être surchargé plus tard par une préférence utilisateur persistée en `localStorage` (réglage réglable depuis l'app).
+
 ## Mesures et tokens de référence
 
 | Élément                | Valeur                                                                            |
@@ -21,7 +25,7 @@ L'effet du portfolio repose sur la fidélité : quelqu'un qui connaît macOS doi
 | Ombre fenêtre inactive | `0 8px 24px rgba(0,0,0,0.2)`                                                      |
 
 - **Police** : SF Pro n'est pas redistribuable. Font stack : `-apple-system, BlinkMacSystemFont, 'Inter', sans-serif` (sur Mac les visiteurs auront le vrai SF).
-- **Vibrancy** : `backdrop-blur-2xl` + fond `rgba(255,255,255,0.65)` (clair) / `rgba(30,30,30,0.65)` (sombre) + `saturate(180%)`. Définir une classe utilitaire `vibrancy` réutilisée partout (menu bar, dock, sidebars).
+- **Vibrancy** : implémenter avec le skill `liquid-glass-tailwind` (matériau Liquid Glass macOS 26, pas un simple `backdrop-blur` générique). Définir une classe utilitaire `vibrancy` réutilisée partout (menu bar, dock, sidebars).
 - ⚠️ Safari : `backdrop-filter` a besoin du préfixe `-webkit-` et se dégrade mal quand il est imbriqué (pas de vibrancy dans vibrancy). Tester tôt.
 
 ## Traffic lights — comportement exact
