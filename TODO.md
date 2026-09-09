@@ -39,23 +39,23 @@
 
 ## Phase 2 — Window manager (cœur du projet, desktop)
 
-- [ ] Store Zustand `useWindowStore` :
-  - [ ] `openWindow(appId)` / `closeWindow(id)` — une app peut-elle avoir plusieurs fenêtres ? (décision : non pour la v1, 1 fenêtre par app)
-  - [ ] Focus : clic n'importe où sur une fenêtre → elle passe au premier plan (gestion `zIndex` incrémental)
-  - [ ] État par fenêtre : `{ appId, position, size, isMinimized, isMaximized, zIndex, prevBounds }`
-  - [ ] Mémoriser position/taille quand on ferme puis rouvre (localStorage en bonus)
-- [ ] Composant `<Window>` :
-  - [ ] Barre de titre avec **traffic lights** (rouge = fermer, jaune = réduire, vert = plein écran) + icônes au hover du groupe, comme sur macOS
-  - [ ] **Drag** via la barre de titre (Framer Motion `drag` ou pointer events maison — pointer events recommandé pour garder le contrôle du store)
-  - [ ] **Resize** : 4 bords + 4 coins, taille minimale par app
-  - [ ] Contrainte : la fenêtre ne peut pas passer sous la menu bar ; peut dépasser des bords gauche/droite/bas comme sur macOS
-  - [ ] Les fenêtres se superposent librement (zIndex piloté par le focus)
-- [ ] Animations Framer Motion :
-  - [ ] Ouverture : scale + fade depuis l'icône cliquée
-  - [ ] **Minimize vers le dock** : la fenêtre s'anime vers la position de l'icône dans le dock (mesurer la position de l'icône avec un `ref`). L'effet genie exact est très coûteux — un scale + translate vers le dock suffit largement
-  - [ ] Restore depuis le dock (animation inverse)
-  - [ ] Plein écran : la fenêtre remplit l'espace sous la menu bar (pas le vrai fullscreen navigateur)
-- [ ] Double-clic sur la barre de titre → maximise (comportement macOS)
+- [x] Store Zustand `useWindowStore` :
+  - [x] `openWindow(appId)` / `closeWindow(id)` — une app peut-elle avoir plusieurs fenêtres ? (décision : non pour la v1, 1 fenêtre par app)
+  - [x] Focus : clic n'importe où sur une fenêtre → elle passe au premier plan (gestion `zIndex` incrémental)
+  - [x] État par fenêtre : `{ appId, position, size, isMinimized, isMaximized, zIndex, prevBounds }`
+  - [x] Mémoriser position/taille quand on ferme puis rouvre (localStorage en bonus)
+- [x] Composant `<Window>` :
+  - [x] Barre de titre avec **traffic lights** (rouge = fermer, jaune = réduire, vert = plein écran) + icônes au hover du groupe, comme sur macOS
+  - [x] **Drag** via la barre de titre (Framer Motion `drag` ou pointer events maison — pointer events recommandé pour garder le contrôle du store)
+  - [x] **Resize** : 4 bords + 4 coins, taille minimale par app
+  - [x] Contrainte : la fenêtre ne peut pas passer sous la menu bar ; peut dépasser des bords gauche/droite/bas comme sur macOS
+  - [x] Les fenêtres se superposent librement (zIndex piloté par le focus)
+- [x] Animations Framer Motion :
+  - [x] Ouverture : scale + fade depuis l'icône cliquée
+  - [x] **Minimize vers le dock** : la fenêtre s'anime vers la position de l'icône dans le dock (mesurer la position de l'icône avec un `ref`). L'effet genie exact est très coûteux — un scale + translate vers le dock suffit largement
+  - [x] Restore depuis le dock (animation inverse)
+  - [x] Plein écran : la fenêtre remplit l'espace sous la menu bar (pas le vrai fullscreen navigateur)
+- [x] Double-clic sur la barre de titre → maximise (comportement macOS)
 
 ## Phase 3 — UI macOS
 
