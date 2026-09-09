@@ -14,8 +14,7 @@ export const useWallpaperStore = create<WallpaperStore>()(
         macos: getDefaultWallpaper("macos").id,
         ios: getDefaultWallpaper("ios").id,
       },
-      setWallpaper: (os, id) =>
-        set((state) => ({ selected: { ...state.selected, [os]: id } })),
+      setWallpaper: (os, id) => set((state) => ({ selected: { ...state.selected, [os]: id } })),
     }),
     { name: WALLPAPER_STORAGE_KEY },
   ),

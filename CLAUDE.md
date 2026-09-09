@@ -38,10 +38,10 @@ Portfolio d'Elwen qui reproduit **macOS sur desktop** et **iOS sur mobile/tablet
 
 **Skills utilisateur** (`~/.claude/skills/`, valables sur tous les repos) :
 
-| Skill                   | Quand                                                                                                                                        |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `portfolio-embed-check` | Dans le repo d'un projet à embarquer (photoshop.elwen.dev…) : valider headers, responsive fenêtre, cookies, avant de l'ajouter au backoffice |
-| `seo-geo-boost`         | Avant toute mise en prod, et pour tout travail SEO/metadata/JSON-LD/llms.txt — sur le portfolio ET sur chaque sous-domaine                   |
+| Skill                   | Quand                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `portfolio-embed-check` | Dans le repo d'un projet à embarquer (photoshop.elwen.dev…) : valider headers, responsive fenêtre, cookies, avant de l'ajouter au backoffice                                                                                                                                                                                                               |
+| `seo-geo-boost`         | Avant toute mise en prod, et pour tout travail SEO/metadata/JSON-LD/llms.txt — sur le portfolio ET sur chaque sous-domaine                                                                                                                                                                                                                                 |
 | `liquid-glass-tailwind` | **Toujours** pour toute surface translucide/vibrancy (menu bar, dock, sidebars, fenêtres, springboard iOS) : seule référence pour coller au vrai matériau Liquid Glass macOS 26 / iOS 26, à charger avant d'écrire le moindre `backdrop-filter`. Les valeurs produites vont dans les constantes `src/lib/liquid-glass.ts`, jamais en dur dans un composant |
 
 ## Outils disponibles

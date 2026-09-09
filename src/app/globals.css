@@ -63,9 +63,7 @@ body {
   --radius-window: 10px;
   --radius-dock: 20px;
 
-  --shadow-window-focused:
-    0 0 0 1px rgb(0 0 0 / 0.15),
-    0 20px 60px rgb(0 0 0 / 0.35);
+  --shadow-window-focused: 0 0 0 1px rgb(0 0 0 / 0.15), 0 20px 60px rgb(0 0 0 / 0.35);
   --shadow-window-unfocused: 0 8px 24px rgb(0 0 0 / 0.2);
 }
 
@@ -103,15 +101,11 @@ body {
   --radius-glass-lg: 28px;
 
   --shadow-glass:
-    0 8px 24px rgb(0 0 0 / 0.12),
-    0 2px 4px rgb(0 0 0 / 0.08),
-    inset 0 1px 0 rgb(255 255 255 / 0.4),
+    0 8px 24px rgb(0 0 0 / 0.12), 0 2px 4px rgb(0 0 0 / 0.08), inset 0 1px 0 rgb(255 255 255 / 0.4),
     inset 0 -1px 0 rgb(0 0 0 / 0.05);
   --shadow-glass-lg:
-    0 16px 48px rgb(0 0 0 / 0.16),
-    0 4px 8px rgb(0 0 0 / 0.08),
-    inset 0 1px 1px rgb(255 255 255 / 0.55),
-    inset 0 -1px 1px rgb(255 255 255 / 0.3);
+    0 16px 48px rgb(0 0 0 / 0.16), 0 4px 8px rgb(0 0 0 / 0.08),
+    inset 0 1px 1px rgb(255 255 255 / 0.55), inset 0 -1px 1px rgb(255 255 255 / 0.3);
   --shadow-glass-rim: inset 0 0 20px -5px rgb(255 255 255 / 0.7);
 }
 
