@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { SYSTEM_APPS } from "@/lib/apps";
 import { getDefaultWallpaper, getWallpaper } from "@/lib/wallpapers";
 import { useWallpaperStore } from "@/stores/useWallpaperStore";
+import { WindowManager } from "./window/WindowManager";
 
 export function MacOS({ inert = false }: { inert?: boolean }) {
   const wallpaperId = useWallpaperStore((state) => state.selected.macos);
@@ -19,6 +21,7 @@ export function MacOS({ inert = false }: { inert?: boolean }) {
         draggable={false}
         className="pointer-events-none object-cover select-none [-webkit-user-drag:none]"
       />
+      <WindowManager apps={SYSTEM_APPS} />
     </div>
   );
 }
