@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import Script from "next/script";
 import { LiquidGlassProvider } from "@/components/os/LiquidGlassProvider";
 import { ThemeProvider } from "@/components/os/ThemeProvider";
+import { BOOT_STORAGE_KEY } from "@/lib/boot";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
 import "./globals.css";
 
@@ -28,6 +29,17 @@ const themeInitScript = `(function () {
   } catch (e) {}
 })();`;
 
+// Hides the boot/login overlay before hydration if this session already
+// played it (see BootScreen.tsx + the .boot-seen rule in globals.css).
+// Only ever reads our own sessionStorage key.
+const bootInitScript = `(function () {
+  try {
+    if (sessionStorage.getItem(${JSON.stringify(BOOT_STORAGE_KEY)}) === "1") {
+      document.documentElement.classList.add("boot-seen");
+    }
+  } catch (e) {}
+})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -42,6 +54,9 @@ export default function RootLayout({
       <body className="h-full flex flex-col overflow-hidden overscroll-none">
         <Script id="theme-init" strategy="beforeInteractive">
           {themeInitScript}
+        </Script>
+        <Script id="boot-init" strategy="beforeInteractive">
+          {bootInitScript}
         </Script>
         <ThemeProvider />
         <LiquidGlassProvider />

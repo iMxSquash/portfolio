@@ -7,6 +7,13 @@
    layout.tsx (anti-FOUC). */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Boot/login overlay anti-flash: hides it before React/hydration even runs
+   when this browser session already played it (see the boot-init script in
+   layout.tsx and BootScreen.tsx). Pure CSS, decoupled from React timing. */
+.boot-seen .boot-screen-root {
+  display: none;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
