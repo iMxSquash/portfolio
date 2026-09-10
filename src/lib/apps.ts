@@ -40,6 +40,13 @@ export type AppDefinition = {
  */
 export const SYSTEM_APPS: AppDefinition[] = [];
 
+/**
+ * Well-known id for the Trash app (registered in Phase 4). The dock
+ * special-cases it to always render last, after the running/minimized
+ * windows section, matching real macOS — see `Dock.tsx`.
+ */
+export const TRASH_APP_ID = "trash";
+
 export function getApp(apps: AppDefinition[], id: string): AppDefinition | undefined {
   return apps.find((app) => app.id === id);
 }
