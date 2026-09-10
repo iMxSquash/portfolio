@@ -81,7 +81,7 @@
 - [x] Fond d'écran plein écran
 - [x] Icônes sur le bureau (alignées à droite, façon macOS) : projets, raccourcis
 - [x] Simple clic → sélection (surbrillance), **double-clic → ouverture**
-- [ ] Bonus : rectangle de sélection au drag, menu contextuel clic droit (« Changer le fond d'écran… », « Nouvelle note »)
+- [x] Bonus : rectangle de sélection au drag, menu contextuel clic droit (« Changer le fond d'écran… », « Nouvelle note »)
 
 ## Phase 4 — Apps système
 
