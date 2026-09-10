@@ -61,27 +61,27 @@
 
 ### Menu bar
 
-- [ ] Barre fixe en haut : fond vibrancy, hauteur ~28px
-- [ ] Logo à gauche → menu déroulant (« À propos de ce portfolio », « Préférences… », « Verrouiller l'écran »…)
-- [ ] Nom de l'app active en gras + menus contextuels (Fichier, Édition…) — contenu par app, même factice
-- [ ] À droite : wifi, batterie, **horloge live** (format macOS : « lun. 6 juil. 09:41 »)
-- [ ] Bonus : Spotlight (Cmd+Espace, recherche parmi les apps/projets), Control Center (toggle thème, luminosité factice)
+- [x] Barre fixe en haut : fond vibrancy, hauteur ~28px
+- [x] Logo à gauche → menu déroulant (« À propos de ce portfolio », « Préférences… », « Verrouiller l'écran »…)
+- [x] Nom de l'app active en gras + menus contextuels (Fichier, Édition…) — contenu par app, même factice
+- [x] À droite : wifi, batterie, **horloge live** (format macOS : « lun. 6 juil. 09:41 »)
+- [x] Bonus : Spotlight (Cmd+Espace, recherche parmi les apps/projets), Control Center (toggle thème, luminosité factice)
 
 ### Dock
 
-- [ ] Dock centré en bas : fond vibrancy, coins arrondis
-- [ ] Icônes des apps (depuis le registre) + **effet magnification au survol** (interpolation de la taille selon la distance du curseur — Framer Motion `useMotionValue` + `useTransform`)
-- [ ] Point/indicateur sous les apps ouvertes
-- [ ] Tooltip avec le nom de l'app au survol
-- [ ] Section droite après un séparateur : fenêtres réduites (miniature ou icône) + Corbeille
-- [ ] Clic sur une app fermée → ouvre ; ouverte → focus ; réduite → restore
+- [x] Dock centré en bas : fond vibrancy, coins arrondis
+- [x] Icônes des apps (depuis le registre) + **effet magnification au survol** (interpolation de la taille selon la distance du curseur — Framer Motion `useMotionValue` + `useTransform`)
+- [x] Point/indicateur sous les apps ouvertes
+- [x] Tooltip avec le nom de l'app au survol
+- [x] Section droite après un séparateur : fenêtres réduites (miniature ou icône) + Corbeille
+- [x] Clic sur une app fermée → ouvre ; ouverte → focus ; réduite → restore
 
 ### Bureau
 
-- [ ] Fond d'écran plein écran
-- [ ] Icônes sur le bureau (alignées à droite, façon macOS) : projets, raccourcis
-- [ ] Simple clic → sélection (surbrillance), **double-clic → ouverture**
-- [ ] Bonus : rectangle de sélection au drag, menu contextuel clic droit (« Changer le fond d'écran… », « Nouvelle note »)
+- [x] Fond d'écran plein écran
+- [x] Icônes sur le bureau (alignées à droite, façon macOS) : projets, raccourcis
+- [x] Simple clic → sélection (surbrillance), **double-clic → ouverture**
+- [x] Bonus : rectangle de sélection au drag, menu contextuel clic droit (« Changer le fond d'écran… », « Nouvelle note »)
 
 ## Phase 4 — Apps système
 

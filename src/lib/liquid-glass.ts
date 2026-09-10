@@ -13,6 +13,9 @@
  * saturation, brightness, blur elevation) are meant to be user-tunable.
  */
 
+/** Lens shape for the SVG refraction chain — see `liquid-glass-refraction.ts`. */
+export type LiquidGlassRefractionMode = "diagonal" | "symmetric";
+
 export type LiquidGlassParams = {
   /** Tint color channels, light mode, e.g. "255 255 255" */
   tint: string;
@@ -33,6 +36,20 @@ export type LiquidGlassParams = {
   blurXl: string;
   /** Blur used by the high-transparency `clear` variant */
   blurClear: string;
+  /** CSS blur inside the SVG refraction chain — distinct from `blurClear`, displacement does most of the frosting there. */
+  blurRefract: string;
+  /**
+   * SVG refraction tuning (Chromium only; every other engine keeps the plain
+   * blur+saturate fallback above). Applied per-element by
+   * `useLiquidGlassRefraction`, not pushed to `:root` like the rest of this
+   * object — see `LIQUID_GLASS_CSS_VARS` and `liquid-glass-refraction.ts`.
+   */
+  refractScale: number;
+  /** Per-channel scale spread driving the chromatic-aberration fringes; 0 disables it. */
+  refractAberration: number;
+  refractMode: LiquidGlassRefractionMode;
+  /** Tint alpha specifically for refracting surfaces — lower than the base `tintAlpha` so the displacement reads clearly instead of being muddied by a denser tint. Also per-element, not `:root`. */
+  refractTintAlpha: string;
 };
 
 /**
@@ -51,10 +68,21 @@ export const DEFAULT_LIQUID_GLASS: LiquidGlassParams = {
   blurLg: "24px",
   blurXl: "40px",
   blurClear: "3px",
+  blurRefract: "3px",
+  refractScale: -140,
+  refractAberration: 14,
+  refractMode: "diagonal",
+  refractTintAlpha: "4%",
 };
 
-/** Maps each param to the CSS custom property it drives (declared in the `@theme` block of globals.css). */
-export const LIQUID_GLASS_CSS_VARS: Record<keyof LiquidGlassParams, string> = {
+/**
+ * Maps each `:root`-driven param to the CSS custom property it drives
+ * (declared in the `@theme` block of globals.css). The four `refract*`
+ * knobs are deliberately absent — they're consumed directly as JS options /
+ * per-element style overrides by refracting components, never pushed
+ * globally (see `LiquidGlassParams`).
+ */
+export const LIQUID_GLASS_CSS_VARS: Partial<Record<keyof LiquidGlassParams, string>> = {
   tint: "--glass-tint",
   tintAlpha: "--glass-tint-alpha",
   tintDark: "--glass-tint-dark",
@@ -66,6 +94,7 @@ export const LIQUID_GLASS_CSS_VARS: Record<keyof LiquidGlassParams, string> = {
   blurLg: "--blur-glass-lg",
   blurXl: "--blur-glass-xl",
   blurClear: "--blur-glass-clear",
+  blurRefract: "--glass-blur-refract",
 };
 
 /** localStorage key used by the persisted `useLiquidGlassStore`. */
@@ -77,6 +106,8 @@ export function applyLiquidGlassParams(
   target: HTMLElement = document.documentElement,
 ) {
   for (const key of Object.keys(params) as Array<keyof LiquidGlassParams>) {
-    target.style.setProperty(LIQUID_GLASS_CSS_VARS[key], params[key]);
+    const cssVar = LIQUID_GLASS_CSS_VARS[key];
+    if (!cssVar) continue;
+    target.style.setProperty(cssVar, String(params[key]));
   }
 }

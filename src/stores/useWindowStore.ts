@@ -25,6 +25,8 @@ type WindowStore = {
   openWindow: (appId: string, defaultSize: Size) => void;
   closeWindow: (appId: string) => void;
   focusWindow: (appId: string) => void;
+  /** Clears focus without closing anything — clicking the desktop background falls back to "Finder" in the menu bar. */
+  blurAll: () => void;
   minimizeWindow: (appId: string) => void;
   toggleMaximize: (appId: string, maximizedBounds: Bounds) => void;
   /** Commits a position/size change — call only once, at the end of a drag/resize gesture. */
@@ -108,6 +110,8 @@ export const useWindowStore = create<WindowStore>()(
             focusedAppId: appId,
           };
         }),
+
+      blurAll: () => set({ focusedAppId: null }),
 
       minimizeWindow: (appId) =>
         set((state) => {
