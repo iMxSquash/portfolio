@@ -6,16 +6,18 @@ import { useWindowStore } from "@/stores/useWindowStore";
 
 type DesktopIconsProps = {
   apps: AppDefinition[];
-  selectedId: string | null;
-  onSelect: (id: string | null) => void;
+  selectedIds: string[];
+  onSelect: (id: string) => void;
 };
 
 /**
  * Icons aligned in a column from the right edge (macOS convention). Single
  * click selects (highlight), double click opens. Deselecting on background
- * click is handled by the caller (see MacOS.tsx).
+ * click, and multi-select via the drag marquee, are handled by the caller
+ * (see MacOS.tsx / DesktopBackground.tsx) — `data-desktop-icon-id` is what
+ * the marquee's hit-testing looks for.
  */
-export function DesktopIcons({ apps, selectedId, onSelect }: DesktopIconsProps) {
+export function DesktopIcons({ apps, selectedIds, onSelect }: DesktopIconsProps) {
   const openWindow = useWindowStore((state) => state.openWindow);
   const desktopApps = getDesktopApps(apps);
 
@@ -27,6 +29,7 @@ export function DesktopIcons({ apps, selectedId, onSelect }: DesktopIconsProps) 
         <button
           key={app.id}
           type="button"
+          data-desktop-icon-id={app.id}
           onClick={() => onSelect(app.id)}
           onDoubleClick={() => openWindow(app.id, app.defaultSize)}
           className="flex w-20 flex-col items-center gap-1 rounded p-1"
@@ -36,7 +39,7 @@ export function DesktopIcons({ apps, selectedId, onSelect }: DesktopIconsProps) 
           </span>
           <span
             className={`rounded px-1.5 py-0.5 text-center text-[12px] text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.6)] ${
-              selectedId === app.id ? "bg-blue-500/60" : ""
+              selectedIds.includes(app.id) ? "bg-blue-500/60" : ""
             }`}
           >
             {app.name}
