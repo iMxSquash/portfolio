@@ -88,6 +88,10 @@ body {
   --blur-glass-lg: 24px;
   --blur-glass-xl: 40px;
   --blur-glass-clear: 3px;
+  /* CSS blur inside the SVG refraction chain (see liquid-glass-refraction.ts)
+     — distinct from --blur-glass-clear, displacement does most of the
+     frosting there so this stays low (2-4px). */
+  --glass-blur-refract: 3px;
 
   --glass-tint: 255 255 255;
   --glass-tint-alpha: 12%;
