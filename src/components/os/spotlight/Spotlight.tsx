@@ -53,7 +53,14 @@ export function Spotlight({ apps, disabled = false }: SpotlightProps) {
     {
       scale: glassParams.refractScale,
       aberration: glassParams.refractAberration,
-      mode: glassParams.refractMode,
+      // Always "symmetric", never the global `glassParams.refractMode`: the
+      // idle pill's radius equals half its height, giving it tightly curved
+      // semicircular caps. "diagonal" pushes every border pixel in the same
+      // fixed direction regardless of local curvature, which on a cap that
+      // sharp produces a visible ghost rim offset from the true edge —
+      // "symmetric" derives the push direction from the SDF gradient, so it
+      // rotates with the curve and stays artifact-free at any radius.
+      mode: "symmetric",
     },
     // Border-radius alone (pill <-> card, see hasResultsPanel below) doesn't
     // resize the element, so the controller's own ResizeObserver won't
