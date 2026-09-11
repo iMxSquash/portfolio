@@ -62,3 +62,13 @@ export function getMobileApps(apps: AppDefinition[]): AppDefinition[] {
 export function getDockApps(apps: AppDefinition[]): AppDefinition[] {
   return apps.filter((app) => app.pinnedToDock);
 }
+
+/** Iframe/external apps — what Finder's "Projets" favorite lists (see os-apps skill). */
+export function getProjectApps(apps: AppDefinition[]): AppDefinition[] {
+  return apps.filter((app) => app.type === "iframe" || app.type === "external");
+}
+
+/** Component-type (system) apps — what Finder's "Applications" favorite lists. */
+export function getSystemComponentApps(apps: AppDefinition[]): AppDefinition[] {
+  return apps.filter((app) => app.type === "component");
+}
