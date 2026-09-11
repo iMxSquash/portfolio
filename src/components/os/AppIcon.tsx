@@ -11,6 +11,11 @@ type AppIconProps = {
  * Squircle wrapper (~22.5% radius) shared by dock, desktop and the iOS
  * springboard so every app icon reads consistently regardless of its
  * source (SVG component or image asset) — see os-macos-ui skill.
+ *
+ * Also applies the macOS 26 Liquid Glass icon material: a top specular
+ * highlight + bottom inner shadow layered over every icon, matching the
+ * glossy bevel Tahoe gives every system app icon — centralized here rather
+ * than redrawn inside each icon SVG.
  */
 export function AppIcon({ app, className = "" }: AppIconProps) {
   return (
@@ -22,6 +27,15 @@ export function AppIcon({ app, className = "" }: AppIconProps) {
       ) : (
         <IconComponent icon={app.icon} />
       )}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(155deg, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0.12) 18%, rgb(255 255 255 / 0) 45%, rgb(0 0 0 / 0.1) 100%)",
+          boxShadow: "inset 0 -1px 1px rgb(0 0 0 / 0.15), inset 0 1px 0 rgb(255 255 255 / 0.35)",
+        }}
+      />
     </span>
   );
 }

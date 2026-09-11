@@ -101,7 +101,7 @@ export function MenuBarMenuItem({
       role="menuitem"
       onClick={onSelect}
       // Panel is `rounded-lg` (8px) with `p-1` (4px) padding — concentric child radius is 8-4=4px (see liquid-glass-tailwind skill).
-      className="flex w-full items-center justify-between gap-4 rounded-[4px] px-2 py-1 text-left text-[13px] hover:bg-blue-500 hover:text-white"
+      className="flex w-full items-center justify-between gap-4 rounded-[4px] px-2 py-1 text-left text-[13px] hover:bg-system-blue hover:text-white"
     >
       <span>{label}</span>
       {shortcut ? <span className="text-xs opacity-60">{shortcut}</span> : null}

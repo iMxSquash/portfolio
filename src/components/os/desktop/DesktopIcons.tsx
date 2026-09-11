@@ -39,7 +39,7 @@ export function DesktopIcons({ apps, selectedIds, onSelect }: DesktopIconsProps)
           </span>
           <span
             className={`rounded px-1.5 py-0.5 text-center text-[12px] text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.6)] ${
-              selectedIds.includes(app.id) ? "bg-blue-500/60" : ""
+              selectedIds.includes(app.id) ? "bg-system-blue/60" : ""
             }`}
           >
             {app.name}

@@ -211,7 +211,7 @@ export function Spotlight({ apps, disabled = false }: SpotlightProps) {
                       onClick={() => launch(app)}
                       onMouseEnter={() => setSelectedIndex(index)}
                       className={`flex w-full items-center gap-3 rounded-2xl px-3 py-2 text-left ${
-                        index === selected ? "bg-blue-500 text-white" : ""
+                        index === selected ? "bg-system-blue text-white" : ""
                       }`}
                     >
                       <span className="size-6 shrink-0">

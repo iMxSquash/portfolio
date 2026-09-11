@@ -32,7 +32,7 @@ export function WallpaperPicker({ position, onClose }: { position: Point; onClos
             aria-label={wallpaper.label}
             aria-pressed={selected === wallpaper.id}
             className={`relative aspect-video overflow-hidden rounded-md ${
-              selected === wallpaper.id ? "ring-2 ring-blue-500" : ""
+              selected === wallpaper.id ? "ring-2 ring-system-blue" : ""
             }`}
           >
             <Image src={wallpaper.src} alt="" fill sizes="80px" className="object-cover" />

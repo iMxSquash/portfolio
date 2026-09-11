@@ -63,7 +63,7 @@ export function ControlCenterContent() {
             value={brightness}
             onChange={(event) => setBrightness(Number(event.target.value))}
             aria-label="Luminosité (factice, sans effet réel)"
-            className="w-full accent-blue-500"
+            className="w-full accent-system-blue"
           />
           <SunIcon className="size-4" />
         </div>
