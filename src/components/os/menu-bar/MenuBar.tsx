@@ -46,7 +46,27 @@ export function MenuBar({ apps }: MenuBarProps) {
       setOpenMenuId(null);
     }
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpenMenuId(null);
+      if (event.key === "Escape") {
+        setOpenMenuId(null);
+        return;
+      }
+      // Real macOS: while a menu is open, Left/Right moves to and opens the
+      // adjacent menu (cycling), keeping focus on its trigger.
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      if (!barRef.current) return;
+      const triggers = Array.from(
+        barRef.current.querySelectorAll<HTMLElement>("[data-menu-id]"),
+      );
+      const index = triggers.findIndex((el) => el.dataset.menuId === openMenuId);
+      if (index === -1) return;
+      event.preventDefault();
+      const delta = event.key === "ArrowRight" ? 1 : -1;
+      const next = triggers[(index + delta + triggers.length) % triggers.length];
+      const nextId = next?.dataset.menuId;
+      if (nextId) {
+        setOpenMenuId(nextId);
+        next.focus();
+      }
     }
 
     document.addEventListener("pointerdown", handlePointerDown);

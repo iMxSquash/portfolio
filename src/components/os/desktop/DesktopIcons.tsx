@@ -1,6 +1,8 @@
 "use client";
 
+import type { KeyboardEvent } from "react";
 import { AppIcon } from "@/components/os/AppIcon";
+import { focusListSibling } from "@/lib/arrow-key-nav";
 import { getDesktopApps, type AppDefinition } from "@/lib/apps";
 import { useWindowStore } from "@/stores/useWindowStore";
 
@@ -23,18 +25,26 @@ export function DesktopIcons({ apps, selectedIds, onSelect }: DesktopIconsProps)
 
   if (desktopApps.length === 0) return null;
 
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    focusListSibling(event, event.currentTarget, "vertical", "[data-desktop-icon-id]");
+  }
+
   return (
     // `pointer-events-none` on the column itself: its bounding box spans the
     // full right-edge strip (including empty gaps between icons), which would
     // otherwise swallow clicks/right-clicks meant for the desktop background
     // underneath. Only the icon buttons re-enable pointer events.
-    <div className="pointer-events-none absolute top-(--menu-bar-height) right-0 bottom-0 flex flex-col items-end gap-1 p-4">
+    <div
+      className="pointer-events-none absolute top-(--menu-bar-height) right-0 bottom-0 flex flex-col items-end gap-1 p-4"
+      onKeyDown={handleKeyDown}
+    >
       {desktopApps.map((app) => (
         <button
           key={app.id}
           type="button"
           data-desktop-icon-id={app.id}
           onClick={() => onSelect(app.id)}
+          onFocus={() => onSelect(app.id)}
           onDoubleClick={() => openWindow(app.id, app.defaultSize)}
           className="pointer-events-auto flex w-20 flex-col items-center gap-1 rounded p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >

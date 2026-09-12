@@ -1,5 +1,6 @@
-import type { ComponentType } from "react";
+import type { ComponentType, KeyboardEvent } from "react";
 import { AppIcon } from "@/components/os/AppIcon";
+import { focusGridSibling, focusListSibling } from "@/lib/arrow-key-nav";
 
 export type FileGridItem = {
   id: string;
@@ -32,7 +33,12 @@ export function FileGrid({ items, viewMode, emptyLabel }: FileGridProps) {
 
   if (viewMode === "list") {
     return (
-      <div className="text-[13px]">
+      <div
+        className="text-[13px]"
+        onKeyDown={(event: KeyboardEvent<HTMLDivElement>) =>
+          focusListSibling(event, event.currentTarget, "vertical")
+        }
+      >
         <div className="text-foreground/50 flex border-b border-black/10 px-3 py-1.5 text-[11px] font-medium dark:border-white/10">
           <span className="flex-1">Nom</span>
           <span className="w-28 shrink-0">Genre</span>
@@ -61,7 +67,10 @@ export function FileGrid({ items, viewMode, emptyLabel }: FileGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-2 p-3">
+    <div
+      className="grid grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-2 p-3"
+      onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => focusGridSibling(event, event.currentTarget)}
+    >
       {items.map((item) => (
         <button
           key={item.id}

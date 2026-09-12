@@ -57,6 +57,7 @@ export function MenuBarButton({
       <button
         ref={buttonRef}
         type="button"
+        data-menu-id={id}
         aria-label={ariaLabel}
         aria-haspopup="menu"
         aria-expanded={isOpen}

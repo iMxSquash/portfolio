@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type KeyboardEvent } from "react";
 import { FolderIcon } from "@/components/icons/FolderIcon";
+import { focusListSibling } from "@/lib/arrow-key-nav";
 import { NOTES, NOTE_FOLDERS } from "@/lib/notes-content";
 
 /**
@@ -26,12 +27,18 @@ export function Notes() {
 
   return (
     <div className="flex h-full min-h-0 text-[13px]">
-      <nav className="w-36 min-w-28 shrink-0 overflow-y-auto border-r border-black/10 bg-black/[0.02] py-2 dark:border-white/10 dark:bg-white/[0.03]">
+      <nav
+        className="w-36 min-w-28 shrink-0 overflow-y-auto border-r border-black/10 bg-black/[0.02] py-2 dark:border-white/10 dark:bg-white/[0.03]"
+        onKeyDown={(event: KeyboardEvent<HTMLElement>) =>
+          focusListSibling(event, event.currentTarget, "vertical")
+        }
+      >
         {NOTE_FOLDERS.map((folder) => (
           <button
             key={folder.id}
             type="button"
             onClick={() => handleSelectFolder(folder.id)}
+            onFocus={() => handleSelectFolder(folder.id)}
             className={`flex w-full items-center gap-2 px-3 py-1.5 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-system-blue ${
               folder.id === selectedFolderId
                 ? "bg-amber-400/30 dark:bg-amber-400/20"
@@ -44,12 +51,18 @@ export function Notes() {
         ))}
       </nav>
 
-      <div className="w-56 min-w-40 shrink-0 overflow-y-auto border-r border-black/10 dark:border-white/10">
+      <div
+        className="w-56 min-w-40 shrink-0 overflow-y-auto border-r border-black/10 dark:border-white/10"
+        onKeyDown={(event: KeyboardEvent<HTMLDivElement>) =>
+          focusListSibling(event, event.currentTarget, "vertical")
+        }
+      >
         {notesInFolder.map((note) => (
           <button
             key={note.id}
             type="button"
             onClick={() => setSelectedNoteId(note.id)}
+            onFocus={() => setSelectedNoteId(note.id)}
             className={`flex w-full flex-col gap-0.5 border-b border-black/5 px-3 py-2 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-system-blue dark:border-white/5 ${
               note.id === selectedNote?.id ? "bg-amber-400/25 dark:bg-amber-400/15" : ""
             }`}
