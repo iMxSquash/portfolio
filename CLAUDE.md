@@ -17,6 +17,7 @@ Portfolio d'Elwen qui reproduit **macOS sur desktop** et **iOS sur mobile/tablet
 
 ## Architecture — points non négociables
 
+- **Fidélité visuelle native avant tout** : le portfolio doit se comporter et paraître comme une vraie application macOS/iOS, jamais comme un site web qui imite un OS — Next.js/Tailwind/React ne sont qu'un détail d'implémentation, invisible pour la personne qui l'utilise. Ça couvre les matériaux (Liquid Glass), le mouvement (courbes/durées natives, jamais un easing web générique), la réactivité au geste (survol, pression, drag) et la réfraction : par défaut sur **tout élément actionnable** (dock, boutons de fenêtre, sidebars, segmented controls, springboard iOS), pas seulement une surface décorative isolée — voir le skill `apple-design`. En cas de doute sur un détail, vérifier sur une capture du vrai macOS/iOS plutôt qu'inventer.
 - **Registre central des apps** (`src/lib/apps.ts`) : tout ce qui s'ouvre (app système, projet iframe, lien externe) y est déclaré. Bureau, dock, Finder et springboard iOS ne font que le lire — aucune liste d'apps dupliquée.
 - **Paramètres Liquid Glass centralisés** (`src/lib/liquid-glass.ts`) : les valeurs par défaut du matériau (blur, saturation, teinte clair/sombre, bordure, etc.) sont des **constantes typées**, seule source de vérité — jamais de valeur codée en dur localement dans un composant. Menu bar, dock, sidebars, fenêtres, springboard iOS les consomment toutes. Pensé pour être surchargé plus tard par une préférence utilisateur (réglage dans l'app, persistée en `localStorage`) : à la lecture, fusionner défauts + overrides localStorage, sans jamais muter les constantes par défaut.
 - **Une seule source de vérité pour les fenêtres** : le store Zustand `useWindowStore`. Jamais de position/taille de fenêtre en state local.
@@ -42,7 +43,12 @@ Portfolio d'Elwen qui reproduit **macOS sur desktop** et **iOS sur mobile/tablet
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `portfolio-embed-check` | Dans le repo d'un projet à embarquer (photoshop.elwen.dev…) : valider headers, responsive fenêtre, cookies, avant de l'ajouter au backoffice                                                                                                                                                                                                               |
 | `seo-geo-boost`         | Avant toute mise en prod, et pour tout travail SEO/metadata/JSON-LD/llms.txt — sur le portfolio ET sur chaque sous-domaine                                                                                                                                                                                                                                 |
-| `liquid-glass-tailwind` | **Toujours** pour toute surface translucide/vibrancy (menu bar, dock, sidebars, fenêtres, springboard iOS) : seule référence pour coller au vrai matériau Liquid Glass macOS 26 / iOS 26, à charger avant d'écrire le moindre `backdrop-filter`. Les valeurs produites vont dans les constantes `src/lib/liquid-glass.ts`, jamais en dur dans un composant |
+
+**Skill hérité** (`../.claude/skills/apple-design`, au niveau du dossier `Personnel/` qui contient ce repo — visible automatiquement ici, pas besoin de l'installer) :
+
+| Skill          | Quand                                                                                                                                                                                                                                                                                                                                                                                                    |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apple-design` | **Toujours** pour toute surface translucide/vibrancy (menu bar, dock, sidebars, fenêtres, springboard iOS) et pour toute décision d'UI/interaction en général : référence unique (design HIG + implémentation Tailwind/CSS + réfraction SVG) pour coller au vrai matériau Liquid Glass macOS 26 / iOS 26, à charger avant d'écrire le moindre `backdrop-filter`. Réfraction par défaut sur les éléments actionnables (voir "Fidélité visuelle native" ci-dessus), aberration chromatique réservée à 1-2 éléments proéminents. Les valeurs produites vont dans les constantes `src/lib/liquid-glass.ts`, jamais en dur dans un composant |
 
 ## Outils disponibles
 
@@ -58,7 +64,6 @@ Portfolio d'Elwen qui reproduit **macOS sur desktop** et **iOS sur mobile/tablet
 ## Conventions
 
 - Code et commits en français côté contenu, nommage code en anglais
-- Fidélité macOS/iOS avant tout : en cas de doute sur un détail d'UI, vérifier sur une capture du vrai macOS plutôt qu'inventer
 - Contenu éditorial (notes du CV, contenu corbeille) : dans le repo (TS/MDX) ; contenu géré (projets) : Supabase uniquement
 
 ## Git
