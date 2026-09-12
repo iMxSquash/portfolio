@@ -60,7 +60,7 @@ export function MenuBar({ apps }: MenuBarProps) {
   return (
     <div
       ref={barRef}
-      className="fixed inset-x-0 top-0 z-[1000] flex h-(--menu-bar-height) items-center gap-1 px-2 text-[13px] text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.4)]"
+      className="liquid-glass glass-hairline fixed inset-x-0 top-0 z-1000 flex h-(--menu-bar-height) items-center gap-1 rounded-none border-x-0 border-t-0 px-2 text-[13px] text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.4)]"
     >
       <MenuBarButton
         id="apple"
@@ -128,7 +128,7 @@ export function MenuBar({ apps }: MenuBarProps) {
           type="button"
           aria-label="Spotlight"
           onClick={toggleSpotlight}
-          className="flex h-full items-center rounded-[4px] px-2"
+          className="flex h-full items-center rounded-sm px-2"
         >
           <SpotlightIcon className="size-4" />
         </button>

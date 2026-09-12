@@ -25,7 +25,7 @@ export function Trash() {
           type="button"
           onClick={emptyTrash}
           disabled={items.length === 0}
-          className="rounded bg-black/5 px-2 py-1 text-[12px] disabled:opacity-40 dark:bg-white/10"
+          className="focus-visible:outline-system-blue rounded bg-black/5 px-2 py-1 text-[12px] focus-visible:outline-2 disabled:opacity-40 dark:bg-white/10"
         >
           Vider la corbeille
         </button>

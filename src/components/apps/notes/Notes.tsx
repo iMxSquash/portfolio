@@ -32,7 +32,7 @@ export function Notes() {
             key={folder.id}
             type="button"
             onClick={() => handleSelectFolder(folder.id)}
-            className={`flex w-full items-center gap-2 px-3 py-1.5 text-left ${
+            className={`flex w-full items-center gap-2 px-3 py-1.5 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-system-blue ${
               folder.id === selectedFolderId
                 ? "bg-amber-400/30 dark:bg-amber-400/20"
                 : "hover:bg-black/5 dark:hover:bg-white/5"
@@ -50,7 +50,7 @@ export function Notes() {
             key={note.id}
             type="button"
             onClick={() => setSelectedNoteId(note.id)}
-            className={`flex w-full flex-col gap-0.5 border-b border-black/5 px-3 py-2 text-left dark:border-white/5 ${
+            className={`flex w-full flex-col gap-0.5 border-b border-black/5 px-3 py-2 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-system-blue dark:border-white/5 ${
               note.id === selectedNote?.id ? "bg-amber-400/25 dark:bg-amber-400/15" : ""
             }`}
           >

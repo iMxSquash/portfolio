@@ -78,7 +78,7 @@ export function Finder() {
           aria-label="Précédent"
           disabled={historyIndex === 0}
           onClick={() => setHistoryIndex((index) => Math.max(0, index - 1))}
-          className="rounded px-1.5 py-0.5 disabled:opacity-30"
+          className="rounded px-1.5 py-0.5 focus-visible:outline-2 focus-visible:outline-system-blue disabled:opacity-30"
         >
           <IconChevronLeft size={12} stroke={3} />
         </button>
@@ -87,7 +87,7 @@ export function Finder() {
           aria-label="Suivant"
           disabled={historyIndex === history.length - 1}
           onClick={() => setHistoryIndex((index) => Math.min(history.length - 1, index + 1))}
-          className="rounded px-1.5 py-0.5 disabled:opacity-30"
+          className="rounded px-1.5 py-0.5 focus-visible:outline-2 focus-visible:outline-system-blue disabled:opacity-30"
         >
           <IconChevronRight size={12} stroke={3} />
         </button>
@@ -100,7 +100,7 @@ export function Finder() {
             aria-label="Vue en icônes"
             aria-pressed={viewMode === "icons"}
             onClick={() => setViewMode("icons")}
-            className={`rounded px-2 py-0.5 ${viewMode === "icons" ? "bg-white shadow-sm dark:bg-white/20" : ""}`}
+            className={`focus-visible:outline-system-blue rounded px-2 py-0.5 focus-visible:outline-2 ${viewMode === "icons" ? "bg-white shadow-sm dark:bg-white/20" : ""}`}
           >
             <IconLayoutGrid size={14} stroke={2} />
           </button>
@@ -109,7 +109,7 @@ export function Finder() {
             aria-label="Vue en liste"
             aria-pressed={viewMode === "list"}
             onClick={() => setViewMode("list")}
-            className={`rounded px-2 py-0.5 ${viewMode === "list" ? "bg-white shadow-sm dark:bg-white/20" : ""}`}
+            className={`focus-visible:outline-system-blue rounded px-2 py-0.5 focus-visible:outline-2 ${viewMode === "list" ? "bg-white shadow-sm dark:bg-white/20" : ""}`}
           >
             <IconList size={14} stroke={2} />
           </button>
@@ -124,7 +124,7 @@ export function Finder() {
               key={favorite.id}
               type="button"
               onClick={() => navigate(favorite.id)}
-              className={`flex w-full items-center gap-2 px-3 py-1.5 text-left ${
+              className={`flex w-full items-center gap-2 px-3 py-1.5 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-system-blue ${
                 favorite.id === currentFavoriteId
                   ? "bg-system-blue/20 dark:bg-system-blue/25"
                   : "hover:bg-black/5 dark:hover:bg-white/5"

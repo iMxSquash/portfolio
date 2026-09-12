@@ -42,7 +42,10 @@ export function FileGrid({ items, viewMode, emptyLabel }: FileGridProps) {
             key={item.id}
             type="button"
             onDoubleClick={item.onOpen}
-            className="flex w-full items-center border-b border-black/5 px-3 py-1.5 text-left hover:bg-black/5 dark:border-white/5 dark:hover:bg-white/5"
+            onKeyDown={(event) => {
+              if (event.key === "Enter") item.onOpen();
+            }}
+            className="focus-visible:bg-system-blue/20 flex w-full items-center border-b border-black/5 px-3 py-1.5 text-left hover:bg-black/5 focus-visible:outline-none dark:border-white/5 dark:hover:bg-white/5"
           >
             <span className="flex flex-1 items-center gap-2 truncate">
               <span className="w-4.5 shrink-0">
@@ -64,7 +67,10 @@ export function FileGrid({ items, viewMode, emptyLabel }: FileGridProps) {
           key={item.id}
           type="button"
           onDoubleClick={item.onOpen}
-          className="flex flex-col items-center gap-1 rounded p-2 text-center hover:bg-black/5 dark:hover:bg-white/5"
+          onKeyDown={(event) => {
+            if (event.key === "Enter") item.onOpen();
+          }}
+          className="focus-visible:bg-system-blue/20 flex flex-col items-center gap-1 rounded p-2 text-center hover:bg-black/5 focus-visible:outline-none dark:hover:bg-white/5"
         >
           <span className="w-12">
             <AppIcon app={item} />

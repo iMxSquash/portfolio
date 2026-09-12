@@ -64,7 +64,7 @@ export function MenuBarButton({
         onPointerEnter={() => {
           if (openId !== null && openId !== id) onOpenChange(id);
         }}
-        className={`flex h-full items-center rounded-[4px] px-2 text-[13px] ${bold ? "font-semibold" : ""} ${
+        className={`flex h-full items-center rounded-sm px-2 text-[13px] focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:outline-none ${bold ? "font-semibold" : ""} ${
           isOpen ? "bg-white/25 dark:bg-white/15" : ""
         }`}
       >
@@ -74,7 +74,7 @@ export function MenuBarButton({
         ? createPortal(
             <div
               role="menu"
-              className="liquid-glass fixed z-[1001] min-w-56 rounded-lg p-1 shadow-glass-lg"
+              className="liquid-glass fixed z-1001 min-w-56 rounded-lg p-1 shadow-glass-lg"
               style={{ top: position.top, left: position.left, right: position.right }}
             >
               {children}
@@ -101,7 +101,7 @@ export function MenuBarMenuItem({
       role="menuitem"
       onClick={onSelect}
       // Panel is `rounded-lg` (8px) with `p-1` (4px) padding — concentric child radius is 8-4=4px (see liquid-glass-tailwind skill).
-      className="flex w-full items-center justify-between gap-4 rounded-[4px] px-2 py-1 text-left text-[13px] hover:bg-system-blue hover:text-white"
+      className="flex w-full items-center justify-between gap-4 rounded-sm px-2 py-1 text-left text-[13px] hover:bg-system-blue hover:text-white focus-visible:bg-system-blue focus-visible:text-white focus-visible:outline-none"
     >
       <span>{label}</span>
       {shortcut ? <span className="text-xs opacity-60">{shortcut}</span> : null}

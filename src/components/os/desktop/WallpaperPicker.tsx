@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useLayoutEffect, useRef, useState } from "react";
 import { getWallpapersFor } from "@/lib/wallpapers";
 import { useWallpaperStore } from "@/stores/useWallpaperStore";
 
@@ -12,12 +13,27 @@ export function WallpaperPicker({ position, onClose }: { position: Point; onClos
   const setWallpaper = useWallpaperStore((state) => state.setWallpaper);
   const wallpapers = getWallpapersFor("macos");
 
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [clamped, setClamped] = useState(position);
+
+  // Same edge-avoidance as DesktopContextMenu — this panel can open from a
+  // menu item near the right/bottom edge and must stay fully on-screen.
+  useLayoutEffect(() => {
+    const rect = menuRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setClamped({
+      x: Math.max(8, Math.min(position.x, window.innerWidth - rect.width - 8)),
+      y: Math.max(8, Math.min(position.y, window.innerHeight - rect.height - 8)),
+    });
+  }, [position]);
+
   return (
     <div
+      ref={menuRef}
       role="menu"
       aria-label="Changer le fond d'écran"
-      className="liquid-glass fixed z-[1001] w-64 rounded-lg p-3 shadow-glass-lg"
-      style={{ top: position.y, left: position.x }}
+      className="liquid-glass fixed z-1001 w-64 rounded-lg p-3 shadow-glass-lg"
+      style={{ top: clamped.y, left: clamped.x }}
     >
       <p className="mb-2 px-1 text-xs font-medium opacity-60">Fond d&apos;écran</p>
       <div className="grid grid-cols-3 gap-2">

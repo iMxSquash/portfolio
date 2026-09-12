@@ -43,6 +43,7 @@ export function Window({ app, state, children }: WindowProps) {
   const toggleMaximize = useWindowStore((s) => s.toggleMaximize);
   const setBounds = useWindowStore((s) => s.setBounds);
   const setInteracting = useWindowStore((s) => s.setInteracting);
+  const isInteracting = useWindowStore((s) => s.isInteracting);
 
   const reducedMotion = useReducedMotion();
   const focused = focusedAppId === app.id;
@@ -261,7 +262,10 @@ export function Window({ app, state, children }: WindowProps) {
         <div style={{ width: TRAFFIC_LIGHTS_WIDTH }} aria-hidden />
       </div>
 
-      <div className="bg-background text-foreground relative flex-1 touch-auto overflow-auto">
+      <div
+        className="bg-background text-foreground relative flex-1 touch-auto overflow-auto"
+        style={{ pointerEvents: isInteracting ? "none" : "auto" }}
+      >
         {children}
       </div>
 
