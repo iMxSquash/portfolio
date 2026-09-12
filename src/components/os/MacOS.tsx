@@ -41,7 +41,8 @@ export function MacOS({ inert = false }: { inert?: boolean }) {
         onSelect={(id) => setSelectedDesktopIconIds([id])}
       />
       <WindowManager apps={SYSTEM_APPS} />
-      <Dock apps={SYSTEM_APPS} />
+      {/* Same reasoning as the menu bar above: the lock/boot screen must cover it, not just block it. */}
+      {inert ? null : <Dock apps={SYSTEM_APPS} />}
       <Spotlight apps={SYSTEM_APPS} disabled={inert} />
     </div>
   );
