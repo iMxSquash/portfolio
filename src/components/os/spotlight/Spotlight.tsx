@@ -7,6 +7,7 @@ import type {
   PointerEvent as ReactPointerEvent,
 } from "react";
 import { motion, useMotionValue } from "framer-motion";
+import { IconSearch } from "@tabler/icons-react";
 import { AppIcon } from "@/components/os/AppIcon";
 import type { AppDefinition } from "@/lib/apps";
 import { useLiquidGlassRefraction } from "@/lib/use-liquid-glass-refraction";
@@ -239,18 +240,5 @@ export function Spotlight({ apps, disabled = false }: SpotlightProps) {
 
 /** Also used as the menu-bar trigger icon (see MenuBar.tsx) — same magnifier, two ways to open Spotlight. */
 export function SpotlightIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.4"
-      strokeLinecap="round"
-      className={className}
-      aria-hidden="true"
-    >
-      <circle cx="7" cy="7" r="4.5" />
-      <path d="M14 14l-3.2-3.2" />
-    </svg>
-  );
+  return <IconSearch className={className} stroke={1.75} aria-hidden="true" />;
 }

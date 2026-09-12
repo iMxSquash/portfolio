@@ -1,5 +1,7 @@
 "use client";
 
+import { IconArrowsDiagonal, IconMinus, IconX } from "@tabler/icons-react";
+
 type TrafficLightsProps = {
   focused: boolean;
   onClose: () => void;
@@ -56,25 +58,13 @@ export function TrafficLights({
 }
 
 function CloseGlyph({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 8 8" className={className} fill="none" stroke="#4d0000" strokeWidth="1.2">
-      <path d="M1 1l6 6M7 1L1 7" />
-    </svg>
-  );
+  return <IconX className={className} color="#4d0000" stroke={3} />;
 }
 
 function MinimizeGlyph({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 8 8" className={className} fill="none" stroke="#5c4400" strokeWidth="1.2">
-      <path d="M1 4h6" />
-    </svg>
-  );
+  return <IconMinus className={className} color="#5c4400" stroke={3} />;
 }
 
 function MaximizeGlyph({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 8 8" className={className} fill="none" stroke="#003d0a" strokeWidth="1.2">
-      <path d="M1.5 5.5l5-3M2 2.3v3M6.5 5.2v-3" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+  return <IconArrowsDiagonal className={className} color="#003d0a" stroke={3} />;
 }

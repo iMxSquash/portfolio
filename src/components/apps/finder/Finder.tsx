@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { IconChevronLeft, IconChevronRight, IconLayoutGrid, IconList } from "@tabler/icons-react";
 import { FolderIcon } from "@/components/icons/FolderIcon";
 import {
   getDesktopApps,
@@ -79,7 +80,7 @@ export function Finder() {
           onClick={() => setHistoryIndex((index) => Math.max(0, index - 1))}
           className="rounded px-1.5 py-0.5 disabled:opacity-30"
         >
-          <ChevronIcon direction="left" />
+          <IconChevronLeft size={12} stroke={3} />
         </button>
         <button
           type="button"
@@ -88,7 +89,7 @@ export function Finder() {
           onClick={() => setHistoryIndex((index) => Math.min(history.length - 1, index + 1))}
           className="rounded px-1.5 py-0.5 disabled:opacity-30"
         >
-          <ChevronIcon direction="right" />
+          <IconChevronRight size={12} stroke={3} />
         </button>
 
         <span className="font-semibold">{currentFavorite?.label}</span>
@@ -101,7 +102,7 @@ export function Finder() {
             onClick={() => setViewMode("icons")}
             className={`rounded px-2 py-0.5 ${viewMode === "icons" ? "bg-white shadow-sm dark:bg-white/20" : ""}`}
           >
-            ⊞
+            <IconLayoutGrid size={14} stroke={2} />
           </button>
           <button
             type="button"
@@ -110,7 +111,7 @@ export function Finder() {
             onClick={() => setViewMode("list")}
             className={`rounded px-2 py-0.5 ${viewMode === "list" ? "bg-white shadow-sm dark:bg-white/20" : ""}`}
           >
-            ☰
+            <IconList size={14} stroke={2} />
           </button>
         </div>
       </div>
@@ -156,18 +157,4 @@ function appKindLabel(app: AppDefinition): string {
     case "external":
       return "Lien externe";
   }
-}
-
-function ChevronIcon({ direction }: { direction: "left" | "right" }) {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d={direction === "left" ? "M15 4 7 12l8 8" : "M9 4l8 8-8 8"}
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
 }

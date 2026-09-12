@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { IconUser } from "@tabler/icons-react";
 import { DISPLAY_NAME, UNLOCK_DURATION_S, UNLOCK_DURATION_S_REDUCED } from "@/lib/boot";
 
 export function LoginScreen({
@@ -38,10 +39,7 @@ export function LoginScreen({
         aria-label="Déverrouiller la session"
         className="flex h-24 w-24 items-center justify-center rounded-full bg-white/15 text-white ring-2 ring-white/40 transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white disabled:pointer-events-none"
       >
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <circle cx="12" cy="8" r="4" />
-          <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8v1H4v-1z" />
-        </svg>
+        <IconUser size={48} stroke={1.75} aria-hidden="true" />
       </button>
       <p className="text-lg font-medium text-white">{DISPLAY_NAME}</p>
       <p className="text-sm text-white/70">Cliquez pour déverrouiller</p>
