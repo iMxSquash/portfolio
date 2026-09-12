@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { IconChevronLeft, IconChevronRight, IconLayoutGrid, IconList } from "@tabler/icons-react";
 import { FolderIcon } from "@/components/icons/FolderIcon";
 import {
@@ -11,8 +11,20 @@ import {
   type AppDefinition,
 } from "@/lib/apps";
 import { FINDER_FAVORITES, type FinderFavoriteId } from "@/lib/finder";
+import { useLiquidGlassRefraction } from "@/lib/use-liquid-glass-refraction";
+import { useLiquidGlassStore } from "@/stores/useLiquidGlassStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 import { FileGrid, type FileGridItem, type FinderViewMode } from "./FileGrid";
+
+/**
+ * Sidebar is a larger element (per apple-design skill: Materials — Color)
+ * so it goes more opaque than the base `liquid-glass` default, to stay
+ * legible over the projects/apps grid scrolling behind it.
+ */
+const SIDEBAR_TINT = {
+  "--glass-tint-alpha": "18%",
+  "--glass-tint-alpha-dark": "50%",
+} as CSSProperties;
 
 const EMPTY_LABELS: Record<FinderFavoriteId, string> = {
   projects: "Aucun projet pour le moment",
@@ -30,6 +42,15 @@ export function Finder() {
   const [history, setHistory] = useState<FinderFavoriteId[]>(["projects"]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [viewMode, setViewMode] = useState<FinderViewMode>("icons");
+  const [sidebarEl, setSidebarEl] = useState<HTMLElement | null>(null);
+  const glassParams = useLiquidGlassStore((state) => state.params);
+  // Sidebar is an actionable nav surface — refraction defaults on, aberration
+  // stays 0 (Dock + Spotlight already spend the 1-2-element chromatic budget).
+  useLiquidGlassRefraction(sidebarEl, {
+    scale: glassParams.refractScale,
+    aberration: 0,
+    mode: glassParams.refractMode,
+  });
 
   const currentFavoriteId = history[historyIndex];
 
@@ -72,7 +93,7 @@ export function Finder() {
 
   return (
     <div className="flex h-full min-h-0 flex-col text-[13px]">
-      <div className="flex shrink-0 items-center gap-2 border-b border-black/10 px-2 py-1.5 dark:border-white/10">
+      <div className="liquid-glass glass-hairline flex shrink-0 items-center gap-2 rounded-none border-x-0 border-t-0 px-2 py-1.5">
         <button
           type="button"
           aria-label="Précédent"
@@ -94,7 +115,10 @@ export function Finder() {
 
         <span className="font-semibold">{currentFavorite?.label}</span>
 
-        <div className="ml-auto flex items-center gap-1 rounded-md bg-black/5 p-0.5 dark:bg-white/10">
+        {/* Flat segmented control sitting on the already-glass toolbar — no
+            second blur layer (see apple-design skill: nested translucent
+            layers is an anti-pattern). */}
+        <div className="ml-auto flex items-center gap-1 rounded-md bg-black/10 p-0.5 dark:bg-white/15">
           <button
             type="button"
             aria-label="Vue en icônes"
@@ -117,7 +141,11 @@ export function Finder() {
       </div>
 
       <div className="flex min-h-0 flex-1">
-        <nav className="w-40 min-w-32 shrink-0 overflow-y-auto border-r border-black/10 bg-black/[0.02] py-2 dark:border-white/10 dark:bg-white/[0.03]">
+        <nav
+          ref={setSidebarEl}
+          className="liquid-glass w-40 min-w-32 shrink-0 rounded-none border-y-0 border-l-0 py-2"
+          style={SIDEBAR_TINT}
+        >
           <p className="text-foreground/40 px-3 pb-1 text-[11px] font-medium">Favoris</p>
           {FINDER_FAVORITES.map((favorite) => (
             <button

@@ -19,13 +19,13 @@ export function Trash() {
 
   return (
     <div className="flex h-full min-h-0 flex-col text-[13px]">
-      <div className="flex shrink-0 items-center justify-between border-b border-black/10 px-3 py-1.5 dark:border-white/10">
+      <div className="liquid-glass glass-hairline flex shrink-0 items-center justify-between rounded-none border-x-0 border-t-0 px-3 py-1.5">
         <span className="font-semibold">Corbeille</span>
         <button
           type="button"
           onClick={emptyTrash}
           disabled={items.length === 0}
-          className="focus-visible:outline-system-blue rounded bg-black/5 px-2 py-1 text-[12px] focus-visible:outline-2 disabled:opacity-40 dark:bg-white/10"
+          className="focus-visible:outline-system-blue rounded bg-black/10 px-2 py-1 text-[12px] focus-visible:outline-2 disabled:opacity-40 dark:bg-white/15"
         >
           Vider la corbeille
         </button>

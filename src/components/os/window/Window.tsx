@@ -2,6 +2,7 @@
 
 import { useMemo, useRef } from "react";
 import type {
+  CSSProperties,
   MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
   ReactNode,
@@ -28,6 +29,17 @@ import { TrafficLights } from "./TrafficLights";
 const MINIMIZE_SCALE = 0.05;
 /** 3 traffic lights + 2 gaps — mirrors the left group so the title stays visually centered. */
 const TRAFFIC_LIGHTS_WIDTH = "calc(3 * var(--traffic-light-size) + 2 * var(--traffic-light-gap))";
+
+/**
+ * Inactive title bars go quieter than the base `liquid-glass` tint — real
+ * macOS dims an unfocused window's chrome without hiding the material
+ * entirely (see apple-design skill: window chrome stays a layered,
+ * translucent surface even when unfocused).
+ */
+const TITLE_BAR_UNFOCUSED_TINT = {
+  "--glass-tint-alpha": "6%",
+  "--glass-tint-alpha-dark": "24%",
+} as CSSProperties;
 
 type WindowProps = {
   app: AppDefinition;
@@ -240,11 +252,8 @@ export function Window({ app, state, children }: WindowProps) {
       transition={transition}
     >
       <div
-        className={`flex h-(--title-bar-height-min) shrink-0 touch-none items-center border-b px-2 select-none ${
-          focused
-            ? "border-black/10 bg-black/2 dark:border-white/10 dark:bg-white/5"
-            : "border-black/5 bg-black/1 dark:border-white/5 dark:bg-white/2"
-        }`}
+        className="liquid-glass glass-hairline flex h-(--title-bar-height-min) shrink-0 touch-none items-center rounded-none border-x-0 border-t-0 px-2 select-none"
+        style={focused ? undefined : TITLE_BAR_UNFOCUSED_TINT}
         onPointerDown={handleTitleBarPointerDown}
         onPointerMove={handleTitleBarPointerMove}
         onPointerUp={handleTitleBarPointerUp}
