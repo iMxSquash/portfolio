@@ -89,7 +89,7 @@ export function DockIcon({ app, mouseX, isOpen }: DockIconProps) {
 
       <span
         aria-hidden="true"
-        className={`mt-1 size-1 rounded-full bg-foreground transition-opacity ${isOpen ? "opacity-70" : "opacity-0"}`}
+        className={`absolute -bottom-1.5 left-1/2 size-1 -translate-x-1/2 rounded-full bg-foreground transition-opacity ${isOpen ? "opacity-70" : "opacity-0"}`}
       />
     </div>
   );
