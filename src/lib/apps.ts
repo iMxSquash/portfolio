@@ -34,6 +34,15 @@ export type AppDefinition = {
   defaultSize: { width: number; height: number };
   minSize: { width: number; height: number };
   menus?: MenuDefinition[];
+  /**
+   * Structural window chrome (see os-window-manager skill). `"standard"`
+   * (default) keeps the classic full-width title bar. `"unified"` removes
+   * it — the app renders its own leading chrome (a full-height sidebar) and
+   * receives the traffic lights + window-drag handlers via
+   * `useWindowChrome()`. Reserved for apps whose own layout has somewhere
+   * for the traffic lights to live; verified against real macOS Finder.
+   */
+  windowStyle?: "standard" | "unified";
 };
 
 /**
@@ -65,6 +74,7 @@ export const SYSTEM_APPS: AppDefinition[] = [
     pinnedToDock: true,
     defaultSize: { width: 720, height: 480 },
     minSize: { width: 480, height: 340 },
+    windowStyle: "unified",
   },
   {
     id: "notes",

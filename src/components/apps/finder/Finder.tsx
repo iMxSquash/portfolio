@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useMemo, useState } from "react";
 import { IconChevronLeft, IconChevronRight, IconLayoutGrid, IconList } from "@tabler/icons-react";
 import { FolderIcon } from "@/components/icons/FolderIcon";
+import { useWindowChrome } from "@/components/os/window/WindowChromeContext";
 import {
   getDesktopApps,
   getProjectApps,
@@ -11,20 +12,11 @@ import {
   type AppDefinition,
 } from "@/lib/apps";
 import { FINDER_FAVORITES, type FinderFavoriteId } from "@/lib/finder";
+import { FINDER_SIDEBAR_MATERIAL } from "@/lib/liquid-glass";
 import { useLiquidGlassRefraction } from "@/lib/use-liquid-glass-refraction";
 import { useLiquidGlassStore } from "@/stores/useLiquidGlassStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 import { FileGrid, type FileGridItem, type FinderViewMode } from "./FileGrid";
-
-/**
- * Sidebar is a larger element (per apple-design skill: Materials — Color)
- * so it goes more opaque than the base `liquid-glass` default, to stay
- * legible over the projects/apps grid scrolling behind it.
- */
-const SIDEBAR_TINT = {
-  "--glass-tint-alpha": "18%",
-  "--glass-tint-alpha-dark": "50%",
-} as CSSProperties;
 
 const EMPTY_LABELS: Record<FinderFavoriteId, string> = {
   projects: "Aucun projet pour le moment",
@@ -42,15 +34,26 @@ export function Finder() {
   const [history, setHistory] = useState<FinderFavoriteId[]>(["projects"]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [viewMode, setViewMode] = useState<FinderViewMode>("icons");
-  const [sidebarEl, setSidebarEl] = useState<HTMLElement | null>(null);
+  const { trafficLights, dragHandlers } = useWindowChrome();
+  const [backForwardEl, setBackForwardEl] = useState<HTMLElement | null>(null);
+  const [viewToggleEl, setViewToggleEl] = useState<HTMLElement | null>(null);
   const glassParams = useLiquidGlassStore((state) => state.params);
-  // Sidebar is an actionable nav surface — refraction defaults on, aberration
-  // stays 0 (Dock + Spotlight already spend the 1-2-element chromatic budget).
-  useLiquidGlassRefraction(sidebarEl, {
-    scale: glassParams.refractScale,
-    aberration: 0,
-    mode: glassParams.refractMode,
-  });
+  // Toolbar controls are individually actionable Liquid Glass pills — the
+  // toolbar itself carries no material (see apple-design skill: a full-width
+  // bar is background chrome, not a control, but the controls sitting on it
+  // still default to refraction). The sidebar, by contrast, is verified
+  // against real macOS Finder to be flat window chrome with no lens — it
+  // does not get refraction (see FINDER_SIDEBAR_MATERIAL).
+  const refractionOptions = useMemo(
+    () => ({
+      scale: glassParams.refractScale,
+      aberration: 0,
+      mode: glassParams.refractMode,
+    }),
+    [glassParams.refractScale, glassParams.refractMode],
+  );
+  useLiquidGlassRefraction(backForwardEl, refractionOptions);
+  useLiquidGlassRefraction(viewToggleEl, refractionOptions);
 
   const currentFavoriteId = history[historyIndex];
 
@@ -92,77 +95,99 @@ export function Finder() {
   const currentFavorite = FINDER_FAVORITES.find((favorite) => favorite.id === currentFavoriteId);
 
   return (
-    <div className="flex h-full min-h-0 flex-col text-[13px]">
-      <div className="liquid-glass glass-hairline flex shrink-0 items-center gap-2 rounded-none border-x-0 border-t-0 px-2 py-1.5">
-        <button
-          type="button"
-          aria-label="Précédent"
-          disabled={historyIndex === 0}
-          onClick={() => setHistoryIndex((index) => Math.max(0, index - 1))}
-          className="rounded px-1.5 py-0.5 focus-visible:outline-2 focus-visible:outline-system-blue disabled:opacity-30"
+    <div className="flex h-full min-h-0 text-[13px]">
+      {/* Sidebar is flat window chrome (no refraction — verified against real
+          macOS Finder), pleine hauteur, carries the traffic lights in its own
+          top row so it reads as one continuous surface with the window's
+          leading edge instead of sitting under a separate title bar. */}
+      <nav
+        className="liquid-glass glass-edge-bleed relative flex w-40 min-w-32 shrink-0 flex-col rounded-none border-y-0 border-l-0"
+        style={FINDER_SIDEBAR_MATERIAL}
+      >
+        <div
+          className="flex h-(--toolbar-height) shrink-0 items-center pl-4 select-none"
+          {...dragHandlers}
         >
-          <IconChevronLeft size={12} stroke={3} />
-        </button>
-        <button
-          type="button"
-          aria-label="Suivant"
-          disabled={historyIndex === history.length - 1}
-          onClick={() => setHistoryIndex((index) => Math.min(history.length - 1, index + 1))}
-          className="rounded px-1.5 py-0.5 focus-visible:outline-2 focus-visible:outline-system-blue disabled:opacity-30"
-        >
-          <IconChevronRight size={12} stroke={3} />
-        </button>
-
-        <span className="font-semibold">{currentFavorite?.label}</span>
-
-        {/* Flat segmented control sitting on the already-glass toolbar — no
-            second blur layer (see apple-design skill: nested translucent
-            layers is an anti-pattern). */}
-        <div className="ml-auto flex items-center gap-1 rounded-md bg-black/10 p-0.5 dark:bg-white/15">
-          <button
-            type="button"
-            aria-label="Vue en icônes"
-            aria-pressed={viewMode === "icons"}
-            onClick={() => setViewMode("icons")}
-            className={`focus-visible:outline-system-blue rounded px-2 py-0.5 focus-visible:outline-2 ${viewMode === "icons" ? "bg-white shadow-sm dark:bg-white/20" : ""}`}
-          >
-            <IconLayoutGrid size={14} stroke={2} />
-          </button>
-          <button
-            type="button"
-            aria-label="Vue en liste"
-            aria-pressed={viewMode === "list"}
-            onClick={() => setViewMode("list")}
-            className={`focus-visible:outline-system-blue rounded px-2 py-0.5 focus-visible:outline-2 ${viewMode === "list" ? "bg-white shadow-sm dark:bg-white/20" : ""}`}
-          >
-            <IconList size={14} stroke={2} />
-          </button>
+          {trafficLights}
         </div>
-      </div>
-
-      <div className="flex min-h-0 flex-1">
-        <nav
-          ref={setSidebarEl}
-          className="liquid-glass w-40 min-w-32 shrink-0 rounded-none border-y-0 border-l-0 py-2"
-          style={SIDEBAR_TINT}
-        >
-          <p className="text-foreground/40 px-3 pb-1 text-[11px] font-medium">Favoris</p>
+        <div className="min-h-0 flex-1 overflow-y-auto py-2">
+          <p className="text-foreground/55 px-3 pb-1 text-[11px] font-medium">Favoris</p>
           {FINDER_FAVORITES.map((favorite) => (
             <button
               key={favorite.id}
               type="button"
               onClick={() => navigate(favorite.id)}
-              className={`flex w-full items-center gap-2 px-3 py-1.5 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-system-blue ${
+              className={`flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-system-blue ${
                 favorite.id === currentFavoriteId
-                  ? "bg-system-blue/20 dark:bg-system-blue/25"
-                  : "hover:bg-black/5 dark:hover:bg-white/5"
+                  ? "bg-black/6 text-system-blue font-medium dark:bg-white/7"
+                  : "hover:bg-black/4 dark:hover:bg-white/4"
               }`}
             >
               <FolderIcon />
               <span className="truncate">{favorite.label}</span>
             </button>
           ))}
-        </nav>
+        </div>
+      </nav>
+
+      <div className="bg-window-canvas flex min-h-0 flex-1 flex-col">
+        {/* No material of its own — real macOS Finder's toolbar sits directly
+            on the opaque content pane. Individual controls below still get
+            their own Liquid Glass + refraction (they're actionable). */}
+        <div
+          className="flex h-(--toolbar-height) shrink-0 items-center gap-2 px-3 select-none"
+          {...dragHandlers}
+        >
+          <div
+            ref={setBackForwardEl}
+            className="liquid-glass flex items-center gap-0.5 rounded-[8px] p-0.5"
+          >
+            <button
+              type="button"
+              aria-label="Précédent"
+              disabled={historyIndex === 0}
+              onClick={() => setHistoryIndex((index) => Math.max(0, index - 1))}
+              className="focus-visible:outline-system-blue rounded-[6px] px-1.5 py-0.5 hover:bg-black/4 focus-visible:outline-2 disabled:opacity-30 dark:hover:bg-white/4"
+            >
+              <IconChevronLeft size={12} stroke={3} />
+            </button>
+            <button
+              type="button"
+              aria-label="Suivant"
+              disabled={historyIndex === history.length - 1}
+              onClick={() => setHistoryIndex((index) => Math.min(history.length - 1, index + 1))}
+              className="focus-visible:outline-system-blue rounded-[6px] px-1.5 py-0.5 hover:bg-black/4 focus-visible:outline-2 disabled:opacity-30 dark:hover:bg-white/4"
+            >
+              <IconChevronRight size={12} stroke={3} />
+            </button>
+          </div>
+
+          <span className="font-semibold">{currentFavorite?.label}</span>
+
+          <div
+            ref={setViewToggleEl}
+            className="liquid-glass ml-auto flex items-center gap-1 rounded-[8px] p-0.5"
+          >
+            <button
+              type="button"
+              aria-label="Vue en icônes"
+              aria-pressed={viewMode === "icons"}
+              onClick={() => setViewMode("icons")}
+              className={`focus-visible:outline-system-blue rounded-[6px] px-2 py-0.5 focus-visible:outline-2 ${viewMode === "icons" ? "bg-black/8 dark:bg-white/9" : ""}`}
+            >
+              <IconLayoutGrid size={14} stroke={2} />
+            </button>
+            <button
+              type="button"
+              aria-label="Vue en liste"
+              aria-pressed={viewMode === "list"}
+              onClick={() => setViewMode("list")}
+              className={`focus-visible:outline-system-blue rounded-[6px] px-2 py-0.5 focus-visible:outline-2 ${viewMode === "list" ? "bg-black/8 dark:bg-white/9" : ""}`}
+            >
+              <IconList size={14} stroke={2} />
+            </button>
+          </div>
+        </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto">
           <FileGrid

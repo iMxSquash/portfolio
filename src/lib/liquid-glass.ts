@@ -29,6 +29,15 @@ export type LiquidGlassParams = {
   saturate: string;
   /** backdrop-filter brightness() */
   brightness: string;
+  /**
+   * Dark-mode backdrop-filter saturate()/brightness() — distinct from the
+   * light-mode pair above. Real macOS in dark mode *dims* the backdrop it
+   * blurs (a gray material, not a bright one); the light-mode values stay
+   * tuned for the opposite direction, so a single shared pair can't serve
+   * both without one of the two modes looking wrong.
+   */
+  saturateDark: string;
+  brightnessDark: string;
   /** Blur elevation scale, subtle -> modal */
   blurSm: string;
   blur: string;
@@ -59,10 +68,15 @@ export type LiquidGlassParams = {
 export const DEFAULT_LIQUID_GLASS: LiquidGlassParams = {
   tint: "255 255 255",
   tintAlpha: "12%",
-  tintDark: "0 0 0",
-  tintAlphaDark: "40%",
+  // A clean gray, not black: verified against a real macOS Finder screenshot
+  // (sidebar sampled at ~rgb(23,31,33)) — the dark material tints its own
+  // gray onto the backdrop, it doesn't just darken it toward black.
+  tintDark: "38 40 42",
+  tintAlphaDark: "52%",
   saturate: "180%",
   brightness: "1.1",
+  saturateDark: "140%",
+  brightnessDark: "0.9",
   blurSm: "8px",
   blur: "16px",
   blurLg: "24px",
@@ -89,6 +103,8 @@ export const LIQUID_GLASS_CSS_VARS: Partial<Record<keyof LiquidGlassParams, stri
   tintAlphaDark: "--glass-tint-alpha-dark",
   saturate: "--glass-saturate",
   brightness: "--glass-brightness",
+  saturateDark: "--glass-saturate-dark",
+  brightnessDark: "--glass-brightness-dark",
   blurSm: "--blur-glass-sm",
   blur: "--blur-glass",
   blurLg: "--blur-glass-lg",
@@ -99,6 +115,24 @@ export const LIQUID_GLASS_CSS_VARS: Partial<Record<keyof LiquidGlassParams, stri
 
 /** localStorage key used by the persisted `useLiquidGlassStore`. */
 export const LIQUID_GLASS_STORAGE_KEY = "liquid-glass-params";
+
+/**
+ * Finder's sidebar (per apple-design skill: Materials — Color) is a large
+ * navigation surface, so it goes more opaque than the base `liquid-glass`
+ * default to stay legible over the file grid, and uses the `xl` blur
+ * elevation (real macOS shows a fully smooth gradient, no visible wallpaper
+ * structure through it) plus a very subtle `--glass-edge-bleed` so the
+ * blurred backdrop reads slightly denser near the sidebar's edges/top third
+ * than at its center — verified against a real Finder screenshot, not
+ * guessed. See `glass-edge-bleed` in globals.css for the mechanism.
+ */
+export const FINDER_SIDEBAR_MATERIAL: Record<string, string> = {
+  "--glass-tint": "246 246 248",
+  "--glass-tint-alpha": "58%",
+  "--glass-tint-alpha-dark": "54%",
+  "--blur-glass": "var(--blur-glass-xl)",
+  "--glass-edge-bleed": "8%",
+};
 
 /** Writes params as CSS custom properties on the given element (defaults to `<html>`). */
 export function applyLiquidGlassParams(

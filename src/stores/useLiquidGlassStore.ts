@@ -27,6 +27,22 @@ export const useLiquidGlassStore = create<LiquidGlassStore>()(
       setParams: (partial) => set((state) => ({ params: { ...state.params, ...partial } })),
       resetParams: () => set({ params: DEFAULT_LIQUID_GLASS }),
     }),
-    { name: LIQUID_GLASS_STORAGE_KEY },
+    {
+      name: LIQUID_GLASS_STORAGE_KEY,
+      // zustand's default merge shallow-replaces `params` wholesale with the
+      // persisted object, so a visitor's older localStorage value (missing
+      // fields like saturateDark/brightnessDark) would keep them `undefined`
+      // forever — `applyLiquidGlassParams` writes that straight into CSS
+      // custom properties, silently breaking every glass surface. Merging
+      // against `DEFAULT_LIQUID_GLASS` here backfills any field the
+      // persisted value doesn't have, on every load.
+      merge: (persisted, current) => ({
+        ...current,
+        params: {
+          ...DEFAULT_LIQUID_GLASS,
+          ...(persisted as { params?: Partial<LiquidGlassParams> } | undefined)?.params,
+        },
+      }),
+    },
   ),
 );

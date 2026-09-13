@@ -17,6 +17,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Lighter opaque backing for window bodies, used instead of --background
+     where a window's own chrome needs a real gray canvas underneath it
+     (Finder's content pane, Notes, Corbeille) rather than near-black. */
+  --window-canvas: #ffffff;
 
   /* macOS system accent blue (Apple HIG systemBlue) — selection highlights,
      focus rings, links. Distinct from light/dark like --background, never
@@ -30,6 +34,9 @@
   --menu-bar-height: 28px;
   --title-bar-height-min: 28px;
   --title-bar-height-max: 38px;
+  /* A "unified" window (see os-window-manager skill) has no separate title
+     bar — this is the height of its merged toolbar/traffic-lights row. */
+  --toolbar-height: 48px;
   --traffic-light-size: 12px;
   --traffic-light-gap: 8px;
   --traffic-light-inset: 8px;
@@ -42,6 +49,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-window-canvas: var(--window-canvas);
   --color-system-blue: var(--system-blue);
   --font-sans: -apple-system, BlinkMacSystemFont, var(--font-inter), sans-serif;
 }
@@ -52,6 +60,7 @@
   --background: #0a0a0a;
   --foreground: #ededed;
   --system-blue: #0a84ff;
+  --window-canvas: #1e1f20;
 }
 
 body {
@@ -102,11 +111,20 @@ body {
 
   --glass-tint: 255 255 255;
   --glass-tint-alpha: 12%;
-  --glass-tint-dark: 0 0 0;
-  --glass-tint-alpha-dark: 40%;
+  /* A clean gray, not black — see DEFAULT_LIQUID_GLASS in liquid-glass.ts
+     for the source measurement. */
+  --glass-tint-dark: 38 40 42;
+  --glass-tint-alpha-dark: 52%;
   --glass-saturate: 180%;
   --glass-brightness: 1.1;
+  --glass-saturate-dark: 140%;
+  --glass-brightness-dark: 0.9;
   --color-glass-rim: rgb(255 255 255 / 0.2);
+
+  /* Subtle "denser near the edges/top" overlay for large glass panels (e.g.
+     Finder's sidebar) — see `glass-edge-bleed` below. 0% = off by default;
+     panels that want it override this custom property locally. */
+  --glass-edge-bleed: 0%;
 
   --radius-glass: 20px;
   --radius-glass-lg: 28px;
@@ -141,12 +159,24 @@ body {
   @variant dark {
     background: rgb(var(--glass-tint-dark) / var(--glass-tint-alpha-dark));
     border-color: rgb(255 255 255 / 0.1);
+    /* Dark material dims what it blurs (saturate/brightness < light mode) —
+       real macOS in dark mode never brightens the backdrop like the light
+       variant does. Re-declared rather than swapping the shared custom
+       properties, so this stays scoped to `.liquid-glass` itself. */
+    -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(var(--glass-saturate-dark))
+      brightness(var(--glass-brightness-dark));
+    backdrop-filter: blur(var(--blur-glass)) saturate(var(--glass-saturate-dark))
+      brightness(var(--glass-brightness-dark));
   }
 
   @variant reduced-transparency {
     background: rgb(245 245 245 / 0.95);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+
+    @variant dark {
+      background: rgb(30 31 32 / 0.96);
+    }
   }
 }
 
@@ -167,6 +197,50 @@ body {
     top: 0;
     height: 1px;
     background: linear-gradient(to right, transparent, rgb(255 255 255 / 0.7), transparent);
+  }
+}
+
+/*
+ * Subtle "denser near the edges/top" overlay for a large glass panel: the
+ * base tint alpha is set to the panel's *edge* density (its most transparent
+ * state), and this adds a small amount more tint at the center via
+ * `--glass-edge-bleed`, masked out so it fades back toward the edges — the
+ * inverse of a vignette. The mask's pixel insets and vertical stops are
+ * tuned to Finder's sidebar (its only consumer today, via
+ * `FINDER_SIDEBAR_MATERIAL`) — verified against a real Finder screenshot: a
+ * ±4-8/255 modulation, smooth, no visible structure. Keep
+ * `--glass-edge-bleed` in that range (a larger value reads as a painted
+ * gradient instead of translucency), and re-tune the mask insets if a panel
+ * of a different size adopts this utility.
+ */
+@utility glass-edge-bleed {
+  &::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgb(var(--glass-tint) / var(--glass-edge-bleed));
+    -webkit-mask-image:
+      linear-gradient(to bottom, transparent 0%, #000 38%, #000 90%, rgb(0 0 0 / 0.5) 100%),
+      linear-gradient(to right, transparent 0%, #000 28px, #000 calc(100% - 24px), transparent 100%);
+    mask-image:
+      linear-gradient(to bottom, transparent 0%, #000 38%, #000 90%, rgb(0 0 0 / 0.5) 100%),
+      linear-gradient(to right, transparent 0%, #000 28px, #000 calc(100% - 24px), transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  @variant dark {
+    &::after {
+      background: rgb(var(--glass-tint-dark) / var(--glass-edge-bleed));
+    }
+  }
+
+  @variant reduced-transparency {
+    &::after {
+      display: none;
+    }
   }
 }
 
