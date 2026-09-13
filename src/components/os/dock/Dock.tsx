@@ -3,6 +3,7 @@
 import { useState, type CSSProperties } from "react";
 import { useMotionValue } from "framer-motion";
 import { getApp, getDockApps, TRASH_APP_ID, type AppDefinition } from "@/lib/apps";
+import { DOCK_HEIGHT, DOCK_PADDING_Y } from "@/lib/dock";
 import { useLiquidGlassRefraction } from "@/lib/use-liquid-glass-refraction";
 import { useLiquidGlassStore } from "@/stores/useLiquidGlassStore";
 import { useWindowStore } from "@/stores/useWindowStore";
@@ -48,11 +49,25 @@ export function Dock({ apps }: DockProps) {
       ref={setDockEl}
       onMouseMove={(event) => mouseX.set(event.clientX)}
       onMouseLeave={() => mouseX.set(Infinity)}
-      // Lower tint than the base `liquid-glass` default so the refraction
-      // (when supported) reads clearly instead of being muddied — no-op on
-      // engines that fall back to the plain CSS blur+saturate.
-      style={{ "--glass-tint-alpha": glassParams.refractTintAlpha } as CSSProperties}
-      className="liquid-glass glass-hairline fixed bottom-(--dock-margin-bottom-max) left-1/2 z-[1000] flex -translate-x-1/2 items-end gap-2 px-3 py-2"
+      style={
+        {
+          // Lower tint than the base `liquid-glass` default so the
+          // refraction (when supported) reads clearly instead of being
+          // muddied — no-op on engines that fall back to the plain CSS
+          // blur+saturate.
+          "--glass-tint-alpha": glassParams.refractTintAlpha,
+          // Fixed height: the dock must only ever grow horizontally as
+          // icons magnify, never vertically (see DOCK_HEIGHT). `overflow`
+          // and `contain` override the `.liquid-glass` utility's defaults
+          // (hidden / paint), which would otherwise clip magnified icons
+          // instead of letting them pop out above the glass like real macOS.
+          height: DOCK_HEIGHT,
+          paddingBlock: DOCK_PADDING_Y,
+          overflow: "visible",
+          contain: "layout style",
+        } as CSSProperties
+      }
+      className="liquid-glass glass-hairline fixed bottom-(--dock-margin-bottom-max) left-1/2 z-[1000] flex -translate-x-1/2 items-end gap-2 px-3"
     >
       {pinnedApps.map((app) => (
         <DockIcon key={app.id} app={app} mouseX={mouseX} isOpen={Boolean(windows[app.id])} />
