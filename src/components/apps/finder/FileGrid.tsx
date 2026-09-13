@@ -69,7 +69,9 @@ export function FileGrid({ items, viewMode, emptyLabel }: FileGridProps) {
   return (
     <div
       className="grid grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-2 p-3"
-      onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => focusGridSibling(event, event.currentTarget)}
+      onKeyDown={(event: KeyboardEvent<HTMLDivElement>) =>
+        focusGridSibling(event, event.currentTarget)
+      }
     >
       {items.map((item) => (
         <button

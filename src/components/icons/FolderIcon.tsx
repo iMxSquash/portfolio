@@ -16,7 +16,14 @@ export function FolderIcon({ className = "" }: { className?: string }) {
       className={`shrink-0 ${className}`}
     >
       <defs>
-        <linearGradient id={gradientId} x1="12" y1="4" x2="12" y2="19" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id={gradientId}
+          x1="12"
+          y1="4"
+          x2="12"
+          y2="19"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop offset="0%" stopColor="#7CC5FF" />
           <stop offset="100%" stopColor="#0A84FF" />
         </linearGradient>
