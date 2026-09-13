@@ -59,8 +59,8 @@ export function Dock({ apps }: DockProps) {
       <div
         onMouseMove={(event) => mouseX.set(event.clientX)}
         onMouseLeave={() => mouseX.set(Infinity)}
-        style={{ paddingBlock: DOCK_PADDING_Y }}
-        className="flex h-full items-end gap-2 px-3"
+        style={{ height: DOCK_HEIGHT, paddingBlock: DOCK_PADDING_Y }}
+        className="flex items-end gap-2 px-3"
       >
         {pinnedApps.map((app) => (
           <DockIcon key={app.id} app={app} mouseX={mouseX} isOpen={Boolean(windows[app.id])} />
