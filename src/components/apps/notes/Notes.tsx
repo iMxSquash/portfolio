@@ -1,21 +1,11 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties, type KeyboardEvent } from "react";
+import { useMemo, useState, type KeyboardEvent } from "react";
 import { FolderIcon } from "@/components/icons/FolderIcon";
 import { focusListSibling } from "@/lib/arrow-key-nav";
+import { NOTES_SIDEBAR_GLASS } from "@/lib/glass-presets";
 import { NOTES, NOTE_FOLDERS } from "@/lib/notes-content";
-import { useLiquidGlassRefraction } from "@/lib/use-liquid-glass-refraction";
-import { useLiquidGlassStore } from "@/stores/useLiquidGlassStore";
-
-/**
- * Sidebar is a larger element (per apple-design skill: Materials — Color) so
- * it goes more opaque than the base `liquid-glass` default, to stay legible
- * over the notes list scrolling behind it.
- */
-const SIDEBAR_TINT = {
-  "--glass-tint-alpha": "18%",
-  "--glass-tint-alpha-dark": "50%",
-} as CSSProperties;
+import { useLiquidGlass } from "@/lib/use-liquid-glass";
 
 /**
  * Read-only Notes.app clone: sidebar (folders) / list (notes) / editor,
@@ -31,14 +21,9 @@ export function Notes() {
   const [selectedNoteId, setSelectedNoteId] = useState<string | undefined>(notesInFolder[0]?.id);
   const selectedNote = NOTES.find((note) => note.id === selectedNoteId) ?? notesInFolder[0];
   const [sidebarEl, setSidebarEl] = useState<HTMLElement | null>(null);
-  const glassParams = useLiquidGlassStore((state) => state.params);
   // Sidebar is an actionable nav surface — refraction defaults on, aberration
   // stays 0 (Dock + Spotlight already spend the 1-2-element chromatic budget).
-  useLiquidGlassRefraction(sidebarEl, {
-    scale: glassParams.refractScale,
-    aberration: 0,
-    mode: glassParams.refractMode,
-  });
+  useLiquidGlass(sidebarEl, NOTES_SIDEBAR_GLASS);
 
   function handleSelectFolder(folderId: string) {
     setSelectedFolderId(folderId);
@@ -50,8 +35,7 @@ export function Notes() {
     <div className="flex h-full min-h-0 text-[13px]">
       <nav
         ref={setSidebarEl}
-        className="liquid-glass w-36 min-w-28 shrink-0 rounded-none border-y-0 border-l-0 py-2"
-        style={SIDEBAR_TINT}
+        className="w-36 min-w-28 shrink-0 border-y-0 border-l-0 py-2"
         onKeyDown={(event: KeyboardEvent<HTMLElement>) =>
           focusListSibling(event, event.currentTarget, "vertical")
         }

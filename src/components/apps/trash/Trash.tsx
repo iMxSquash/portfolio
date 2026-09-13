@@ -1,13 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { DocumentIcon } from "@/components/apps/finder/DocumentIcon";
 import { FileGrid, type FileGridItem } from "@/components/apps/finder/FileGrid";
+import { TITLE_BAR_GLASS } from "@/lib/glass-presets";
+import { useLiquidGlass } from "@/lib/use-liquid-glass";
 import { useTrashStore } from "@/stores/useTrashStore";
 
 /** Reuses the Finder layout (see os-apps skill), with static fun content and an empty-trash action. */
 export function Trash() {
   const items = useTrashStore((state) => state.items);
   const emptyTrash = useTrashStore((state) => state.emptyTrash);
+  const [headerEl, setHeaderEl] = useState<HTMLDivElement | null>(null);
+  useLiquidGlass(headerEl, TITLE_BAR_GLASS);
 
   const fileItems: FileGridItem[] = items.map((item) => ({
     id: item.id,
@@ -19,16 +24,18 @@ export function Trash() {
 
   return (
     <div className="flex h-full min-h-0 flex-col text-[13px]">
-      <div className="liquid-glass glass-hairline flex shrink-0 items-center justify-between rounded-none border-x-0 border-t-0 px-3 py-1.5">
-        <span className="font-semibold">Corbeille</span>
-        <button
-          type="button"
-          onClick={emptyTrash}
-          disabled={items.length === 0}
-          className="focus-visible:outline-system-blue rounded bg-black/10 px-2 py-1 text-[12px] focus-visible:outline-2 disabled:opacity-40 dark:bg-white/15"
-        >
-          Vider la corbeille
-        </button>
+      <div ref={setHeaderEl} className="shrink-0">
+        <div className="flex items-center justify-between px-3 py-1.5">
+          <span className="font-semibold">Corbeille</span>
+          <button
+            type="button"
+            onClick={emptyTrash}
+            disabled={items.length === 0}
+            className="focus-visible:outline-system-blue rounded bg-black/10 px-2 py-1 text-[12px] focus-visible:outline-2 disabled:opacity-40 dark:bg-white/15"
+          >
+            Vider la corbeille
+          </button>
+        </div>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
         <FileGrid items={fileItems} viewMode="icons" emptyLabel="La corbeille est vide" />

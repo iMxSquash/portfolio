@@ -29,7 +29,7 @@ export function ControlCenterContent() {
     <div className="w-60 space-y-3 p-1">
       <div>
         <p className="mb-1.5 px-1 text-xs font-medium opacity-60">Apparence</p>
-        {/* Track: rounded-lg (8px) + p-1 (4px) padding -> buttons rounded-[4px] (concentric, see liquid-glass-tailwind skill). */}
+        {/* Track: rounded-lg (8px) + p-1 (4px) padding -> buttons rounded-[4px] (concentric, see apple-design skill). */}
         <div className="flex rounded-lg bg-black/10 p-1 dark:bg-white/10">
           {THEME_OPTIONS.map((option) => (
             <button

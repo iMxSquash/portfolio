@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
-import { LiquidGlassProvider } from "@/components/os/LiquidGlassProvider";
 import { ThemeProvider } from "@/components/os/ThemeProvider";
 import { BOOT_STORAGE_KEY } from "@/lib/boot";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
@@ -59,7 +58,6 @@ export default function RootLayout({
           {bootInitScript}
         </Script>
         <ThemeProvider />
-        <LiquidGlassProvider />
         {children}
       </body>
     </html>

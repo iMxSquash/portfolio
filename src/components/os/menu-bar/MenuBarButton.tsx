@@ -2,6 +2,8 @@
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { MENU_POPOVER_GLASS } from "@/lib/glass-presets";
+import { useLiquidGlass } from "@/lib/use-liquid-glass";
 
 type MenuBarButtonProps = {
   id: string;
@@ -15,10 +17,10 @@ type MenuBarButtonProps = {
 
 /**
  * A single menu-bar trigger + its dropdown panel. The panel is rendered
- * through a portal into `document.body` instead of as a DOM child: the menu
- * bar itself is a `liquid-glass` surface, and nesting another blurred glass
- * layer inside it is the "glass-on-glass" anti-pattern (see
- * liquid-glass-tailwind skill) — expensive and buggy in Safari.
+ * through a portal into `document.body` instead of as a DOM child: nesting
+ * one glass surface inside another is the "glass-on-glass" anti-pattern
+ * (see apple-design skill) — expensive and buggy in Safari, and the menu
+ * bar itself may carry its own glass at the call site.
  */
 export function MenuBarButton({
   id,
@@ -33,6 +35,8 @@ export function MenuBarButton({
   const [position, setPosition] = useState<{ top: number; left?: number; right?: number } | null>(
     null,
   );
+  const [panelEl, setPanelEl] = useState<HTMLDivElement | null>(null);
+  useLiquidGlass(panelEl, MENU_POPOVER_GLASS);
   const isOpen = openId === id;
 
   useLayoutEffect(() => {
@@ -74,8 +78,9 @@ export function MenuBarButton({
       {isOpen && position
         ? createPortal(
             <div
+              ref={setPanelEl}
               role="menu"
-              className="liquid-glass fixed z-1001 min-w-56 rounded-lg p-1 shadow-glass-lg"
+              className="fixed z-1001 min-w-56 p-1"
               style={{ top: position.top, left: position.left, right: position.right }}
             >
               {children}
@@ -101,7 +106,7 @@ export function MenuBarMenuItem({
       type="button"
       role="menuitem"
       onClick={onSelect}
-      // Panel is `rounded-lg` (8px) with `p-1` (4px) padding — concentric child radius is 8-4=4px (see liquid-glass-tailwind skill).
+      // Panel is `rounded-lg` (8px, see MENU_POPOVER_GLASS) with `p-1` (4px) padding — concentric child radius is 8-4=4px (see apple-design skill).
       className="flex w-full items-center justify-between gap-4 rounded-sm px-2 py-1 text-left text-[13px] hover:bg-system-blue hover:text-white focus-visible:bg-system-blue focus-visible:text-white focus-visible:outline-none"
     >
       <span>{label}</span>

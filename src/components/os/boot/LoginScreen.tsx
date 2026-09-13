@@ -24,10 +24,10 @@ export function LoginScreen({
 
   return (
     <motion.div
-      // Blur reads the centralized `--blur-glass-xl` token (src/lib/liquid-glass.ts /
-      // LiquidGlassProvider) instead of a static Tailwind step, per the project's
-      // single-source-of-truth rule for Liquid Glass values.
-      className="fixed inset-0 flex flex-col items-center justify-center gap-4 bg-black/20 backdrop-blur-[var(--blur-glass-xl)] dark:bg-black/30"
+      // Full-viewport scrim behind the login card, not an actionable glass
+      // control — a plain fixed blur rather than a `LiquidGlassEngine`
+      // instance (see apple-design skill).
+      className="fixed inset-0 flex flex-col items-center justify-center gap-4 bg-black/20 backdrop-blur-3xl dark:bg-black/30"
       animate={unlocking ? { opacity: 0, scale: 1.05 } : { opacity: 1, scale: 1 }}
       transition={{ duration: unlocking ? duration : 0 }}
       onAnimationComplete={() => {

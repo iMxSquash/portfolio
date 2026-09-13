@@ -12,9 +12,8 @@ import {
   type AppDefinition,
 } from "@/lib/apps";
 import { FINDER_FAVORITES, type FinderFavoriteId } from "@/lib/finder";
-import { FINDER_SIDEBAR_MATERIAL } from "@/lib/liquid-glass";
-import { useLiquidGlassRefraction } from "@/lib/use-liquid-glass-refraction";
-import { useLiquidGlassStore } from "@/stores/useLiquidGlassStore";
+import { FINDER_SIDEBAR_GLASS, FINDER_TOOLBAR_CLUSTER_GLASS } from "@/lib/glass-presets";
+import { useLiquidGlass } from "@/lib/use-liquid-glass";
 import { useWindowStore } from "@/stores/useWindowStore";
 import { FileGrid, type FileGridItem, type FinderViewMode } from "./FileGrid";
 
@@ -35,25 +34,18 @@ export function Finder() {
   const [historyIndex, setHistoryIndex] = useState(0);
   const [viewMode, setViewMode] = useState<FinderViewMode>("icons");
   const { trafficLights, dragHandlers } = useWindowChrome();
+  const [sidebarEl, setSidebarEl] = useState<HTMLElement | null>(null);
   const [backForwardEl, setBackForwardEl] = useState<HTMLElement | null>(null);
   const [viewToggleEl, setViewToggleEl] = useState<HTMLElement | null>(null);
-  const glassParams = useLiquidGlassStore((state) => state.params);
   // Toolbar controls are individually actionable Liquid Glass pills — the
   // toolbar itself carries no material (see apple-design skill: a full-width
   // bar is background chrome, not a control, but the controls sitting on it
   // still default to refraction). The sidebar, by contrast, is verified
   // against real macOS Finder to be flat window chrome with no lens — it
-  // does not get refraction (see FINDER_SIDEBAR_MATERIAL).
-  const refractionOptions = useMemo(
-    () => ({
-      scale: glassParams.refractScale,
-      aberration: 0,
-      mode: glassParams.refractMode,
-    }),
-    [glassParams.refractScale, glassParams.refractMode],
-  );
-  useLiquidGlassRefraction(backForwardEl, refractionOptions);
-  useLiquidGlassRefraction(viewToggleEl, refractionOptions);
+  // does not get refraction (see FINDER_SIDEBAR_GLASS).
+  useLiquidGlass(sidebarEl, FINDER_SIDEBAR_GLASS);
+  useLiquidGlass(backForwardEl, FINDER_TOOLBAR_CLUSTER_GLASS);
+  useLiquidGlass(viewToggleEl, FINDER_TOOLBAR_CLUSTER_GLASS);
 
   const currentFavoriteId = history[historyIndex];
 
@@ -100,33 +92,32 @@ export function Finder() {
           macOS Finder), pleine hauteur, carries the traffic lights in its own
           top row so it reads as one continuous surface with the window's
           leading edge instead of sitting under a separate title bar. */}
-      <nav
-        className="liquid-glass glass-edge-bleed relative flex w-40 min-w-32 shrink-0 flex-col rounded-none border-y-0 border-l-0"
-        style={FINDER_SIDEBAR_MATERIAL}
-      >
-        <div
-          className="flex h-(--toolbar-height) shrink-0 items-center pl-4 select-none"
-          {...dragHandlers}
-        >
-          {trafficLights}
-        </div>
-        <div className="min-h-0 flex-1 overflow-y-auto py-2">
-          <p className="text-foreground/55 px-3 pb-1 text-[11px] font-medium">Favoris</p>
-          {FINDER_FAVORITES.map((favorite) => (
-            <button
-              key={favorite.id}
-              type="button"
-              onClick={() => navigate(favorite.id)}
-              className={`flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-system-blue ${
-                favorite.id === currentFavoriteId
-                  ? "bg-black/6 text-system-blue font-medium dark:bg-white/7"
-                  : "hover:bg-black/4 dark:hover:bg-white/4"
-              }`}
-            >
-              <FolderIcon />
-              <span className="truncate">{favorite.label}</span>
-            </button>
-          ))}
+      <nav ref={setSidebarEl} className="w-40 min-w-32 shrink-0 border-y-0 border-l-0">
+        <div className="flex h-full flex-col">
+          <div
+            className="flex h-(--toolbar-height) shrink-0 items-center pl-4 select-none"
+            {...dragHandlers}
+          >
+            {trafficLights}
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto py-2">
+            <p className="text-foreground/55 px-3 pb-1 text-[11px] font-medium">Favoris</p>
+            {FINDER_FAVORITES.map((favorite) => (
+              <button
+                key={favorite.id}
+                type="button"
+                onClick={() => navigate(favorite.id)}
+                className={`flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-system-blue ${
+                  favorite.id === currentFavoriteId
+                    ? "bg-black/6 text-system-blue font-medium dark:bg-white/7"
+                    : "hover:bg-black/4 dark:hover:bg-white/4"
+                }`}
+              >
+                <FolderIcon />
+                <span className="truncate">{favorite.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </nav>
 
@@ -138,54 +129,52 @@ export function Finder() {
           className="flex h-(--toolbar-height) shrink-0 items-center gap-2 px-3 select-none"
           {...dragHandlers}
         >
-          <div
-            ref={setBackForwardEl}
-            className="liquid-glass flex items-center gap-0.5 rounded-[8px] p-0.5"
-          >
-            <button
-              type="button"
-              aria-label="Précédent"
-              disabled={historyIndex === 0}
-              onClick={() => setHistoryIndex((index) => Math.max(0, index - 1))}
-              className="focus-visible:outline-system-blue rounded-[6px] px-1.5 py-0.5 hover:bg-black/4 focus-visible:outline-2 disabled:opacity-30 dark:hover:bg-white/4"
-            >
-              <IconChevronLeft size={12} stroke={3} />
-            </button>
-            <button
-              type="button"
-              aria-label="Suivant"
-              disabled={historyIndex === history.length - 1}
-              onClick={() => setHistoryIndex((index) => Math.min(history.length - 1, index + 1))}
-              className="focus-visible:outline-system-blue rounded-[6px] px-1.5 py-0.5 hover:bg-black/4 focus-visible:outline-2 disabled:opacity-30 dark:hover:bg-white/4"
-            >
-              <IconChevronRight size={12} stroke={3} />
-            </button>
+          <div ref={setBackForwardEl} className="p-0.5">
+            <div className="flex items-center gap-0.5">
+              <button
+                type="button"
+                aria-label="Précédent"
+                disabled={historyIndex === 0}
+                onClick={() => setHistoryIndex((index) => Math.max(0, index - 1))}
+                className="focus-visible:outline-system-blue rounded-[6px] px-1.5 py-0.5 hover:bg-black/4 focus-visible:outline-2 disabled:opacity-30 dark:hover:bg-white/4"
+              >
+                <IconChevronLeft size={12} stroke={3} />
+              </button>
+              <button
+                type="button"
+                aria-label="Suivant"
+                disabled={historyIndex === history.length - 1}
+                onClick={() => setHistoryIndex((index) => Math.min(history.length - 1, index + 1))}
+                className="focus-visible:outline-system-blue rounded-[6px] px-1.5 py-0.5 hover:bg-black/4 focus-visible:outline-2 disabled:opacity-30 dark:hover:bg-white/4"
+              >
+                <IconChevronRight size={12} stroke={3} />
+              </button>
+            </div>
           </div>
 
           <span className="font-semibold">{currentFavorite?.label}</span>
 
-          <div
-            ref={setViewToggleEl}
-            className="liquid-glass ml-auto flex items-center gap-1 rounded-[8px] p-0.5"
-          >
-            <button
-              type="button"
-              aria-label="Vue en icônes"
-              aria-pressed={viewMode === "icons"}
-              onClick={() => setViewMode("icons")}
-              className={`focus-visible:outline-system-blue rounded-[6px] px-2 py-0.5 focus-visible:outline-2 ${viewMode === "icons" ? "bg-black/8 dark:bg-white/9" : ""}`}
-            >
-              <IconLayoutGrid size={14} stroke={2} />
-            </button>
-            <button
-              type="button"
-              aria-label="Vue en liste"
-              aria-pressed={viewMode === "list"}
-              onClick={() => setViewMode("list")}
-              className={`focus-visible:outline-system-blue rounded-[6px] px-2 py-0.5 focus-visible:outline-2 ${viewMode === "list" ? "bg-black/8 dark:bg-white/9" : ""}`}
-            >
-              <IconList size={14} stroke={2} />
-            </button>
+          <div ref={setViewToggleEl} className="ml-auto p-0.5">
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                aria-label="Vue en icônes"
+                aria-pressed={viewMode === "icons"}
+                onClick={() => setViewMode("icons")}
+                className={`focus-visible:outline-system-blue rounded-[6px] px-2 py-0.5 focus-visible:outline-2 ${viewMode === "icons" ? "bg-black/8 dark:bg-white/9" : ""}`}
+              >
+                <IconLayoutGrid size={14} stroke={2} />
+              </button>
+              <button
+                type="button"
+                aria-label="Vue en liste"
+                aria-pressed={viewMode === "list"}
+                onClick={() => setViewMode("list")}
+                className={`focus-visible:outline-system-blue rounded-[6px] px-2 py-0.5 focus-visible:outline-2 ${viewMode === "list" ? "bg-black/8 dark:bg-white/9" : ""}`}
+              >
+                <IconList size={14} stroke={2} />
+              </button>
+            </div>
           </div>
         </div>
 

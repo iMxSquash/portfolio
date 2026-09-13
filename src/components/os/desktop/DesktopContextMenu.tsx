@@ -2,6 +2,8 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { MenuBarMenuItem, MenuBarMenuSeparator } from "@/components/os/menu-bar/MenuBarButton";
+import { MENU_POPOVER_GLASS } from "@/lib/glass-presets";
+import { useLiquidGlass } from "@/lib/use-liquid-glass";
 
 type Point = { x: number; y: number };
 
@@ -18,7 +20,9 @@ export function DesktopContextMenu({
   onClose,
 }: DesktopContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
+  const [menuEl, setMenuEl] = useState<HTMLDivElement | null>(null);
   const [clamped, setClamped] = useState(position);
+  useLiquidGlass(menuEl, MENU_POPOVER_GLASS);
 
   // Right-clicking near the bottom/right edge would otherwise render the menu
   // partially off-screen — measure the real rect once mounted and pull it
@@ -34,10 +38,13 @@ export function DesktopContextMenu({
 
   return (
     <div
-      ref={menuRef}
+      ref={(node) => {
+        menuRef.current = node;
+        setMenuEl(node);
+      }}
       role="menu"
       aria-label="Menu du bureau"
-      className="liquid-glass fixed z-1001 min-w-56 rounded-lg p-1 shadow-glass-lg"
+      className="fixed z-1001 min-w-56 p-1"
       style={{ top: clamped.y, left: clamped.x }}
     >
       <MenuBarMenuItem label="Changer le fond d'écran…" onSelect={onSelectWallpaper} />

@@ -1,17 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type {
-  CSSProperties,
-  KeyboardEvent as ReactKeyboardEvent,
-  PointerEvent as ReactPointerEvent,
-} from "react";
+import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from "react";
 import { motion, useMotionValue } from "framer-motion";
 import { IconSearch } from "@tabler/icons-react";
 import { AppIcon } from "@/components/os/AppIcon";
 import type { AppDefinition } from "@/lib/apps";
-import { useLiquidGlassRefraction } from "@/lib/use-liquid-glass-refraction";
-import { useLiquidGlassStore } from "@/stores/useLiquidGlassStore";
+import { SPOTLIGHT_CARD_RADIUS, SPOTLIGHT_GLASS, SPOTLIGHT_PILL_RADIUS } from "@/lib/glass-presets";
+import { useLiquidGlass } from "@/lib/use-liquid-glass";
 import { useSpotlightStore } from "@/stores/useSpotlightStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 
@@ -47,27 +43,24 @@ export function Spotlight({ apps, disabled = false }: SpotlightProps) {
     startPosition: { x: number; y: number };
   } | null>(null);
 
-  const glassParams = useLiquidGlassStore((state) => state.params);
   const [panelEl, setPanelEl] = useState<HTMLDivElement | null>(null);
-  useLiquidGlassRefraction(
-    panelEl,
-    {
-      scale: glassParams.refractScale,
-      aberration: glassParams.refractAberration,
-      // Always "symmetric", never the global `glassParams.refractMode`: the
-      // idle pill's radius equals half its height, giving it tightly curved
-      // semicircular caps. "diagonal" pushes every border pixel in the same
-      // fixed direction regardless of local curvature, which on a cap that
-      // sharp produces a visible ghost rim offset from the true edge —
-      // "symmetric" derives the push direction from the SDF gradient, so it
-      // rotates with the curve and stays artifact-free at any radius.
-      mode: "symmetric",
-    },
-    // Border-radius alone (pill <-> card, see hasResultsPanel below) doesn't
-    // resize the element, so the controller's own ResizeObserver won't
-    // rebuild the displacement map for it — force one explicitly.
-    Boolean(query.trim()),
+  // Idle (no query yet): a full pill, like real Spotlight. Once results show
+  // below, a full pill on a tall rectangle would look wrong, so it relaxes
+  // to a large rounded card instead — the rows below then derive their
+  // radius from *this* value, not the pill one.
+  const hasResultsPanel = Boolean(query.trim());
+  const panelGlassConfig = useMemo(
+    () => ({
+      ...SPOTLIGHT_GLASS,
+      borderRadius: hasResultsPanel ? SPOTLIGHT_CARD_RADIUS : SPOTLIGHT_PILL_RADIUS,
+    }),
+    [hasResultsPanel],
   );
+  // A `borderRadius`-only config change (pill <-> card) doesn't resize the
+  // element, but `useLiquidGlass` diffs the whole config on every change and
+  // rebuilds the displacement map whenever geometry-affecting fields like
+  // `borderRadius` differ — no separate rebuild trigger needed here.
+  useLiquidGlass(panelEl, panelGlassConfig);
 
   // "State derived from a state/prop change" (React docs pattern) rather than
   // an effect: clearing the query on open, and force-closing if Spotlight
@@ -163,8 +156,6 @@ export function Spotlight({ apps, disabled = false }: SpotlightProps) {
     }
   }
 
-  const hasResultsPanel = Boolean(query.trim());
-
   return (
     <div className="fixed inset-0 z-[1002] flex justify-center pt-[20vh]" onClick={() => close()}>
       <motion.div
@@ -175,64 +166,64 @@ export function Spotlight({ apps, disabled = false }: SpotlightProps) {
         onPointerDown={handleDragPointerDown}
         onPointerMove={handleDragPointerMove}
         onPointerUp={handleDragPointerUp}
-        style={
-          { x, y, "--glass-tint-alpha": glassParams.refractTintAlpha } as unknown as CSSProperties
-        }
-        // Idle (no query yet): a full pill, like real Spotlight. Once results
-        // show below, a full pill on a tall rectangle would look wrong, so it
-        // relaxes to a large rounded-3xl card instead — the rows below then
-        // derive their radius from *this* value, not the pill one.
-        className={`liquid-glass h-fit w-[640px] max-w-[90vw] touch-none overflow-hidden p-0 shadow-glass-lg ${
-          hasResultsPanel ? "rounded-3xl" : "rounded-full"
-        }`}
+        style={{ x, y }}
+        className="h-fit w-[640px] max-w-[90vw] touch-none p-0"
       >
-        <div className="flex items-center gap-4 px-6 py-4">
-          <SpotlightIcon className="size-6 shrink-0 opacity-60" />
-          <input
-            ref={inputRef}
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setSelectedIndex(0);
-            }}
-            onKeyDown={handleInputKeyDown}
-            placeholder="Spotlight"
-            aria-label="Recherche Spotlight"
-            className="w-full bg-transparent text-xl outline-none placeholder:opacity-40"
-          />
-        </div>
-
-        {hasResultsPanel ? (
-          // Panel is rounded-3xl (24px) with no padding here; this results
-          // list sits flush against the bottom edge, so its rows are
-          // rounded-2xl (16px) = 24 - 8 (the list's own p-2) — concentric,
-          // see liquid-glass-tailwind skill.
-          <div className="border-t border-black/10 p-2 dark:border-white/10">
-            {results.length === 0 ? (
-              <p className="px-3 py-2 text-sm opacity-60">Aucun résultat</p>
-            ) : (
-              <ul>
-                {results.map((app, index) => (
-                  <li key={app.id}>
-                    <button
-                      type="button"
-                      onClick={() => launch(app)}
-                      onMouseEnter={() => setSelectedIndex(index)}
-                      className={`flex w-full items-center gap-3 rounded-2xl px-3 py-2 text-left ${
-                        index === selected ? "bg-system-blue text-white" : ""
-                      }`}
-                    >
-                      <span className="size-6 shrink-0">
-                        <AppIcon app={app} />
-                      </span>
-                      <span className="text-sm">{app.name}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
+        {/*
+          Stable wrapper the host's children-reparenting invariant requires
+          (see the hook's own doc comment in use-liquid-glass.ts) — the
+          results panel below toggles in and out, so it can't be a direct
+          child of the glass host itself.
+        */}
+        <div>
+          <div className="flex items-center gap-4 px-6 py-4">
+            <SpotlightIcon className="size-6 shrink-0 opacity-60" />
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setSelectedIndex(0);
+              }}
+              onKeyDown={handleInputKeyDown}
+              placeholder="Spotlight"
+              aria-label="Recherche Spotlight"
+              className="w-full bg-transparent text-xl outline-none placeholder:opacity-40"
+            />
           </div>
-        ) : null}
+
+          {hasResultsPanel ? (
+            // Panel is a rounded card (see SPOTLIGHT_CARD_RADIUS) with no
+            // padding here; this results list sits flush against the bottom
+            // edge, so its rows are rounded-2xl (16px) = 24 - 8 (the list's
+            // own p-2) — concentric (see apple-design skill).
+            <div className="border-t border-black/10 p-2 dark:border-white/10">
+              {results.length === 0 ? (
+                <p className="px-3 py-2 text-sm opacity-60">Aucun résultat</p>
+              ) : (
+                <ul>
+                  {results.map((app, index) => (
+                    <li key={app.id}>
+                      <button
+                        type="button"
+                        onClick={() => launch(app)}
+                        onMouseEnter={() => setSelectedIndex(index)}
+                        className={`flex w-full items-center gap-3 rounded-2xl px-3 py-2 text-left ${
+                          index === selected ? "bg-system-blue text-white" : ""
+                        }`}
+                      >
+                        <span className="size-6 shrink-0">
+                          <AppIcon app={app} />
+                        </span>
+                        <span className="text-sm">{app.name}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ) : null}
+        </div>
       </motion.div>
     </div>
   );

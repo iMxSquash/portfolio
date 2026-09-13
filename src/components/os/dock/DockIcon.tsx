@@ -18,6 +18,8 @@ import {
   DOCK_MAGNIFICATION_SPRING,
   DOCK_TOOLTIP_DELAY_S,
 } from "@/lib/dock";
+import { DOCK_TOOLTIP_GLASS } from "@/lib/glass-presets";
+import { useLiquidGlass } from "@/lib/use-liquid-glass";
 import { useDockIconStore } from "@/stores/useDockIconStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 
@@ -33,6 +35,8 @@ export function DockIcon({ app, mouseX, isOpen }: DockIconProps) {
   const openWindow = useWindowStore((state) => state.openWindow);
   const reducedMotion = useReducedMotion();
   const [hovered, setHovered] = useState(false);
+  const [tooltipEl, setTooltipEl] = useState<HTMLSpanElement | null>(null);
+  useLiquidGlass(tooltipEl, DOCK_TOOLTIP_GLASS);
 
   const distance = useTransform(mouseX, (value) => {
     const rect = buttonRef.current?.getBoundingClientRect();
@@ -56,10 +60,11 @@ export function DockIcon({ app, mouseX, isOpen }: DockIconProps) {
       <AnimatePresence>
         {hovered ? (
           <motion.span
+            ref={setTooltipEl}
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0, transition: { delay: DOCK_TOOLTIP_DELAY_S } }}
             exit={{ opacity: 0, y: 4, transition: { duration: 0.1 } }}
-            className="liquid-glass absolute -top-9 rounded-md px-2 py-1 text-xs whitespace-nowrap"
+            className="absolute -top-9 px-2 py-1 text-xs whitespace-nowrap"
           >
             {app.name}
           </motion.span>

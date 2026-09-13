@@ -1,14 +1,15 @@
 "use client";
 
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type {
-  CSSProperties,
   MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
   ReactNode,
 } from "react";
 import { motion, useMotionValue, useReducedMotion } from "framer-motion";
 import type { AppDefinition } from "@/lib/apps";
+import { TITLE_BAR_GLASS, TITLE_BAR_GLASS_INACTIVE } from "@/lib/glass-presets";
+import { useLiquidGlass } from "@/lib/use-liquid-glass";
 import {
   WINDOW_OPEN_TRANSITION,
   WINDOW_CLOSE_TRANSITION,
@@ -31,17 +32,6 @@ const MINIMIZE_SCALE = 0.05;
 /** 3 traffic lights + 2 gaps — mirrors the left group so the title stays visually centered. */
 const TRAFFIC_LIGHTS_WIDTH = "calc(3 * var(--traffic-light-size) + 2 * var(--traffic-light-gap))";
 
-/**
- * Inactive title bars go quieter than the base `liquid-glass` tint — real
- * macOS dims an unfocused window's chrome without hiding the material
- * entirely (see apple-design skill: window chrome stays a layered,
- * translucent surface even when unfocused).
- */
-const TITLE_BAR_UNFOCUSED_TINT = {
-  "--glass-tint-alpha": "6%",
-  "--glass-tint-alpha-dark": "24%",
-} as CSSProperties;
-
 type WindowProps = {
   app: AppDefinition;
   state: WindowState;
@@ -60,6 +50,9 @@ export function Window({ app, state, children }: WindowProps) {
 
   const reducedMotion = useReducedMotion();
   const focused = focusedAppId === app.id;
+
+  const [titleBarEl, setTitleBarEl] = useState<HTMLDivElement | null>(null);
+  useLiquidGlass(titleBarEl, focused ? TITLE_BAR_GLASS : TITLE_BAR_GLASS_INACTIVE);
 
   const x = useMotionValue(state.position.x);
   const y = useMotionValue(state.position.y);
@@ -315,16 +308,17 @@ export function Window({ app, state, children }: WindowProps) {
         <WindowChromeProvider value={chromeContextValue}>{content}</WindowChromeProvider>
       ) : (
         <>
-          <div
-            className="liquid-glass glass-hairline flex h-(--title-bar-height-min) shrink-0 touch-none items-center rounded-none border-x-0 border-t-0 px-2 select-none"
-            style={focused ? undefined : TITLE_BAR_UNFOCUSED_TINT}
-            {...dragHandlers}
-          >
-            {trafficLights}
-            <span className="flex-1 truncate px-2 text-center text-[13px] font-semibold">
-              {app.name}
-            </span>
-            <div style={{ width: TRAFFIC_LIGHTS_WIDTH }} aria-hidden />
+          <div ref={setTitleBarEl} className="h-(--title-bar-height-min) shrink-0">
+            <div
+              className="flex h-full touch-none items-center px-2 select-none"
+              {...dragHandlers}
+            >
+              {trafficLights}
+              <span className="flex-1 truncate px-2 text-center text-[13px] font-semibold">
+                {app.name}
+              </span>
+              <div style={{ width: TRAFFIC_LIGHTS_WIDTH }} aria-hidden />
+            </div>
           </div>
 
           {content}
