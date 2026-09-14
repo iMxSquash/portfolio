@@ -53,7 +53,7 @@ export const TITLE_BAR_GLASS_INACTIVE: Partial<LiquidGlassConfig> = {
  * decision to fully adopt its look), not that pre-existing, never-consumed
  * value.
  */
-export const DOCK_BORDER_RADIUS = 30;
+export const DOCK_BORDER_RADIUS = 21;
 
 /**
  * Dock: the canonical floating regular-glass control. One of the ~2
