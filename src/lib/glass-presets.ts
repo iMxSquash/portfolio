@@ -134,6 +134,8 @@ export const FINDER_TOOLBAR_CLUSTER_GLASS: Partial<LiquidGlassConfig> = {
   ...GLASS_DEFAULTS,
   material: "thin",
   borderRadius: 8,
+  elevation: 0.1,
+  edgeHighlight: 0,
 };
 
 /**
