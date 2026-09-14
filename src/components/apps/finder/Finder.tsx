@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IconChevronLeft, IconChevronRight, IconLayoutGrid, IconList } from "@tabler/icons-react";
 import { FolderIcon } from "@/components/icons/FolderIcon";
 import { useWindowChrome } from "@/components/os/window/WindowChromeContext";
@@ -12,8 +12,15 @@ import {
   type AppDefinition,
 } from "@/lib/apps";
 import { FINDER_FAVORITES, type FinderFavoriteId } from "@/lib/finder";
-import { FINDER_SIDEBAR_GLASS, FINDER_TOOLBAR_CLUSTER_GLASS } from "@/lib/glass-presets";
+import {
+  FINDER_SIDEBAR_GLASS,
+  FINDER_SIDEBAR_TINT_DARK,
+  FINDER_SIDEBAR_TINT_LIGHT,
+  FINDER_TOOLBAR_CLUSTER_GLASS,
+} from "@/lib/glass-presets";
+import { resolveTheme } from "@/lib/theme";
 import { useLiquidGlass } from "@/lib/use-liquid-glass";
+import { useThemeStore } from "@/stores/useThemeStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 import { FileGrid, type FileGridItem, type FinderViewMode } from "./FileGrid";
 
@@ -37,13 +44,36 @@ export function Finder() {
   const [sidebarEl, setSidebarEl] = useState<HTMLElement | null>(null);
   const [backForwardEl, setBackForwardEl] = useState<HTMLElement | null>(null);
   const [viewToggleEl, setViewToggleEl] = useState<HTMLElement | null>(null);
+
+  // `LiquidGlassConfig.tint` is a static value with no light/dark switching
+  // of its own, so the exact `--window-canvas` match (see
+  // FINDER_SIDEBAR_TINT_LIGHT/DARK) needs the resolved theme here, mirroring
+  // ThemeProvider's own system-preference resolution.
+  const themeMode = useThemeStore((state) => state.mode);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const update = () => setIsDarkMode(resolveTheme(themeMode, media.matches) === "dark");
+    update();
+    if (themeMode !== "system") return;
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, [themeMode]);
+  const finderSidebarGlass = useMemo(
+    () => ({
+      ...FINDER_SIDEBAR_GLASS,
+      tint: isDarkMode ? FINDER_SIDEBAR_TINT_DARK : FINDER_SIDEBAR_TINT_LIGHT,
+    }),
+    [isDarkMode],
+  );
+
   // Toolbar controls are individually actionable Liquid Glass pills — the
   // toolbar itself carries no material (see apple-design skill: a full-width
   // bar is background chrome, not a control, but the controls sitting on it
   // still default to refraction). The sidebar, by contrast, is verified
   // against real macOS Finder to be flat window chrome with no lens — it
   // does not get refraction (see FINDER_SIDEBAR_GLASS).
-  useLiquidGlass(sidebarEl, FINDER_SIDEBAR_GLASS);
+  useLiquidGlass(sidebarEl, finderSidebarGlass);
   useLiquidGlass(backForwardEl, FINDER_TOOLBAR_CLUSTER_GLASS);
   useLiquidGlass(viewToggleEl, FINDER_TOOLBAR_CLUSTER_GLASS);
 

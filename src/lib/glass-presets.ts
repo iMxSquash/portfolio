@@ -88,17 +88,33 @@ export const SPOTLIGHT_GLASS: Partial<LiquidGlassConfig> = {
  * Finder sidebar: full-height chrome carrying the traffic lights, verified
  * against a real macOS Finder screenshot to be flat window chrome with no
  * lens (see portfolio CLAUDE.md — do not generalize this exception to other
- * sidebars). Goes more opaque than a normal `regular` surface and uses a
- * high blur elevation to stay legible over the file grid.
+ * sidebars). `tintOpacity: 1` makes the sidebar read as the exact same flat
+ * material as the content pane it sits beside, rather than a glass surface
+ * revealing the blurred desktop behind it.
  */
 export const FINDER_SIDEBAR_GLASS: Partial<LiquidGlassConfig> = {
   ...GLASS_DEFAULTS,
   material: "regular",
   refractionStrength: 0,
   blur: 32,
-  tintOpacity: 0.2,
+  saturation: 1.1,
+  tintOpacity: 1,
   borderRadius: 0,
+  elevation: 0,
+  edgeHighlight: 0,
 };
+
+/**
+ * `tint` for `FINDER_SIDEBAR_GLASS`, matching `--window-canvas` in
+ * globals.css exactly so the sidebar and the content pane read as one
+ * continuous surface. `LiquidGlassConfig.tint` is a static value (no
+ * light/dark switching of its own outside quick-liquid's built-in default),
+ * so the caller picks one of these based on the resolved theme — see
+ * `Finder.tsx`. Keep in sync with `--window-canvas` by hand if that value
+ * ever changes.
+ */
+export const FINDER_SIDEBAR_TINT_LIGHT = "255, 255, 255";
+export const FINDER_SIDEBAR_TINT_DARK = "30, 31, 32";
 
 /**
  * Notes sidebar: an ordinary actionable nav surface, not the Finder
