@@ -130,7 +130,7 @@ export function Finder() {
           >
             {trafficLights}
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto py-2">
+          <div className="min-h-0 flex-1 overflow-y-auto px-2.5 py-2">
             <p className="text-foreground/55 px-3 pb-1 text-[11px] font-medium">Favoris</p>
             {FINDER_FAVORITES.map((favorite) => (
               <button
