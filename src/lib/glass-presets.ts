@@ -85,14 +85,16 @@ export const SPOTLIGHT_GLASS: Partial<LiquidGlassConfig> = {
 };
 
 /**
- * Finder sidebar: full-height chrome carrying the traffic lights, verified
- * against a real macOS Finder screenshot to be flat window chrome with no
- * lens (see portfolio CLAUDE.md — do not generalize this exception to other
- * sidebars). `tintOpacity: 1` makes the sidebar read as the exact same flat
- * material as the content pane it sits beside, rather than a glass surface
- * revealing the blurred desktop behind it.
+ * Full-height sidebar chrome for Finder and Notes: verified against a real
+ * macOS Finder screenshot to be flat window chrome with no lens (see
+ * portfolio CLAUDE.md); Notes' sidebar was aligned to the same flat-chrome
+ * treatment as an explicit project decision rather than its own macOS
+ * capture. Do not extend this preset to other sidebars without equivalent
+ * verification. `tintOpacity: 1` makes the sidebar read as the exact same
+ * flat material as the content pane it sits beside, rather than a glass
+ * surface revealing the blurred desktop behind it.
  */
-export const FINDER_SIDEBAR_GLASS: Partial<LiquidGlassConfig> = {
+export const SIDEBAR_CHROME_GLASS: Partial<LiquidGlassConfig> = {
   ...GLASS_DEFAULTS,
   material: "regular",
   refractionStrength: 0,
@@ -105,29 +107,16 @@ export const FINDER_SIDEBAR_GLASS: Partial<LiquidGlassConfig> = {
 };
 
 /**
- * `tint` for `FINDER_SIDEBAR_GLASS`, matching `--window-canvas` in
+ * `tint` for `SIDEBAR_CHROME_GLASS`, matching `--window-canvas` in
  * globals.css exactly so the sidebar and the content pane read as one
  * continuous surface. `LiquidGlassConfig.tint` is a static value (no
  * light/dark switching of its own outside quick-liquid's built-in default),
- * so the caller picks one of these based on the resolved theme — see
- * `Finder.tsx`. Keep in sync with `--window-canvas` by hand if that value
- * ever changes.
+ * so the caller picks one of these based on `useIsDarkMode()` — see
+ * `FinderView.tsx` and `Notes.tsx`. Keep in sync with `--window-canvas` by
+ * hand if that value ever changes.
  */
-export const FINDER_SIDEBAR_TINT_LIGHT = "255, 255, 255";
-export const FINDER_SIDEBAR_TINT_DARK = "30, 31, 32";
-
-/**
- * Notes sidebar: an ordinary actionable nav surface, not the Finder
- * exception above — refraction stays on at the preset default, aberration
- * stays 0 (Dock + Spotlight already spend that budget). Denser tint than
- * the base `regular` default to stay legible over the scrolling note list.
- */
-export const NOTES_SIDEBAR_GLASS: Partial<LiquidGlassConfig> = {
-  ...GLASS_DEFAULTS,
-  material: "regular",
-  tintOpacity: 0.16,
-  borderRadius: 0,
-};
+export const SIDEBAR_CHROME_TINT_LIGHT = "255, 255, 255";
+export const SIDEBAR_CHROME_TINT_DARK = "30, 31, 32";
 
 /** Finder toolbar clusters (back/forward group, view-mode toggle group): actionable pill controls. */
 export const FINDER_TOOLBAR_CLUSTER_GLASS: Partial<LiquidGlassConfig> = {

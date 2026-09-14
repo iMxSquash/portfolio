@@ -87,6 +87,9 @@ export const SYSTEM_APPS: AppDefinition[] = [
     pinnedToDock: true,
     defaultSize: { width: 780, height: 520 },
     minSize: { width: 480, height: 360 },
+    // Same chrome as Finder (own sidebar carries the traffic lights) — see
+    // os-apps skill.
+    windowStyle: "unified",
   },
   {
     id: TRASH_APP_ID,

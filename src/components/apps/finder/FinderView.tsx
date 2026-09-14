@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { IconChevronLeft, IconChevronRight, IconLayoutGrid, IconList } from "@tabler/icons-react";
 import type { TrashItem } from "@/components/apps/trash/trash-content";
 import { useWindowChrome } from "@/components/os/window/WindowChromeContext";
@@ -13,14 +13,13 @@ import {
 } from "@/lib/apps";
 import { FINDER_FAVORITES, type FinderFavoriteId } from "@/lib/finder";
 import {
-  FINDER_SIDEBAR_GLASS,
-  FINDER_SIDEBAR_TINT_DARK,
-  FINDER_SIDEBAR_TINT_LIGHT,
   FINDER_TOOLBAR_CLUSTER_GLASS,
+  SIDEBAR_CHROME_GLASS,
+  SIDEBAR_CHROME_TINT_DARK,
+  SIDEBAR_CHROME_TINT_LIGHT,
 } from "@/lib/glass-presets";
-import { resolveTheme } from "@/lib/theme";
+import { useIsDarkMode } from "@/lib/use-is-dark-mode";
 import { useLiquidGlass } from "@/lib/use-liquid-glass";
-import { useThemeStore } from "@/stores/useThemeStore";
 import { useTrashStore } from "@/stores/useTrashStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 import { DocumentIcon } from "./DocumentIcon";
@@ -66,29 +65,19 @@ export function FinderView({ initialFavoriteId }: FinderViewProps) {
 
   // `LiquidGlassConfig.tint` is a static value with no light/dark switching
   // of its own, so the exact `--window-canvas` match (see
-  // FINDER_SIDEBAR_TINT_LIGHT/DARK) needs the resolved theme here, mirroring
-  // ThemeProvider's own system-preference resolution.
-  const themeMode = useThemeStore((state) => state.mode);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const update = () => setIsDarkMode(resolveTheme(themeMode, media.matches) === "dark");
-    update();
-    if (themeMode !== "system") return;
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, [themeMode]);
+  // SIDEBAR_CHROME_TINT_LIGHT/DARK) needs the resolved theme here.
+  const isDarkMode = useIsDarkMode();
   const finderSidebarGlass = useMemo(
     () => ({
-      ...FINDER_SIDEBAR_GLASS,
-      tint: isDarkMode ? FINDER_SIDEBAR_TINT_DARK : FINDER_SIDEBAR_TINT_LIGHT,
+      ...SIDEBAR_CHROME_GLASS,
+      tint: isDarkMode ? SIDEBAR_CHROME_TINT_DARK : SIDEBAR_CHROME_TINT_LIGHT,
     }),
     [isDarkMode],
   );
 
   // Sidebar, by contrast with the toolbar clusters below, is verified
   // against real macOS Finder to be flat window chrome with no lens — it
-  // does not get refraction (see FINDER_SIDEBAR_GLASS).
+  // does not get refraction (see SIDEBAR_CHROME_GLASS).
   useLiquidGlass(sidebarEl, finderSidebarGlass);
 
   function navigate(favoriteId: FinderFavoriteId) {

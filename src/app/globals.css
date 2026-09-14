@@ -26,6 +26,10 @@
      focus rings, links. Distinct from light/dark like --background, never
      Tailwind's default `blue-500` (too indigo, not the real system color). */
   --system-blue: #007aff;
+  /* macOS system accent yellow (Apple HIG systemYellow) — Notes' own accent
+     (matches its yellow app icon/folder glyph), used instead of
+     --system-blue for its sidebar selection. */
+  --system-yellow: #ffcc00;
 
   /* macOS chrome measurements without a matching Tailwind utility family
      (Tailwind v4 only exposes a single `--spacing` scalar, not named
@@ -51,6 +55,7 @@
   --color-foreground: var(--foreground);
   --color-window-canvas: var(--window-canvas);
   --color-system-blue: var(--system-blue);
+  --color-system-yellow: var(--system-yellow);
   --font-sans: -apple-system, BlinkMacSystemFont, var(--font-inter), sans-serif;
 }
 
@@ -60,6 +65,7 @@
   --background: #0a0a0a;
   --foreground: #ededed;
   --system-blue: #0a84ff;
+  --system-yellow: #ffd60a;
   --window-canvas: #1e1f20;
 }
 
