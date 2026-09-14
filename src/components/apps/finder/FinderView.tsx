@@ -1,0 +1,275 @@
+"use client";
+
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { IconChevronLeft, IconChevronRight, IconLayoutGrid, IconList } from "@tabler/icons-react";
+import type { TrashItem } from "@/components/apps/trash/trash-content";
+import { useWindowChrome } from "@/components/os/window/WindowChromeContext";
+import {
+  getDesktopApps,
+  getProjectApps,
+  getSystemComponentApps,
+  SYSTEM_APPS,
+  type AppDefinition,
+} from "@/lib/apps";
+import { FINDER_FAVORITES, type FinderFavoriteId } from "@/lib/finder";
+import {
+  FINDER_SIDEBAR_GLASS,
+  FINDER_SIDEBAR_TINT_DARK,
+  FINDER_SIDEBAR_TINT_LIGHT,
+  FINDER_TOOLBAR_CLUSTER_GLASS,
+} from "@/lib/glass-presets";
+import { resolveTheme } from "@/lib/theme";
+import { useLiquidGlass } from "@/lib/use-liquid-glass";
+import { useThemeStore } from "@/stores/useThemeStore";
+import { useTrashStore } from "@/stores/useTrashStore";
+import { useWindowStore } from "@/stores/useWindowStore";
+import { DocumentIcon } from "./DocumentIcon";
+import { FileGrid, type FileGridItem, type FinderViewMode } from "./FileGrid";
+
+const EMPTY_LABELS: Record<FinderFavoriteId, string> = {
+  projects: "Aucun projet pour le moment",
+  applications: "Aucune application",
+  desktop: "Le bureau est vide",
+  trash: "La corbeille est vide",
+};
+
+/** Stable reference so the trash-store selector below doesn't force a re-render on every mutation while a different favorite is showing. */
+const EMPTY_TRASH_ITEMS: TrashItem[] = [];
+
+type FinderViewProps = {
+  /** Which sidebar favorite the window opens on — "trash" for the Trash app (see os-apps skill). */
+  initialFavoriteId: FinderFavoriteId;
+};
+
+/**
+ * Finder clone: sidebar favorites (Projets/Applications/Bureau/Corbeille)
+ * resolved against the apps registry (or `useTrashStore` for Corbeille),
+ * toolbar back/forward + icons/list toggle, main pane via the shared
+ * `FileGrid`. The single source of truth for both the Finder and Trash
+ * windows — `Finder.tsx` and `Trash.tsx` are thin wrappers that only differ
+ * in `initialFavoriteId`, since the Trash is technically a Finder window
+ * (see os-apps skill). Desktop only.
+ */
+export function FinderView({ initialFavoriteId }: FinderViewProps) {
+  const openWindow = useWindowStore((state) => state.openWindow);
+  const [history, setHistory] = useState<FinderFavoriteId[]>([initialFavoriteId]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const currentFavoriteId = history[historyIndex];
+
+  const trashItems = useTrashStore((state) =>
+    currentFavoriteId === "trash" ? state.items : EMPTY_TRASH_ITEMS,
+  );
+  const emptyTrash = useTrashStore((state) => state.emptyTrash);
+  const [viewMode, setViewMode] = useState<FinderViewMode>("icons");
+  const { trafficLights, dragHandlers } = useWindowChrome();
+  const [sidebarEl, setSidebarEl] = useState<HTMLElement | null>(null);
+
+  // `LiquidGlassConfig.tint` is a static value with no light/dark switching
+  // of its own, so the exact `--window-canvas` match (see
+  // FINDER_SIDEBAR_TINT_LIGHT/DARK) needs the resolved theme here, mirroring
+  // ThemeProvider's own system-preference resolution.
+  const themeMode = useThemeStore((state) => state.mode);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const update = () => setIsDarkMode(resolveTheme(themeMode, media.matches) === "dark");
+    update();
+    if (themeMode !== "system") return;
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, [themeMode]);
+  const finderSidebarGlass = useMemo(
+    () => ({
+      ...FINDER_SIDEBAR_GLASS,
+      tint: isDarkMode ? FINDER_SIDEBAR_TINT_DARK : FINDER_SIDEBAR_TINT_LIGHT,
+    }),
+    [isDarkMode],
+  );
+
+  // Sidebar, by contrast with the toolbar clusters below, is verified
+  // against real macOS Finder to be flat window chrome with no lens — it
+  // does not get refraction (see FINDER_SIDEBAR_GLASS).
+  useLiquidGlass(sidebarEl, finderSidebarGlass);
+
+  function navigate(favoriteId: FinderFavoriteId) {
+    if (favoriteId === currentFavoriteId) return;
+    const nextHistory = [...history.slice(0, historyIndex + 1), favoriteId];
+    setHistory(nextHistory);
+    setHistoryIndex(nextHistory.length - 1);
+  }
+
+  function appToFileItem(app: AppDefinition): FileGridItem {
+    return {
+      id: app.id,
+      name: app.name,
+      icon: app.icon,
+      kind: appKindLabel(app),
+      onOpen: () => {
+        if (app.type === "external") {
+          window.open(app.url, "_blank", "noopener");
+          return;
+        }
+        openWindow(app.id, app.defaultSize);
+      },
+    };
+  }
+
+  const items = useMemo(() => {
+    switch (currentFavoriteId) {
+      case "projects":
+        return getProjectApps(SYSTEM_APPS).map(appToFileItem);
+      case "applications":
+        return getSystemComponentApps(SYSTEM_APPS).map(appToFileItem);
+      case "desktop":
+        return getDesktopApps(SYSTEM_APPS).map(appToFileItem);
+      case "trash":
+        return trashItems.map(trashItemToFileItem);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- appToFileItem closes over stable openWindow; trashItems is a real, already-listed dep
+  }, [currentFavoriteId, trashItems]);
+
+  const currentFavorite = FINDER_FAVORITES.find((favorite) => favorite.id === currentFavoriteId);
+
+  return (
+    <div className="flex h-full min-h-0 text-[13px]">
+      {/* Sidebar is flat window chrome (no refraction — verified against real
+          macOS Finder), pleine hauteur, carries the traffic lights in its own
+          top row so it reads as one continuous surface with the window's
+          leading edge instead of sitting under a separate title bar. */}
+      <nav ref={setSidebarEl} className="w-40 min-w-32 shrink-0 border-y-0 border-l-0">
+        <div className="flex h-full flex-col">
+          <div
+            className="flex h-(--toolbar-height) shrink-0 items-center pl-4 select-none"
+            {...dragHandlers}
+          >
+            {trafficLights}
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto px-2.5 py-2">
+            <p className="text-foreground/55 px-3 pb-1 text-[11px] font-medium">Favoris</p>
+            {FINDER_FAVORITES.map((favorite) => (
+              <button
+                key={favorite.id}
+                type="button"
+                onClick={() => navigate(favorite.id)}
+                className={`flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-system-blue ${
+                  favorite.id === currentFavoriteId
+                    ? "bg-black/6 text-system-blue font-medium dark:bg-white/7"
+                    : "hover:bg-black/4 dark:hover:bg-white/4"
+                }`}
+              >
+                <favorite.icon />
+                <span className="truncate">{favorite.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </nav>
+
+      <div className="bg-window-canvas flex min-h-0 flex-1 flex-col">
+        {/* No material of its own — real macOS Finder's toolbar sits directly
+            on the opaque content pane. Individual controls below still get
+            their own Liquid Glass + refraction (they're actionable). */}
+        <div
+          className="flex h-(--toolbar-height) shrink-0 items-center gap-2 px-3 select-none"
+          {...dragHandlers}
+        >
+          <ToolbarCluster>
+            <div className="flex items-center gap-0.5">
+              <button
+                type="button"
+                aria-label="Précédent"
+                disabled={historyIndex === 0}
+                onClick={() => setHistoryIndex((index) => Math.max(0, index - 1))}
+                className="focus-visible:outline-system-blue rounded-[6px] px-1.5 py-0.5 hover:bg-black/4 focus-visible:outline-2 disabled:opacity-30 dark:hover:bg-white/4"
+              >
+                <IconChevronLeft size={12} stroke={3} />
+              </button>
+              <button
+                type="button"
+                aria-label="Suivant"
+                disabled={historyIndex === history.length - 1}
+                onClick={() => setHistoryIndex((index) => Math.min(history.length - 1, index + 1))}
+                className="focus-visible:outline-system-blue rounded-[6px] px-1.5 py-0.5 hover:bg-black/4 focus-visible:outline-2 disabled:opacity-30 dark:hover:bg-white/4"
+              >
+                <IconChevronRight size={12} stroke={3} />
+              </button>
+            </div>
+          </ToolbarCluster>
+
+          <span className="font-semibold">{currentFavorite?.label}</span>
+
+          <div className="ml-auto flex items-center gap-2">
+            {currentFavoriteId === "trash" && (
+              <ToolbarCluster>
+                <button
+                  type="button"
+                  onClick={emptyTrash}
+                  disabled={trashItems.length === 0}
+                  className="focus-visible:outline-system-blue rounded-[6px] px-2.5 py-0.5 text-[12px] font-medium hover:bg-black/4 focus-visible:outline-2 disabled:opacity-30 dark:hover:bg-white/4"
+                >
+                  Vider la corbeille
+                </button>
+              </ToolbarCluster>
+            )}
+            <ToolbarCluster>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  aria-label="Vue en icônes"
+                  aria-pressed={viewMode === "icons"}
+                  onClick={() => setViewMode("icons")}
+                  className={`focus-visible:outline-system-blue rounded-[6px] px-2 py-0.5 focus-visible:outline-2 ${viewMode === "icons" ? "bg-black/8 dark:bg-white/9" : ""}`}
+                >
+                  <IconLayoutGrid size={14} stroke={2} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Vue en liste"
+                  aria-pressed={viewMode === "list"}
+                  onClick={() => setViewMode("list")}
+                  className={`focus-visible:outline-system-blue rounded-[6px] px-2 py-0.5 focus-visible:outline-2 ${viewMode === "list" ? "bg-black/8 dark:bg-white/9" : ""}`}
+                >
+                  <IconList size={14} stroke={2} />
+                </button>
+              </div>
+            </ToolbarCluster>
+          </div>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <FileGrid
+            items={items}
+            viewMode={viewMode}
+            emptyLabel={EMPTY_LABELS[currentFavoriteId]}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Individually actionable Liquid Glass pill wrapper — back/forward, view-mode toggle, empty-trash (see apple-design skill). */
+function ToolbarCluster({ children }: { children: ReactNode }) {
+  const [el, setEl] = useState<HTMLElement | null>(null);
+  useLiquidGlass(el, FINDER_TOOLBAR_CLUSTER_GLASS);
+  return (
+    <div ref={setEl} className="p-0.5">
+      {children}
+    </div>
+  );
+}
+
+function trashItemToFileItem(item: TrashItem): FileGridItem {
+  return { id: item.id, name: item.name, icon: DocumentIcon, kind: item.kind, onOpen: () => {} };
+}
+
+function appKindLabel(app: AppDefinition): string {
+  switch (app.type) {
+    case "component":
+      return "Application";
+    case "iframe":
+      return "Projet";
+    case "external":
+      return "Lien externe";
+  }
+}

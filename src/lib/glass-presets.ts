@@ -26,7 +26,7 @@ const GLASS_DEFAULTS = {
   specularStrength: 0,
 } as const satisfies Partial<LiquidGlassConfig>;
 
-/** Compact full-width bar (window title bar, Trash header row): flat chrome, no lens, square corners. */
+/** Compact full-width bar (window title bar, "standard" windowStyle apps): flat chrome, no lens, square corners. */
 export const TITLE_BAR_GLASS: Partial<LiquidGlassConfig> = {
   ...GLASS_DEFAULTS,
   material: "thin",

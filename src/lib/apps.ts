@@ -97,8 +97,11 @@ export const SYSTEM_APPS: AppDefinition[] = [
     showOnDesktop: false,
     showOnMobile: false,
     pinnedToDock: true,
-    defaultSize: { width: 640, height: 440 },
-    minSize: { width: 420, height: 320 },
+    defaultSize: { width: 720, height: 480 },
+    minSize: { width: 480, height: 340 },
+    // Same chrome as Finder (own sidebar carries the traffic lights) — the
+    // Trash is technically a Finder window, see os-apps skill.
+    windowStyle: "unified",
   },
 ];
 
