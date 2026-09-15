@@ -24,13 +24,15 @@ import type { LiquidGlassConfig } from "quick-liquid";
 const GLASS_DEFAULTS = {
   chromaticAberration: 0,
   specularStrength: 0,
+  edgeHighlight: 0.1,
 } as const satisfies Partial<LiquidGlassConfig>;
 
 /** Compact full-width bar (window title bar, "standard" windowStyle apps): flat chrome, no lens, square corners. */
 export const TITLE_BAR_GLASS: Partial<LiquidGlassConfig> = {
   ...GLASS_DEFAULTS,
   material: "thin",
-  refractionStrength: 0,
+  refractionStrength: 5,
+  chromaticAberration: 5,
   borderRadius: 0,
 };
 
@@ -80,8 +82,19 @@ export const SPOTLIGHT_CARD_RADIUS = 24;
  */
 export const SPOTLIGHT_GLASS: Partial<LiquidGlassConfig> = {
   ...GLASS_DEFAULTS,
-  material: "thick",
-  chromaticAberration: 0.25,
+  material: "clear",
+  refractionStrength: 35,
+  chromaticAberration: 0.5,
+  blur: 7.5,
+  tint: "255, 255, 255",
+  tintOpacity: 0.3,
+  saturation: 1.2,
+  borderRadius: SPOTLIGHT_PILL_RADIUS,
+  dynamicLighting: true,
+  edgeHighlight: 0.1,
+  cursorTracking: true,
+  bezelWidth: 10,
+  edgeDistortion: 20,
 };
 
 /**
