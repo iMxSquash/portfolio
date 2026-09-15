@@ -48,6 +48,16 @@
   --dock-icon-size-max: 56px;
   --dock-margin-bottom-min: 4px;
   --dock-margin-bottom-max: 8px;
+
+  /* iOS mode measurements (see os-ios-ui skill). Status bar/dock heights are
+     the *content* height — safe-area insets are added on top via
+     `env(safe-area-inset-*)`, not baked in here. */
+  --ios-status-bar-height: 54px;
+  --ios-dock-height: 72px;
+  --ios-dock-icon-size: 56px;
+  --ios-springboard-icon-size: 60px;
+  --ios-home-indicator-width: 134px;
+  --ios-home-indicator-height: 5px;
 }
 
 @theme inline {

@@ -156,3 +156,18 @@ export const DOCK_TOOLTIP_GLASS: Partial<LiquidGlassConfig> = {
   material: "thin",
   borderRadius: 6,
 };
+
+/** Radius (px) the iOS dock renders at — rounder pill than the macOS dock, matching real iOS's dock proportions. */
+export const IOS_DOCK_BORDER_RADIUS = 34;
+
+/**
+ * iOS dock (see os-ios-ui skill): fixed 4-icon bar above the home indicator,
+ * no cursor to track and no magnification — same floating regular-glass
+ * material as the macOS dock, without `dynamicLighting`/chromatic aberration
+ * (those read as cursor-driven highlights, meaningless on touch).
+ */
+export const IOS_DOCK_GLASS: Partial<LiquidGlassConfig> = {
+  ...GLASS_DEFAULTS,
+  material: "regular",
+  borderRadius: IOS_DOCK_BORDER_RADIUS,
+};

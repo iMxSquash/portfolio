@@ -1,15 +1,27 @@
 "use client";
 
 import Image from "next/image";
+import { AnimatePresence } from "framer-motion";
+import { APPS, getApp } from "@/lib/apps";
 import { getDefaultWallpaper, getWallpaper } from "@/lib/wallpapers";
+import { useIOSAppStore } from "@/stores/useIOSAppStore";
 import { useWallpaperStore } from "@/stores/useWallpaperStore";
+import { AppFullScreenView } from "./ios/AppFullScreenView";
+import { IOSDock } from "./ios/IOSDock";
+import { Springboard } from "./ios/Springboard";
+import { StatusBar } from "./ios/StatusBar";
 
-export function IOS() {
+export function IOS({ inert = false }: { inert?: boolean }) {
   const wallpaperId = useWallpaperStore((state) => state.selected.ios);
   const wallpaper = getWallpaper(wallpaperId) ?? getDefaultWallpaper("ios");
+  const activeAppId = useIOSAppStore((state) => state.activeAppId);
+  const activeApp = activeAppId ? getApp(APPS, activeAppId) : undefined;
 
   return (
-    <div className="relative h-dvh w-full overflow-hidden">
+    <div
+      className="overscroll-none relative h-dvh w-full overflow-hidden [touch-action:manipulation]"
+      inert={inert}
+    >
       <Image
         src={wallpaper.src}
         alt=""
@@ -19,6 +31,20 @@ export function IOS() {
         draggable={false}
         className="pointer-events-none object-cover select-none [-webkit-user-drag:none]"
       />
+
+      {/* Hidden while locked/booting, same reasoning as MacOS's menu bar/dock
+          (see MacOS.tsx) — the lock screen is meant to cover everything. */}
+      {inert ? null : <StatusBar variant={activeApp ? "content" : "overlay"} />}
+
+      <AnimatePresence>
+        {activeApp ? (
+          <AppFullScreenView key={activeApp.id} app={activeApp} />
+        ) : (
+          <Springboard key="springboard" apps={APPS} />
+        )}
+      </AnimatePresence>
+
+      {inert ? null : <IOSDock apps={APPS} hidden={Boolean(activeApp)} />}
     </div>
   );
 }

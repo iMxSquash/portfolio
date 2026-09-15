@@ -43,13 +43,18 @@ export function OS({ initialMode }: { initialMode: OSMode }) {
   }, [initialMode, setStoreMode]);
 
   if (mode === "ios") {
-    return <IOS />;
+    return (
+      <>
+        <IOS inert={bootStage !== "done"} />
+        <BootScreen mode="ios" />
+      </>
+    );
   }
 
   return (
     <>
       <MacOS inert={bootStage !== "done"} />
-      <BootScreen />
+      <BootScreen mode="macos" />
     </>
   );
 }
