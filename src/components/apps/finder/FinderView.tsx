@@ -5,9 +5,11 @@ import { IconChevronLeft, IconChevronRight, IconLayoutGrid, IconList } from "@ta
 import type { TrashItem } from "@/components/apps/trash/trash-content";
 import { useWindowChrome } from "@/components/os/window/WindowChromeContext";
 import {
+  APPS,
   getDesktopApps,
   getProjectApps,
   getSystemComponentApps,
+  launchApp,
   SYSTEM_APPS,
   type AppDefinition,
 } from "@/lib/apps";
@@ -93,24 +95,18 @@ export function FinderView({ initialFavoriteId }: FinderViewProps) {
       name: app.name,
       icon: app.icon,
       kind: appKindLabel(app),
-      onOpen: () => {
-        if (app.type === "external") {
-          window.open(app.url, "_blank", "noopener");
-          return;
-        }
-        openWindow(app.id, app.defaultSize);
-      },
+      onOpen: () => launchApp(app, openWindow),
     };
   }
 
   const items = useMemo(() => {
     switch (currentFavoriteId) {
       case "projects":
-        return getProjectApps(SYSTEM_APPS).map(appToFileItem);
+        return getProjectApps(APPS).map(appToFileItem);
       case "applications":
         return getSystemComponentApps(SYSTEM_APPS).map(appToFileItem);
       case "desktop":
-        return getDesktopApps(SYSTEM_APPS).map(appToFileItem);
+        return getDesktopApps(APPS).map(appToFileItem);
       case "trash":
         return trashItems.map(trashItemToFileItem);
     }

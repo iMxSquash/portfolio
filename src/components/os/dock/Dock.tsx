@@ -14,10 +14,14 @@ type DockProps = {
 };
 
 /**
- * Centered bottom dock: pinned apps, a separator, then minimized windows
- * that aren't pinned, then the Trash (always last, see `TRASH_APP_ID`).
- * Renders nothing while the registry has nothing to show — Phase 4/5/7
- * populate `SYSTEM_APPS` and the Supabase-backed projects.
+ * Centered bottom dock: pinned apps, then running-but-unpinned apps (any
+ * open window, minimized or not — real macOS keeps a running app's icon in
+ * the dock the whole time it's open, not just while minimized), then a
+ * separator, then the Trash (always last, see `TRASH_APP_ID`) — real macOS
+ * keeps a single separator right before Trash, with every app icon grouped
+ * to its left regardless of pinned/running status. Renders nothing while
+ * the registry has nothing to show — Phase 4/5/7 populate `SYSTEM_APPS` and
+ * the Supabase-backed projects.
  */
 export function Dock({ apps }: DockProps) {
   const mouseX = useMotionValue(Infinity);
@@ -31,17 +35,17 @@ export function Dock({ apps }: DockProps) {
 
   const pinnedApps = getDockApps(apps).filter((app) => app.id !== TRASH_APP_ID);
   const trashApp = getApp(apps, TRASH_APP_ID);
-  const minimizedApps = Object.values(windows)
+  // `windows` only ever holds open windows (closeWindow removes the entry —
+  // see useWindowStore), so "running" is just "present here", regardless of
+  // isMinimized.
+  const runningUnpinnedApps = Object.values(windows)
     .filter(
-      (win) =>
-        win.isMinimized &&
-        win.appId !== TRASH_APP_ID &&
-        !pinnedApps.some((app) => app.id === win.appId),
+      (win) => win.appId !== TRASH_APP_ID && !pinnedApps.some((app) => app.id === win.appId),
     )
     .map((win) => getApp(apps, win.appId))
     .filter((app): app is AppDefinition => app !== undefined);
 
-  if (pinnedApps.length === 0 && minimizedApps.length === 0 && !trashApp) return null;
+  if (pinnedApps.length === 0 && runningUnpinnedApps.length === 0 && !trashApp) return null;
 
   return (
     <div
@@ -66,13 +70,13 @@ export function Dock({ apps }: DockProps) {
           <DockIcon key={app.id} app={app} mouseX={mouseX} isOpen={Boolean(windows[app.id])} />
         ))}
 
-        {pinnedApps.length > 0 && (minimizedApps.length > 0 || trashApp) ? (
-          <div className="mx-1 w-px self-stretch bg-black/10 dark:bg-white/10" aria-hidden="true" />
-        ) : null}
-
-        {minimizedApps.map((app) => (
+        {runningUnpinnedApps.map((app) => (
           <DockIcon key={app.id} app={app} mouseX={mouseX} isOpen />
         ))}
+
+        {(pinnedApps.length > 0 || runningUnpinnedApps.length > 0) && trashApp ? (
+          <div className="mx-1 w-px self-stretch bg-black/10 dark:bg-white/10" aria-hidden="true" />
+        ) : null}
 
         {trashApp ? (
           <DockIcon app={trashApp} mouseX={mouseX} isOpen={Boolean(windows[trashApp.id])} />

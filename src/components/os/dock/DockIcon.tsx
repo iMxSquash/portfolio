@@ -10,7 +10,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { AppIcon } from "@/components/os/AppIcon";
-import type { AppDefinition } from "@/lib/apps";
+import { launchApp, type AppDefinition } from "@/lib/apps";
 import {
   DOCK_ICON_MAGNIFIED_SIZE,
   DOCK_ICON_REST_SIZE,
@@ -35,6 +35,10 @@ export function DockIcon({ app, mouseX, isOpen }: DockIconProps) {
   const openWindow = useWindowStore((state) => state.openWindow);
   const reducedMotion = useReducedMotion();
   const [hovered, setHovered] = useState(false);
+  // `external` apps open no window (see os-apps skill), so a launch click
+  // needs its own feedback — a real-macOS-style bounce — instead of relying
+  // on a window appearing.
+  const [bouncing, setBouncing] = useState(false);
   const [tooltipEl, setTooltipEl] = useState<HTMLSpanElement | null>(null);
   useLiquidGlass(tooltipEl, DOCK_TOOLTIP_GLASS);
 
@@ -75,9 +79,15 @@ export function DockIcon({ app, mouseX, isOpen }: DockIconProps) {
         ref={buttonRef}
         type="button"
         aria-label={app.name}
-        onClick={() => openWindow(app.id, app.defaultSize)}
+        onClick={() => {
+          if (app.type === "external" && !reducedMotion) setBouncing(true);
+          launchApp(app, openWindow);
+        }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        animate={bouncing ? { y: [0, -16, 0, -8, 0] } : { y: 0 }}
+        onAnimationComplete={() => setBouncing(false)}
+        transition={bouncing ? { duration: 0.5, ease: "easeOut" } : { duration: 0 }}
         style={{
           width: reducedMotion ? DOCK_ICON_REST_SIZE : springSize,
           height: reducedMotion ? DOCK_ICON_REST_SIZE : springSize,
