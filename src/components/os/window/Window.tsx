@@ -309,10 +309,7 @@ export function Window({ app, state, children }: WindowProps) {
       ) : (
         <>
           <div ref={setTitleBarEl} className="h-(--title-bar-height-min) shrink-0">
-            <div
-              className="flex h-full touch-none items-center px-2 select-none"
-              {...dragHandlers}
-            >
+            <div className="flex h-full touch-none items-center px-2 select-none" {...dragHandlers}>
               {trafficLights}
               <span className="flex-1 truncate px-2 text-center text-[13px] font-semibold">
                 {app.name}
