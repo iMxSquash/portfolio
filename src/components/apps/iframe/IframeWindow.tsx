@@ -48,7 +48,9 @@ export function IframeWindow({ url }: IframeWindowProps) {
       {status === "blocked" ? (
         <div className="bg-window-canvas absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
           <IconWorldOff size={32} stroke={1.5} className="opacity-40" aria-hidden="true" />
-          <p className="max-w-64 text-[13px] opacity-60">Ce projet ne peut pas s&apos;afficher ici.</p>
+          <p className="max-w-64 text-[13px] opacity-60">
+            Ce projet ne peut pas s&apos;afficher ici.
+          </p>
           <button
             type="button"
             onClick={() => openInNewTab(url)}

@@ -39,9 +39,7 @@ export function Dock({ apps }: DockProps) {
   // see useWindowStore), so "running" is just "present here", regardless of
   // isMinimized.
   const runningUnpinnedApps = Object.values(windows)
-    .filter(
-      (win) => win.appId !== TRASH_APP_ID && !pinnedApps.some((app) => app.id === win.appId),
-    )
+    .filter((win) => win.appId !== TRASH_APP_ID && !pinnedApps.some((app) => app.id === win.appId))
     .map((win) => getApp(apps, win.appId))
     .filter((app): app is AppDefinition => app !== undefined);
 

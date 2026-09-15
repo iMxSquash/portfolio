@@ -121,7 +121,9 @@ const PROJECT_APP_MIN_SIZE = { width: 560, height: 400 };
  * them from Supabase instead (see `PROJECT_APPS` below and os-apps skill).
  * Each maps to its own subdomain, opened via `IframeWindow`.
  */
-const PROJECT_APP_SOURCES: Array<Pick<AppDefinition, "id" | "name" | "icon"> & { subdomain: string }> = [
+const PROJECT_APP_SOURCES: Array<
+  Pick<AppDefinition, "id" | "name" | "icon"> & { subdomain: string }
+> = [
   { id: "photoshop", name: "Photoshop", icon: PhotoshopIcon, subdomain: "photoshop" },
   { id: "illustrator", name: "Illustrator", icon: IllustratorIcon, subdomain: "illustrator" },
   { id: "premierepro", name: "Premiere Pro", icon: PremiereProIcon, subdomain: "premierepro" },
