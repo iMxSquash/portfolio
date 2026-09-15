@@ -58,6 +58,9 @@ export function NotesMobile() {
     >
       <div className="shrink-0 px-5 pt-4 pb-2">
         <h1 className="text-3xl font-bold text-white">Notes</h1>
+        <p className="text-[13px] text-white/50">
+          {NOTES.length} {NOTES.length > 1 ? "notes" : "note"}
+        </p>
       </div>
       {/* Grouped-list card (iOS Settings/Notes style): the app's previous
           plain background now reads as this card floating on the pure black
