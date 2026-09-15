@@ -36,9 +36,11 @@ type WindowProps = {
   app: AppDefinition;
   state: WindowState;
   children: ReactNode;
+  /** Replaces the standard title bar's trailing spacer (e.g. iframe windows' "open fullscreen" button, see os-apps skill). Ignored for `windowStyle: "unified"` apps — their own layout owns that space. */
+  titleBarTrailing?: ReactNode;
 };
 
-export function Window({ app, state, children }: WindowProps) {
+export function Window({ app, state, children, titleBarTrailing }: WindowProps) {
   const focusedAppId = useWindowStore((s) => s.focusedAppId);
   const closeWindow = useWindowStore((s) => s.closeWindow);
   const focusWindow = useWindowStore((s) => s.focusWindow);
@@ -309,12 +311,20 @@ export function Window({ app, state, children }: WindowProps) {
       ) : (
         <>
           <div ref={setTitleBarEl} className="h-(--title-bar-height-min) shrink-0">
-            <div className="flex h-full touch-none items-center px-2 select-none" {...dragHandlers}>
+            <div
+              className="flex h-(--title-bar-height-min) touch-none items-center px-2 select-none"
+              {...dragHandlers}
+            >
               {trafficLights}
               <span className="flex-1 truncate px-2 text-center text-[13px] font-semibold">
                 {app.name}
               </span>
-              <div style={{ width: TRAFFIC_LIGHTS_WIDTH }} aria-hidden />
+              <div
+                style={{ width: TRAFFIC_LIGHTS_WIDTH }}
+                className="flex items-center justify-end"
+              >
+                {titleBarTrailing}
+              </div>
             </div>
           </div>
 

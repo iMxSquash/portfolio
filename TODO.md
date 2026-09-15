@@ -106,15 +106,15 @@
 
 ## Phase 5 — Apps projets (fenêtres iframe)
 
-- [ ] Composant `<IframeWindow>` :
-  - [ ] `<iframe>` avec `sandbox` approprié + `loading="lazy"`
-  - [ ] Skeleton/spinner pendant le chargement (événement `onLoad`)
-  - [ ] Gestion d'erreur : si le site refuse l'iframe ou timeout → message + bouton « Ouvrir dans un nouvel onglet »
-  - [ ] ⚠️ Piège : pendant le drag/resize, l'iframe capture les événements souris → poser un overlay transparent sur l'iframe tant que le drag est actif
-- [ ] Fenêtres **Photoshop**, **Illustrator**, **Premiere Pro** → `photoshop.elwen.dev`, `illustrator.elwen.dev`, `premierepro.elwen.dev`
-- [ ] Icônes fidèles aux apps Adobe (recréées en SVG pour éviter les soucis de droits sur les assets officiels)
-- [ ] Mode `external` : clic sur l'icône → `window.open(url)` directement (pas de fenêtre)
-- [ ] Bouton dans la barre de titre des fenêtres iframe : « Ouvrir en plein écran » (vers le sous-domaine direct)
+- [x] Composant `<IframeWindow>` :
+  - [x] `<iframe>` avec `sandbox` approprié + `loading="lazy"`
+  - [x] Skeleton/spinner pendant le chargement (événement `onLoad`)
+  - [x] Gestion d'erreur : si le site refuse l'iframe ou timeout → message + bouton « Ouvrir dans un nouvel onglet »
+  - [x] ⚠️ Piège : pendant le drag/resize, l'iframe capture les événements souris → poser un overlay transparent sur l'iframe tant que le drag est actif (géré via `isInteracting` du store, déjà posé sur tout le contenu de fenêtre en Phase 2)
+- [x] Fenêtres **Photoshop**, **Illustrator**, **Premiere Pro** → `photoshop.elwen.dev`, `illustrator.elwen.dev`, `premierepro.elwen.dev`
+- [x] Icônes fidèles aux apps Adobe (recréées en SVG pour éviter les soucis de droits sur les assets officiels)
+- [x] Mode `external` : clic sur l'icône → `window.open(url)` directement (pas de fenêtre)
+- [x] Bouton dans la barre de titre des fenêtres iframe : « Ouvrir en plein écran » (vers le sous-domaine direct)
 
 ## Phase 6 — Mode iOS (mobile/tablette)
 
@@ -127,7 +127,7 @@
 - [ ] Adapter les apps : Notes en layout 1 colonne avec navigation, projets iframe en plein écran
 - [ ] Pas de Finder ni de Corbeille en mode iOS
 - [ ] Tablette : springboard iOS avec grille plus large (iPadOS)
-- [ ] Bonus : écran de verrouillage au chargement (swipe up pour déverrouiller), app switcher
+- [ ] Écran de verrouillage au chargement (swipe up pour déverrouiller), app switcher
 
 ## Phase 7 — Backoffice + Supabase
 

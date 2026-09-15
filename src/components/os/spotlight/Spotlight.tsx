@@ -5,7 +5,7 @@ import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerE
 import { motion, useMotionValue } from "framer-motion";
 import { IconSearch } from "@tabler/icons-react";
 import { AppIcon } from "@/components/os/AppIcon";
-import type { AppDefinition } from "@/lib/apps";
+import { launchApp, type AppDefinition } from "@/lib/apps";
 import { SPOTLIGHT_CARD_RADIUS, SPOTLIGHT_GLASS, SPOTLIGHT_PILL_RADIUS } from "@/lib/glass-presets";
 import { useLiquidGlass } from "@/lib/use-liquid-glass";
 import { useSpotlightStore } from "@/stores/useSpotlightStore";
@@ -114,7 +114,7 @@ export function Spotlight({ apps, disabled = false }: SpotlightProps) {
   if (!open) return null;
 
   function launch(app: AppDefinition) {
-    openWindow(app.id, app.defaultSize);
+    launchApp(app, openWindow);
     close();
   }
 

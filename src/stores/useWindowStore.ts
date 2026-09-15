@@ -21,7 +21,12 @@ type WindowStore = {
   focusedAppId: string | null;
   /** True while a drag/resize is in progress — lets iframe windows disable pointer-events. */
   isInteracting: boolean;
-  /** Opens `appId`: focuses it if already open, restores it if minimized, else creates it. */
+  /**
+   * Opens `appId`: focuses it if already open, restores it if minimized, else creates it.
+   * `external` apps never have a window to focus/restore/create — callers must launch
+   * through `launchApp()` (see `src/lib/apps.ts` and os-apps skill), never call this
+   * directly with an `external` app's id.
+   */
   openWindow: (appId: string, defaultSize: Size) => void;
   closeWindow: (appId: string) => void;
   focusWindow: (appId: string) => void;

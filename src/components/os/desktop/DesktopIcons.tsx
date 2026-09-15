@@ -3,7 +3,7 @@
 import type { KeyboardEvent } from "react";
 import { AppIcon } from "@/components/os/AppIcon";
 import { focusListSibling } from "@/lib/arrow-key-nav";
-import { getDesktopApps, type AppDefinition } from "@/lib/apps";
+import { getDesktopApps, launchApp, type AppDefinition } from "@/lib/apps";
 import { useWindowStore } from "@/stores/useWindowStore";
 
 type DesktopIconsProps = {
@@ -45,7 +45,7 @@ export function DesktopIcons({ apps, selectedIds, onSelect }: DesktopIconsProps)
           data-desktop-icon-id={app.id}
           onClick={() => onSelect(app.id)}
           onFocus={() => onSelect(app.id)}
-          onDoubleClick={() => openWindow(app.id, app.defaultSize)}
+          onDoubleClick={() => launchApp(app, openWindow)}
           className="pointer-events-auto flex w-20 flex-col items-center gap-1 rounded p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           <span className="w-12">

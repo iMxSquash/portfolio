@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { SYSTEM_APPS } from "@/lib/apps";
+import { APPS } from "@/lib/apps";
 import { getDefaultWallpaper, getWallpaper } from "@/lib/wallpapers";
 import { useWallpaperStore } from "@/stores/useWallpaperStore";
 import { DesktopBackground } from "./desktop/DesktopBackground";
@@ -34,16 +34,16 @@ export function MacOS({ inert = false }: { inert?: boolean }) {
       <DesktopBackground onSelectionChange={setSelectedDesktopIconIds} />
       {/* Hidden while locked/booting (`inert` mirrors bootStage !== "done", see OS.tsx) — the
           lock screen is meant to cover everything, not just block interaction with it. */}
-      {inert ? null : <MenuBar apps={SYSTEM_APPS} />}
+      {inert ? null : <MenuBar apps={APPS} />}
       <DesktopIcons
-        apps={SYSTEM_APPS}
+        apps={APPS}
         selectedIds={selectedDesktopIconIds}
         onSelect={(id) => setSelectedDesktopIconIds([id])}
       />
-      <WindowManager apps={SYSTEM_APPS} />
+      <WindowManager apps={APPS} />
       {/* Same reasoning as the menu bar above: the lock/boot screen must cover it, not just block it. */}
-      {inert ? null : <Dock apps={SYSTEM_APPS} />}
-      <Spotlight apps={SYSTEM_APPS} disabled={inert} />
+      {inert ? null : <Dock apps={APPS} />}
+      <Spotlight apps={APPS} disabled={inert} />
     </div>
   );
 }
