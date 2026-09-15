@@ -46,7 +46,25 @@ export function MenuBar({ apps }: MenuBarProps) {
       setOpenMenuId(null);
     }
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpenMenuId(null);
+      if (event.key === "Escape") {
+        setOpenMenuId(null);
+        return;
+      }
+      // Real macOS: while a menu is open, Left/Right moves to and opens the
+      // adjacent menu (cycling), keeping focus on its trigger.
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      if (!barRef.current) return;
+      const triggers = Array.from(barRef.current.querySelectorAll<HTMLElement>("[data-menu-id]"));
+      const index = triggers.findIndex((el) => el.dataset.menuId === openMenuId);
+      if (index === -1) return;
+      event.preventDefault();
+      const delta = event.key === "ArrowRight" ? 1 : -1;
+      const next = triggers[(index + delta + triggers.length) % triggers.length];
+      const nextId = next?.dataset.menuId;
+      if (nextId) {
+        setOpenMenuId(nextId);
+        next.focus();
+      }
     }
 
     document.addEventListener("pointerdown", handlePointerDown);
@@ -60,7 +78,10 @@ export function MenuBar({ apps }: MenuBarProps) {
   return (
     <div
       ref={barRef}
-      className="fixed inset-x-0 top-0 z-[1000] flex h-(--menu-bar-height) items-center gap-1 px-2 text-[13px] text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.4)]"
+      // No material here on purpose — the global menu bar sits directly over
+      // the wallpaper with no blur/tint of its own (per explicit product
+      // direction), unlike the window/toolbar chrome elsewhere in the app.
+      className="fixed inset-x-0 top-0 z-1000 flex h-(--menu-bar-height) items-center gap-1 px-2 text-[13px] text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.4)]"
     >
       <MenuBarButton
         id="apple"
@@ -128,7 +149,7 @@ export function MenuBar({ apps }: MenuBarProps) {
           type="button"
           aria-label="Spotlight"
           onClick={toggleSpotlight}
-          className="flex h-full items-center rounded-[4px] px-2"
+          className="flex h-full items-center rounded-sm px-2"
         >
           <SpotlightIcon className="size-4" />
         </button>

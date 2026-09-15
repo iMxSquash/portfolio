@@ -87,22 +87,22 @@
 
 ### Notes
 
-- [ ] Layout 3 colonnes : sidebar (dossiers) + liste des notes + éditeur
-- [ ] Contenu : « À propos de moi », parcours, compétences, contact — le CV déguisé en notes
-- [ ] Notes en lecture seule, mais rendu fidèle (fond jaune du titre, typographie Notes)
+- [x] Layout 3 colonnes : sidebar (dossiers) + liste des notes + éditeur
+- [x] Contenu : « À propos de moi », parcours, compétences, contact — le CV déguisé en notes
+- [x] Notes en lecture seule, mais rendu fidèle (fond jaune du titre, typographie Notes)
 
 ### Finder — desktop uniquement
 
-- [ ] Fenêtre Finder : toolbar (précédent/suivant, vue icônes/liste), sidebar (Favoris : Projets, Applications, Bureau…)
-- [ ] Arborescence virtuelle : les projets (depuis Supabase) apparaissent comme des fichiers/dossiers
-- [ ] Double-clic sur un projet dans le Finder → ouvre sa fenêtre
-- [ ] Ne pas l'enregistrer dans les apps mobiles (flag `showOnMobile: false`)
+- [x] Fenêtre Finder : toolbar (précédent/suivant, vue icônes/liste), sidebar (Favoris : Projets, Applications, Bureau…)
+- [x] Arborescence virtuelle : les projets (depuis Supabase) apparaissent comme des fichiers/dossiers
+- [x] Double-clic sur un projet dans le Finder → ouvre sa fenêtre
+- [x] Ne pas l'enregistrer dans les apps mobiles (flag `showOnMobile: false`)
 
 ### Corbeille
 
-- [ ] Icône dans le dock (pleine/vide selon le contenu)
-- [ ] Fenêtre (réutilise le layout Finder) avec du contenu fun : « portfolio-v1-final-FINAL.zip », vieux brouillons…
-- [ ] Bonus : glisser une icône du bureau vers la corbeille + « Vider la corbeille » avec son macOS
+- [x] Icône dans le dock (pleine/vide selon le contenu)
+- [x] Fenêtre (réutilise le layout Finder) avec du contenu fun : « portfolio-v1-final-FINAL.zip », vieux brouillons…
+- [x] Bonus : « Vider la corbeille » avec effet sur l'icône dock (drag depuis le bureau non implémenté)
 
 ## Phase 5 — Apps projets (fenêtres iframe)
 

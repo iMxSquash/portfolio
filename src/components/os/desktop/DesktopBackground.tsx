@@ -126,7 +126,7 @@ export function DesktopBackground({ onSelectionChange }: DesktopBackgroundProps)
       {marquee ? (
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed z-40 rounded-[2px] border border-blue-400 bg-blue-400/20"
+          className="pointer-events-none fixed z-40 rounded-[2px] border border-system-blue bg-system-blue/20"
           style={{ left: marquee.x, top: marquee.y, width: marquee.width, height: marquee.height }}
         />
       ) : null}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type {
   MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
@@ -8,6 +8,8 @@ import type {
 } from "react";
 import { motion, useMotionValue, useReducedMotion } from "framer-motion";
 import type { AppDefinition } from "@/lib/apps";
+import { TITLE_BAR_GLASS, TITLE_BAR_GLASS_INACTIVE } from "@/lib/glass-presets";
+import { useLiquidGlass } from "@/lib/use-liquid-glass";
 import {
   WINDOW_OPEN_TRANSITION,
   WINDOW_CLOSE_TRANSITION,
@@ -24,6 +26,7 @@ import { useDockIconStore } from "@/stores/useDockIconStore";
 import { useWindowStore, type WindowState } from "@/stores/useWindowStore";
 import { ResizeHandles } from "./ResizeHandles";
 import { TrafficLights } from "./TrafficLights";
+import { WindowChromeProvider } from "./WindowChromeContext";
 
 const MINIMIZE_SCALE = 0.05;
 /** 3 traffic lights + 2 gaps — mirrors the left group so the title stays visually centered. */
@@ -43,9 +46,13 @@ export function Window({ app, state, children }: WindowProps) {
   const toggleMaximize = useWindowStore((s) => s.toggleMaximize);
   const setBounds = useWindowStore((s) => s.setBounds);
   const setInteracting = useWindowStore((s) => s.setInteracting);
+  const isInteracting = useWindowStore((s) => s.isInteracting);
 
   const reducedMotion = useReducedMotion();
   const focused = focusedAppId === app.id;
+
+  const [titleBarEl, setTitleBarEl] = useState<HTMLDivElement | null>(null);
+  useLiquidGlass(titleBarEl, focused ? TITLE_BAR_GLASS : TITLE_BAR_GLASS_INACTIVE);
 
   const x = useMotionValue(state.position.x);
   const y = useMotionValue(state.position.y);
@@ -118,54 +125,66 @@ export function Window({ app, state, children }: WindowProps) {
         opacity: WINDOW_OPEN_TRANSITION,
       };
 
-  function handleToggleMaximize() {
+  const handleToggleMaximize = useCallback(() => {
     toggleMaximize(
       app.id,
       computeMaximizedBounds({ width: window.innerWidth, height: window.innerHeight }),
     );
-  }
+  }, [toggleMaximize, app.id]);
 
-  function handleTitleBarPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
-    if (state.isMaximized) return;
-    if ((event.target as HTMLElement).closest("button")) return;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setInteracting(true);
-    dragRef.current = {
-      pointerId: event.pointerId,
-      startPointer: { x: event.clientX, y: event.clientY },
-      startPosition: { x: x.get(), y: y.get() },
-    };
-  }
+  const handleTitleBarPointerDown = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (state.isMaximized) return;
+      if ((event.target as HTMLElement).closest("button")) return;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      setInteracting(true);
+      dragRef.current = {
+        pointerId: event.pointerId,
+        startPointer: { x: event.clientX, y: event.clientY },
+        startPosition: { x: x.get(), y: y.get() },
+      };
+    },
+    [state.isMaximized, setInteracting, x, y],
+  );
 
-  function handleTitleBarPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
-    const drag = dragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    const raw = {
-      x: drag.startPosition.x + (event.clientX - drag.startPointer.x),
-      y: drag.startPosition.y + (event.clientY - drag.startPointer.y),
-    };
-    const clamped = clampDragPosition(
-      raw,
-      { width: width.get(), height: height.get() },
-      { width: window.innerWidth, height: window.innerHeight },
-    );
-    x.set(clamped.x);
-    y.set(clamped.y);
-  }
+  const handleTitleBarPointerMove = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      const drag = dragRef.current;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      const raw = {
+        x: drag.startPosition.x + (event.clientX - drag.startPointer.x),
+        y: drag.startPosition.y + (event.clientY - drag.startPointer.y),
+      };
+      const clamped = clampDragPosition(
+        raw,
+        { width: width.get(), height: height.get() },
+        { width: window.innerWidth, height: window.innerHeight },
+      );
+      x.set(clamped.x);
+      y.set(clamped.y);
+    },
+    [width, height, x, y],
+  );
 
-  function handleTitleBarPointerUp(event: ReactPointerEvent<HTMLDivElement>) {
-    const drag = dragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    dragRef.current = null;
-    setInteracting(false);
-    event.currentTarget.releasePointerCapture(event.pointerId);
-    setBounds(app.id, { position: { x: x.get(), y: y.get() } });
-  }
+  const handleTitleBarPointerUp = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      const drag = dragRef.current;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      dragRef.current = null;
+      setInteracting(false);
+      event.currentTarget.releasePointerCapture(event.pointerId);
+      setBounds(app.id, { position: { x: x.get(), y: y.get() } });
+    },
+    [setInteracting, setBounds, app.id, x, y],
+  );
 
-  function handleTitleBarDoubleClick(event: ReactMouseEvent<HTMLDivElement>) {
-    if ((event.target as HTMLElement).closest("button")) return;
-    handleToggleMaximize();
-  }
+  const handleTitleBarDoubleClick = useCallback(
+    (event: ReactMouseEvent<HTMLDivElement>) => {
+      if ((event.target as HTMLElement).closest("button")) return;
+      handleToggleMaximize();
+    },
+    [handleToggleMaximize],
+  );
 
   function handleResizeStart(direction: ResizeDirection, event: ReactPointerEvent) {
     (event.target as Element).setPointerCapture(event.pointerId);
@@ -207,6 +226,53 @@ export function Window({ app, state, children }: WindowProps) {
     });
   }
 
+  const isUnified = app.windowStyle === "unified";
+  const contentBgClass = isUnified ? "" : "bg-window-canvas";
+
+  const handleClose = useCallback(() => closeWindow(app.id), [closeWindow, app.id]);
+  const handleMinimize = useCallback(() => minimizeWindow(app.id), [minimizeWindow, app.id]);
+
+  const trafficLights = useMemo(
+    () => (
+      <TrafficLights
+        focused={focused}
+        onClose={handleClose}
+        onMinimize={handleMinimize}
+        onToggleMaximize={handleToggleMaximize}
+      />
+    ),
+    [focused, handleClose, handleMinimize, handleToggleMaximize],
+  );
+
+  const dragHandlers = useMemo(
+    () => ({
+      onPointerDown: handleTitleBarPointerDown,
+      onPointerMove: handleTitleBarPointerMove,
+      onPointerUp: handleTitleBarPointerUp,
+      onDoubleClick: handleTitleBarDoubleClick,
+    }),
+    [
+      handleTitleBarPointerDown,
+      handleTitleBarPointerMove,
+      handleTitleBarPointerUp,
+      handleTitleBarDoubleClick,
+    ],
+  );
+
+  const chromeContextValue = useMemo(
+    () => ({ focused, dragHandlers, trafficLights }),
+    [focused, dragHandlers, trafficLights],
+  );
+
+  const content = (
+    <div
+      className={`text-foreground relative flex-1 touch-auto overflow-auto ${contentBgClass}`}
+      style={{ pointerEvents: isInteracting ? "none" : "auto" }}
+    >
+      {children}
+    </div>
+  );
+
   return (
     <motion.div
       role="dialog"
@@ -238,32 +304,23 @@ export function Window({ app, state, children }: WindowProps) {
       }}
       transition={transition}
     >
-      <div
-        className={`flex h-(--title-bar-height-min) shrink-0 touch-none items-center border-b px-2 select-none ${
-          focused
-            ? "border-black/10 bg-black/2 dark:border-white/10 dark:bg-white/5"
-            : "border-black/5 bg-black/1 dark:border-white/5 dark:bg-white/2"
-        }`}
-        onPointerDown={handleTitleBarPointerDown}
-        onPointerMove={handleTitleBarPointerMove}
-        onPointerUp={handleTitleBarPointerUp}
-        onDoubleClick={handleTitleBarDoubleClick}
-      >
-        <TrafficLights
-          focused={focused}
-          onClose={() => closeWindow(app.id)}
-          onMinimize={() => minimizeWindow(app.id)}
-          onToggleMaximize={handleToggleMaximize}
-        />
-        <span className="flex-1 truncate px-2 text-center text-[13px] font-semibold">
-          {app.name}
-        </span>
-        <div style={{ width: TRAFFIC_LIGHTS_WIDTH }} aria-hidden />
-      </div>
+      {isUnified ? (
+        <WindowChromeProvider value={chromeContextValue}>{content}</WindowChromeProvider>
+      ) : (
+        <>
+          <div ref={setTitleBarEl} className="h-(--title-bar-height-min) shrink-0">
+            <div className="flex h-full touch-none items-center px-2 select-none" {...dragHandlers}>
+              {trafficLights}
+              <span className="flex-1 truncate px-2 text-center text-[13px] font-semibold">
+                {app.name}
+              </span>
+              <div style={{ width: TRAFFIC_LIGHTS_WIDTH }} aria-hidden />
+            </div>
+          </div>
 
-      <div className="bg-background text-foreground relative flex-1 touch-auto overflow-auto">
-        {children}
-      </div>
+          {content}
+        </>
+      )}
 
       <ResizeHandles
         onResizeStart={handleResizeStart}

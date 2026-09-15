@@ -17,6 +17,19 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Lighter opaque backing for window bodies, used instead of --background
+     where a window's own chrome needs a real gray canvas underneath it
+     (Finder's content pane, Notes, Corbeille) rather than near-black. */
+  --window-canvas: #ffffff;
+
+  /* macOS system accent blue (Apple HIG systemBlue) — selection highlights,
+     focus rings, links. Distinct from light/dark like --background, never
+     Tailwind's default `blue-500` (too indigo, not the real system color). */
+  --system-blue: #007aff;
+  /* macOS system accent yellow (Apple HIG systemYellow) — Notes' own accent
+     (matches its yellow app icon/folder glyph), used instead of
+     --system-blue for its sidebar selection. */
+  --system-yellow: #ffcc00;
 
   /* macOS chrome measurements without a matching Tailwind utility family
      (Tailwind v4 only exposes a single `--spacing` scalar, not named
@@ -25,6 +38,9 @@
   --menu-bar-height: 28px;
   --title-bar-height-min: 28px;
   --title-bar-height-max: 38px;
+  /* A "unified" window (see os-window-manager skill) has no separate title
+     bar — this is the height of its merged toolbar/traffic-lights row. */
+  --toolbar-height: 48px;
   --traffic-light-size: 12px;
   --traffic-light-gap: 8px;
   --traffic-light-inset: 8px;
@@ -37,6 +53,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-window-canvas: var(--window-canvas);
+  --color-system-blue: var(--system-blue);
+  --color-system-yellow: var(--system-yellow);
   --font-sans: -apple-system, BlinkMacSystemFont, var(--font-inter), sans-serif;
 }
 
@@ -45,6 +64,9 @@
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
+  --system-blue: #0a84ff;
+  --system-yellow: #ffd60a;
+  --window-canvas: #1e1f20;
 }
 
 body {
@@ -68,116 +90,10 @@ body {
 }
 
 /*
- * Liquid Glass material tokens.
- *
- * The knobs below (--glass-tint*, --glass-saturate, --glass-brightness,
- * --blur-glass*) are the runtime-configurable ones: they mirror
- * `DEFAULT_LIQUID_GLASS` in `src/lib/liquid-glass.ts` and get overwritten
- * on `<html>` by `LiquidGlassProvider` from `useLiquidGlassStore` (defaults
- * + any user override persisted in localStorage). The values here only
- * matter for the first paint before hydration — keep them in sync with
- * `DEFAULT_LIQUID_GLASS`, never let them drift.
- *
- * Radius, shadows and rim border stay static design tokens (not
- * user-tunable): they are macOS/iOS chrome measurements, not material
- * physics — see skill os-macos-ui for the source values.
+ * Liquid Glass surfaces are rendered by `quick-liquid`'s `LiquidGlassEngine`
+ * (see `src/lib/use-liquid-glass.ts` and `src/lib/glass-presets.ts`) — it
+ * injects its own inline styles and per-element SVG filters, so there are
+ * no material tokens/utilities to declare here. `prefers-contrast: more` is
+ * the one accessibility fallback the engine doesn't cover itself; add it
+ * per-surface if a glass element ever needs it (see apple-design skill).
  */
-@theme {
-  --blur-glass-sm: 8px;
-  --blur-glass: 16px;
-  --blur-glass-lg: 24px;
-  --blur-glass-xl: 40px;
-  --blur-glass-clear: 3px;
-  /* CSS blur inside the SVG refraction chain (see liquid-glass-refraction.ts)
-     — distinct from --blur-glass-clear, displacement does most of the
-     frosting there so this stays low (2-4px). */
-  --glass-blur-refract: 3px;
-
-  --glass-tint: 255 255 255;
-  --glass-tint-alpha: 12%;
-  --glass-tint-dark: 0 0 0;
-  --glass-tint-alpha-dark: 40%;
-  --glass-saturate: 180%;
-  --glass-brightness: 1.1;
-  --color-glass-rim: rgb(255 255 255 / 0.2);
-
-  --radius-glass: 20px;
-  --radius-glass-lg: 28px;
-
-  --shadow-glass:
-    0 8px 24px rgb(0 0 0 / 0.12), 0 2px 4px rgb(0 0 0 / 0.08), inset 0 1px 0 rgb(255 255 255 / 0.4),
-    inset 0 -1px 0 rgb(0 0 0 / 0.05);
-  --shadow-glass-lg:
-    0 16px 48px rgb(0 0 0 / 0.16), 0 4px 8px rgb(0 0 0 / 0.08),
-    inset 0 1px 1px rgb(255 255 255 / 0.55), inset 0 -1px 1px rgb(255 255 255 / 0.3);
-  --shadow-glass-rim: inset 0 0 20px -5px rgb(255 255 255 / 0.7);
-}
-
-@custom-variant reduced-transparency (@media (prefers-reduced-transparency: reduce));
-
-/* Base material: regular variant, readability-first. Navigation/control layer only — never on content surfaces. */
-@utility liquid-glass {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  contain: layout paint style;
-  border-radius: var(--radius-glass);
-  background: rgb(var(--glass-tint) / var(--glass-tint-alpha));
-  border: 1px solid var(--color-glass-rim);
-  background-clip: padding-box;
-  box-shadow: var(--shadow-glass);
-  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(var(--glass-saturate))
-    brightness(var(--glass-brightness));
-  backdrop-filter: blur(var(--blur-glass)) saturate(var(--glass-saturate))
-    brightness(var(--glass-brightness));
-
-  @variant dark {
-    background: rgb(var(--glass-tint-dark) / var(--glass-tint-alpha-dark));
-    border-color: rgb(255 255 255 / 0.1);
-  }
-
-  @variant reduced-transparency {
-    background: rgb(245 245 245 / 0.95);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
-/* High-transparency variant, only over bold/bright media (never for readability-critical surfaces). */
-@utility liquid-glass-clear {
-  background: rgb(255 255 255 / 0.05);
-  -webkit-backdrop-filter: blur(var(--blur-glass-clear)) saturate(150%);
-  backdrop-filter: blur(var(--blur-glass-clear)) saturate(150%);
-}
-
-/* Top hairline highlight — cheapest specular, use on navbars/menu bar. */
-@utility glass-hairline {
-  &::before {
-    content: "";
-    pointer-events: none;
-    position: absolute;
-    inset-inline: 0;
-    top: 0;
-    height: 1px;
-    background: linear-gradient(to right, transparent, rgb(255 255 255 / 0.7), transparent);
-  }
-}
-
-@media (prefers-contrast: more) {
-  .liquid-glass,
-  .liquid-glass-clear {
-    background: Canvas;
-    color: CanvasText;
-    border: 1px solid CanvasText;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .liquid-glass,
-  .liquid-glass-clear {
-    transition: none;
-    animation: none;
-  }
-}

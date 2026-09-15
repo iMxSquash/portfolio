@@ -36,6 +36,19 @@ type WindowStore = {
 
 const WINDOW_BOUNDS_STORAGE_KEY = "window-bounds";
 
+/** Finds the next window that should receive focus when `excludeAppId` stops being focusable — the topmost (highest zIndex) among the remaining, non-minimized windows. */
+function findNextFocusCandidate(
+  windows: Record<string, WindowState>,
+  excludeAppId: string,
+): string | null {
+  let candidate: WindowState | null = null;
+  for (const win of Object.values(windows)) {
+    if (win.appId === excludeAppId || win.isMinimized) continue;
+    if (!candidate || win.zIndex > candidate.zIndex) candidate = win;
+  }
+  return candidate?.appId ?? null;
+}
+
 export const useWindowStore = create<WindowStore>()(
   persist(
     (set) => ({
@@ -48,15 +61,19 @@ export const useWindowStore = create<WindowStore>()(
       openWindow: (appId, defaultSize) =>
         set((state) => {
           const existing = state.windows[appId];
-          const zIndex = state.nextZIndex;
 
           if (existing) {
+            // Already focused and not minimized: nothing to bring forward, don't burn a z-index.
+            if (state.focusedAppId === appId && !existing.isMinimized) return state;
+            const zIndex = state.nextZIndex;
             return {
               windows: { ...state.windows, [appId]: { ...existing, isMinimized: false, zIndex } },
               nextZIndex: zIndex + 1,
               focusedAppId: appId,
             };
           }
+
+          const zIndex = state.nextZIndex;
 
           const bounds =
             state.lastBounds[appId] ??
@@ -96,7 +113,10 @@ export const useWindowStore = create<WindowStore>()(
           return {
             windows,
             lastBounds: { ...state.lastBounds, [appId]: bounds },
-            focusedAppId: state.focusedAppId === appId ? null : state.focusedAppId,
+            focusedAppId:
+              state.focusedAppId === appId
+                ? findNextFocusCandidate(windows, appId)
+                : state.focusedAppId,
           };
         }),
 
@@ -117,9 +137,13 @@ export const useWindowStore = create<WindowStore>()(
         set((state) => {
           const win = state.windows[appId];
           if (!win) return state;
+          const windows = { ...state.windows, [appId]: { ...win, isMinimized: true } };
           return {
-            windows: { ...state.windows, [appId]: { ...win, isMinimized: true } },
-            focusedAppId: state.focusedAppId === appId ? null : state.focusedAppId,
+            windows,
+            focusedAppId:
+              state.focusedAppId === appId
+                ? findNextFocusCandidate(windows, appId)
+                : state.focusedAppId,
           };
         }),
 

@@ -1,6 +1,8 @@
 "use client";
 
+import type { KeyboardEvent } from "react";
 import { AppIcon } from "@/components/os/AppIcon";
+import { focusListSibling } from "@/lib/arrow-key-nav";
 import { getDesktopApps, type AppDefinition } from "@/lib/apps";
 import { useWindowStore } from "@/stores/useWindowStore";
 
@@ -23,23 +25,35 @@ export function DesktopIcons({ apps, selectedIds, onSelect }: DesktopIconsProps)
 
   if (desktopApps.length === 0) return null;
 
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    focusListSibling(event, event.currentTarget, "vertical", "[data-desktop-icon-id]");
+  }
+
   return (
-    <div className="absolute top-(--menu-bar-height) right-0 bottom-0 flex flex-col items-end gap-1 p-4">
+    // `pointer-events-none` on the column itself: its bounding box spans the
+    // full right-edge strip (including empty gaps between icons), which would
+    // otherwise swallow clicks/right-clicks meant for the desktop background
+    // underneath. Only the icon buttons re-enable pointer events.
+    <div
+      className="pointer-events-none absolute top-(--menu-bar-height) right-0 bottom-0 flex flex-col items-end gap-1 p-4"
+      onKeyDown={handleKeyDown}
+    >
       {desktopApps.map((app) => (
         <button
           key={app.id}
           type="button"
           data-desktop-icon-id={app.id}
           onClick={() => onSelect(app.id)}
+          onFocus={() => onSelect(app.id)}
           onDoubleClick={() => openWindow(app.id, app.defaultSize)}
-          className="flex w-20 flex-col items-center gap-1 rounded p-1"
+          className="pointer-events-auto flex w-20 flex-col items-center gap-1 rounded p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           <span className="w-12">
             <AppIcon app={app} />
           </span>
           <span
             className={`rounded px-1.5 py-0.5 text-center text-[12px] text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.6)] ${
-              selectedIds.includes(app.id) ? "bg-blue-500/60" : ""
+              selectedIds.includes(app.id) ? "bg-system-blue/60" : ""
             }`}
           >
             {app.name}

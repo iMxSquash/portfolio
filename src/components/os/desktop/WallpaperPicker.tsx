@@ -1,6 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { useLayoutEffect, useRef, useState } from "react";
+import { MENU_POPOVER_GLASS } from "@/lib/glass-presets";
+import { useLiquidGlass } from "@/lib/use-liquid-glass";
 import { getWallpapersFor } from "@/lib/wallpapers";
 import { useWallpaperStore } from "@/stores/useWallpaperStore";
 
@@ -12,12 +15,32 @@ export function WallpaperPicker({ position, onClose }: { position: Point; onClos
   const setWallpaper = useWallpaperStore((state) => state.setWallpaper);
   const wallpapers = getWallpapersFor("macos");
 
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuEl, setMenuEl] = useState<HTMLDivElement | null>(null);
+  const [clamped, setClamped] = useState(position);
+  useLiquidGlass(menuEl, MENU_POPOVER_GLASS);
+
+  // Same edge-avoidance as DesktopContextMenu — this panel can open from a
+  // menu item near the right/bottom edge and must stay fully on-screen.
+  useLayoutEffect(() => {
+    const rect = menuRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setClamped({
+      x: Math.max(8, Math.min(position.x, window.innerWidth - rect.width - 8)),
+      y: Math.max(8, Math.min(position.y, window.innerHeight - rect.height - 8)),
+    });
+  }, [position]);
+
   return (
     <div
+      ref={(node) => {
+        menuRef.current = node;
+        setMenuEl(node);
+      }}
       role="menu"
       aria-label="Changer le fond d'écran"
-      className="liquid-glass fixed z-[1001] w-64 rounded-lg p-3 shadow-glass-lg"
-      style={{ top: position.y, left: position.x }}
+      className="fixed z-1001 w-64 p-3"
+      style={{ top: clamped.y, left: clamped.x }}
     >
       <p className="mb-2 px-1 text-xs font-medium opacity-60">Fond d&apos;écran</p>
       <div className="grid grid-cols-3 gap-2">
@@ -32,7 +55,7 @@ export function WallpaperPicker({ position, onClose }: { position: Point; onClos
             aria-label={wallpaper.label}
             aria-pressed={selected === wallpaper.id}
             className={`relative aspect-video overflow-hidden rounded-md ${
-              selected === wallpaper.id ? "ring-2 ring-blue-500" : ""
+              selected === wallpaper.id ? "ring-2 ring-system-blue" : ""
             }`}
           >
             <Image src={wallpaper.src} alt="" fill sizes="80px" className="object-cover" />
