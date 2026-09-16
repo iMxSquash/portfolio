@@ -118,16 +118,17 @@
 
 ## Phase 6 — Mode iOS (mobile/tablette)
 
-- [ ] **Status bar** : heure à gauche, réseau/wifi/batterie à droite
-- [ ] **Springboard** : grille d'icônes (apps système + projets), pagination horizontale par swipe, points de page
-- [ ] **Dock iOS** : 4 icônes fixes en bas, fond vibrancy
-- [ ] Icônes au format iOS (superellipse/squircle, taille tap-friendly ≥ 44px)
-- [ ] Ouverture d'app : animation zoom depuis l'icône → **plein écran** (pas de fenêtres flottantes en mobile)
-- [ ] Fermeture : barre home en bas + swipe up (ou bouton retour) → retour springboard
-- [ ] Adapter les apps : Notes en layout 1 colonne avec navigation, projets iframe en plein écran
-- [ ] Pas de Finder ni de Corbeille en mode iOS
-- [ ] Tablette : springboard iOS avec grille plus large (iPadOS)
-- [ ] Écran de verrouillage au chargement (swipe up pour déverrouiller), app switcher
+- [x] **Status bar** : heure à gauche, réseau/wifi/batterie à droite
+- [x] **Springboard** : grille d'icônes (apps système + projets), pagination horizontale par swipe, points de page
+- [x] **Dock iOS** : 4 icônes fixes en bas, fond vibrancy
+- [x] Icônes au format iOS (superellipse/squircle, taille tap-friendly ≥ 44px)
+- [x] Ouverture d'app : animation zoom depuis l'icône → **plein écran** (pas de fenêtres flottantes en mobile)
+- [x] Fermeture : barre home en bas + swipe up (ou bouton retour) → retour springboard
+- [x] Adapter les apps : Notes en layout 1 colonne avec navigation, projets iframe en plein écran
+- [x] Pas de Finder ni de Corbeille en mode iOS
+- [x] Tablette : springboard iOS avec grille plus large (iPadOS)
+- [x] Écran de verrouillage au chargement (swipe up pour déverrouiller)
+- [x] App switcher (bonus v2, voir skill os-ios-ui)
 
 ## Phase 7 — Backoffice + Supabase
 

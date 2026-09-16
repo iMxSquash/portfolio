@@ -30,6 +30,14 @@ export type AppDefinition = {
   type: "component" | "iframe" | "external";
   /** For type 'component' — always loaded via next/dynamic at the call site. */
   component?: ComponentType;
+  /**
+   * Optional iOS full-screen replacement for `component` (see os-ios-ui
+   * skill) — some apps need a genuinely different layout in a single
+   * full-screen view than in a resizable desktop window (Notes' stacked
+   * list/note nav vs. its 3-column desktop layout), not just a responsive
+   * version of the same component. Falls back to `component` when unset.
+   */
+  mobileComponent?: ComponentType;
   /** For type 'iframe' (subdomain) or 'external'. */
   url?: string;
   showOnDesktop: boolean;
@@ -58,6 +66,9 @@ export const TRASH_APP_ID = "trash";
 
 const Finder = dynamic(() => import("@/components/apps/finder/Finder").then((mod) => mod.Finder));
 const Notes = dynamic(() => import("@/components/apps/notes/Notes").then((mod) => mod.Notes));
+const NotesMobile = dynamic(() =>
+  import("@/components/apps/notes/NotesMobile").then((mod) => mod.NotesMobile),
+);
 const Trash = dynamic(() => import("@/components/apps/trash/Trash").then((mod) => mod.Trash));
 
 /**
@@ -86,6 +97,7 @@ export const SYSTEM_APPS: AppDefinition[] = [
     icon: NotesIcon,
     type: "component",
     component: Notes,
+    mobileComponent: NotesMobile,
     showOnDesktop: true,
     showOnMobile: true,
     pinnedToDock: true,

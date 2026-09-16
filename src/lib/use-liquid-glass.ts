@@ -52,7 +52,19 @@ type UseLiquidGlassOptions = {
  * e.g. Spotlight's results panel or Dock's minimized-icons list) needs one
  * stable wrapper `<div>` one level down that itself is never added/removed
  * — see Dock.tsx / Spotlight.tsx for the two call sites that need this.
+ *
+ * A host that lays out its (unchanging) children with `flex flex-col
+ * items-center` and needs that restored one level down, on `.ql-content`
+ * itself (the reparenting above otherwise leaves it a plain block, see
+ * LoginScreen.tsx/LockScreen.tsx/LockCornerGesture.tsx), can spread
+ * `QL_CONTENT_FLEX_COL_CENTER` into its own className. Add the host's own
+ * `gap-*` there too (e.g. `` `${QL_CONTENT_FLEX_COL_CENTER} [&>.ql-content]:gap-4` ``)
+ * — a `gap` on the host itself no longer does anything once it has only one
+ * child (`.ql-content`).
  */
+export const QL_CONTENT_FLEX_COL_CENTER =
+  "[&>.ql-content]:flex [&>.ql-content]:flex-col [&>.ql-content]:items-center";
+
 export function useLiquidGlass(
   el: HTMLElement | null,
   config: Partial<LiquidGlassConfig>,

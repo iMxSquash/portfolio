@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { IconUser } from "@tabler/icons-react";
 import { DISPLAY_NAME, UNLOCK_DURATION_S, UNLOCK_DURATION_S_REDUCED } from "@/lib/boot";
+import { LOCK_SCREEN_GLASS } from "@/lib/glass-presets";
+import { QL_CONTENT_FLEX_COL_CENTER, useLiquidGlass } from "@/lib/use-liquid-glass";
 
 export function LoginScreen({
   unlocking,
@@ -15,8 +17,15 @@ export function LoginScreen({
   onUnlockComplete: () => void;
 }) {
   const avatarRef = useRef<HTMLButtonElement>(null);
+  const [scrimEl, setScrimEl] = useState<HTMLDivElement | null>(null);
   const reducedMotion = useReducedMotion();
   const duration = reducedMotion ? UNLOCK_DURATION_S_REDUCED : UNLOCK_DURATION_S;
+
+  // Full-viewport scrim behind the login card (see `LOCK_SCREEN_GLASS`'s own
+  // doc comment for the "Sheet / modal" material choice); its children
+  // (avatar button, name, hint) never change shape, so no host-children
+  // wrapper is needed (see use-liquid-glass.ts).
+  useLiquidGlass(scrimEl, LOCK_SCREEN_GLASS);
 
   useEffect(() => {
     avatarRef.current?.focus();
@@ -24,10 +33,14 @@ export function LoginScreen({
 
   return (
     <motion.div
-      // Full-viewport scrim behind the login card, not an actionable glass
-      // control — a plain fixed blur rather than a `LiquidGlassEngine`
-      // instance (see apple-design skill).
-      className="fixed inset-0 flex flex-col items-center justify-center gap-4 bg-black/20 backdrop-blur-3xl dark:bg-black/30"
+      ref={setScrimEl}
+      // The engine reparents this div's children into its own `.ql-content`
+      // wrapper (see QL_CONTENT_FLEX_COL_CENTER's doc comment) — restore the
+      // flex column layout and gap there so the avatar/name/hint stack and
+      // space out the same way they did as direct children of this host
+      // (`gap-4` on the host itself is inert now that it has only one
+      // child).
+      className={`fixed inset-0 flex flex-col items-center justify-center ${QL_CONTENT_FLEX_COL_CENTER} [&>.ql-content]:gap-4`}
       animate={unlocking ? { opacity: 0, scale: 1.05 } : { opacity: 1, scale: 1 }}
       transition={{ duration: unlocking ? duration : 0 }}
       onAnimationComplete={() => {
@@ -44,8 +57,8 @@ export function LoginScreen({
       >
         <IconUser size={48} stroke={1.75} aria-hidden="true" />
       </button>
-      <p className="text-lg font-medium text-white">{DISPLAY_NAME}</p>
-      <p className="text-sm text-white/70">Cliquez pour déverrouiller</p>
+      <p className="text-center text-lg font-medium text-white">{DISPLAY_NAME}</p>
+      <p className="text-center text-sm text-white/70">Cliquez pour déverrouiller</p>
     </motion.div>
   );
 }
