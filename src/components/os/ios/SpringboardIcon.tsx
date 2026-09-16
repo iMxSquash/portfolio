@@ -1,8 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { AppIcon } from "@/components/os/AppIcon";
 import { launchApp, type AppDefinition } from "@/lib/apps";
+import { IOS_MORPH_TRANSITION, IOS_MORPH_TRANSITION_REDUCED } from "@/lib/ios";
 import { useIOSAppStore } from "@/stores/useIOSAppStore";
 
 type SpringboardIconProps = {
@@ -18,6 +19,7 @@ type SpringboardIconProps = {
  */
 export function SpringboardIcon({ app }: SpringboardIconProps) {
   const openApp = useIOSAppStore((state) => state.openApp);
+  const reducedMotion = useReducedMotion();
 
   return (
     <button
@@ -26,7 +28,11 @@ export function SpringboardIcon({ app }: SpringboardIconProps) {
       aria-label={app.name}
       className="flex flex-col items-center gap-1.5 [-webkit-touch-callout:none] select-none"
     >
-      <motion.span layoutId={`ios-app-${app.id}`} className="block w-(--ios-springboard-icon-size)">
+      <motion.span
+        layoutId={`ios-app-${app.id}`}
+        transition={{ layout: reducedMotion ? IOS_MORPH_TRANSITION_REDUCED : IOS_MORPH_TRANSITION }}
+        className="block w-(--ios-springboard-icon-size)"
+      >
         <AppIcon app={app} />
       </motion.span>
       <span className="max-w-[72px] truncate text-[11px] font-medium text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.5)]">

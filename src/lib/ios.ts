@@ -43,6 +43,26 @@ export function getIOSDockApps(apps: AppDefinition[]): AppDefinition[] {
 export const IOS_STATUS_BAR_CLEARANCE =
   "calc(var(--ios-status-bar-height) + env(safe-area-inset-top))";
 
+/**
+ * Shared `layoutId` morph between a springboard icon and its full-screen app
+ * (see `SpringboardIcon.tsx` / `AppFullScreenView.tsx`) — both ends need the
+ * same explicit spring, matching the macOS window chrome's own feel. Pass it
+ * as `transition={{ layout: ... }}`, not a bare `transition={...}` — a
+ * `layoutId` FLIP is a *layout* animation, which Framer only picks the given
+ * spring for under that nested key; a bare `transition` prop is silently
+ * ignored for it and it falls back to Framer's default spring, which
+ * settles closer to 600ms+ — long enough that a quick second tap (opening a
+ * different app right after closing one) can land while the previous view
+ * is still mid-exit, showing both at once.
+ */
+export const IOS_MORPH_TRANSITION = {
+  type: "spring",
+  stiffness: 300,
+  damping: 30,
+  mass: 0.8,
+} as const;
+export const IOS_MORPH_TRANSITION_REDUCED = { type: "tween", duration: 0 } as const;
+
 const STATUS_BAR_TIME_FORMAT: Intl.DateTimeFormatOptions = { hour: "numeric", minute: "2-digit" };
 
 /** iOS status-bar clock format, e.g. "9:41" — time only, unlike the macOS menu bar's date+time (see formatMenuBarClock). */

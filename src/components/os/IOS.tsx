@@ -7,6 +7,7 @@ import { getDefaultWallpaper, getWallpaper } from "@/lib/wallpapers";
 import { useIOSAppStore } from "@/stores/useIOSAppStore";
 import { useWallpaperStore } from "@/stores/useWallpaperStore";
 import { AppFullScreenView } from "./ios/AppFullScreenView";
+import { AppSwitcher } from "./ios/AppSwitcher";
 import { IOSDock } from "./ios/IOSDock";
 import { Springboard } from "./ios/Springboard";
 import { StatusBar } from "./ios/StatusBar";
@@ -16,6 +17,7 @@ export function IOS({ inert = false }: { inert?: boolean }) {
   const wallpaper = getWallpaper(wallpaperId) ?? getDefaultWallpaper("ios");
   const activeAppId = useIOSAppStore((state) => state.activeAppId);
   const activeApp = activeAppId ? getApp(APPS, activeAppId) : undefined;
+  const isSwitcherOpen = useIOSAppStore((state) => state.isSwitcherOpen);
 
   return (
     <div
@@ -45,6 +47,10 @@ export function IOS({ inert = false }: { inert?: boolean }) {
       </AnimatePresence>
 
       {inert ? null : <IOSDock apps={APPS} hidden={Boolean(activeApp)} />}
+
+      <AnimatePresence>
+        {isSwitcherOpen && !inert ? <AppSwitcher key="switcher" apps={APPS} /> : null}
+      </AnimatePresence>
     </div>
   );
 }

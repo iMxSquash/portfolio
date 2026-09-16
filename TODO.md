@@ -128,7 +128,7 @@
 - [x] Pas de Finder ni de Corbeille en mode iOS
 - [x] Tablette : springboard iOS avec grille plus large (iPadOS)
 - [x] Écran de verrouillage au chargement (swipe up pour déverrouiller)
-- [ ] App switcher (bonus v2 — hors scope v1, voir skill os-ios-ui)
+- [x] App switcher (bonus v2, voir skill os-ios-ui)
 
 ## Phase 7 — Backoffice + Supabase
 
