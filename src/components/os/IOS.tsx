@@ -9,6 +9,7 @@ import { useWallpaperStore } from "@/stores/useWallpaperStore";
 import { AppFullScreenView } from "./ios/AppFullScreenView";
 import { AppSwitcher } from "./ios/AppSwitcher";
 import { IOSDock } from "./ios/IOSDock";
+import { LockCornerGesture } from "./ios/LockCornerGesture";
 import { Springboard } from "./ios/Springboard";
 import { StatusBar } from "./ios/StatusBar";
 
@@ -37,6 +38,7 @@ export function IOS({ inert = false }: { inert?: boolean }) {
       {/* Hidden while locked/booting, same reasoning as MacOS's menu bar/dock
           (see MacOS.tsx) — the lock screen is meant to cover everything. */}
       {inert ? null : <StatusBar variant={activeApp ? "content" : "overlay"} />}
+      {inert ? null : <LockCornerGesture />}
 
       <AnimatePresence>
         {activeApp ? (

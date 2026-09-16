@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { SiteLogo } from "@/components/icons/SiteLogo";
 import { SpotlightIcon } from "@/components/os/spotlight/Spotlight";
 import { getApp, type AppDefinition } from "@/lib/apps";
+import { relockSession } from "@/lib/boot";
 import { APPLE_MENU_ITEMS, DEFAULT_APP_MENUS } from "@/lib/menu-bar";
 import { useBootStore } from "@/stores/useBootStore";
 import { useSpotlightStore } from "@/stores/useSpotlightStore";
@@ -98,12 +99,7 @@ export function MenuBar({ apps }: MenuBarProps) {
               onSelect={() => {
                 setOpenMenuId(null);
                 if (item.id === "lock") {
-                  // The anti-FOUC `.boot-seen` class (see globals.css) permanently
-                  // hides `.boot-screen-root` via CSS once the boot sequence has
-                  // played this session — necessary before hydration, but it would
-                  // also swallow this deliberate re-lock. Lift it only here.
-                  document.documentElement.classList.remove("boot-seen");
-                  setBootStage("login");
+                  relockSession(setBootStage);
                 }
               }}
             />

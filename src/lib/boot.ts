@@ -26,3 +26,16 @@ export function markBootSeenThisSession() {
     // Storage unavailable (e.g. private browsing) — the sequence just replays next time, harmless.
   }
 }
+
+/**
+ * Re-locks the session: lifts the anti-FOUC `.boot-seen` class (see
+ * globals.css) that would otherwise keep `BootScreen` permanently hidden,
+ * then re-enters its stage machine at "login". Shared by the macOS menu
+ * bar's "Verrouiller l'écran" (see MenuBar.tsx) and the iOS corner-swipe
+ * lock gesture (see LockCornerGesture.tsx) — both mode's own way in, same
+ * effect, so this stays the one place that defines it.
+ */
+export function relockSession(setBootStage: (stage: BootStage) => void) {
+  document.documentElement.classList.remove("boot-seen");
+  setBootStage("login");
+}
