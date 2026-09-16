@@ -24,6 +24,7 @@ import type { LiquidGlassConfig } from "quick-liquid";
 const GLASS_DEFAULTS = {
   chromaticAberration: 0,
   specularStrength: 0,
+  fresnelPower: 6,
   edgeHighlight: 0.1,
 } as const satisfies Partial<LiquidGlassConfig>;
 
@@ -170,4 +171,46 @@ export const IOS_DOCK_GLASS: Partial<LiquidGlassConfig> = {
   ...GLASS_DEFAULTS,
   material: "regular",
   borderRadius: IOS_DOCK_BORDER_RADIUS,
+};
+
+/**
+ * Lock screen curtain (iOS corner-swipe drag preview — see
+ * `LockCornerGesture.tsx`): tuned for the live drag effect specifically —
+ * strong lensing/dispersion (`refractionStrength`, `chromaticAberration`)
+ * and no frost (`blur: 0`), since it's only ever partially revealed
+ * mid-gesture and reads better as a watery ripple than a blurred pane at
+ * that size. Rounded (`borderRadius: 30`) because unlike the full-screen
+ * lock screens, this curtain is genuinely a floating sliver while dragging,
+ * not full-bleed chrome. Dark `tint` keeps the dimming look the original
+ * plain-CSS scrim had regardless of wallpaper brightness. Spends the third
+ * of this project's chromatic-aberration budget slots — never composited
+ * alongside the Dock/Spotlight (locking hides everything else).
+ */
+export const LOCK_SCREEN_CURTAIN_GLASS: Partial<LiquidGlassConfig> = {
+  ...GLASS_DEFAULTS,
+  material: "clear",
+  borderRadius: 30,
+  tint: "0, 0, 0",
+  tintOpacity: 0.5,
+  blur: 0,
+  refractionStrength: 35,
+  chromaticAberration: 0.5,
+  bezelWidth: 24,
+  thickness: 30,
+  ior: 3,
+};
+
+/**
+ * Lock screen, full screen (macOS `LoginScreen` and iOS `LockScreen`): same
+ * tuned lensing/tint as the drag curtain above, but `borderRadius: 0`
+ * (full-bleed, not a floating card — closest to the "Sheet / modal /
+ * dialog" row of the Component → Config Mapping table once it's the only
+ * thing on screen) and `blur` restored for legibility, since unlike the
+ * curtain this is shown at rest, fully, for as long as the session stays
+ * locked.
+ */
+export const LOCK_SCREEN_GLASS: Partial<LiquidGlassConfig> = {
+  ...LOCK_SCREEN_CURTAIN_GLASS,
+  borderRadius: 0,
+  blur: 22,
 };

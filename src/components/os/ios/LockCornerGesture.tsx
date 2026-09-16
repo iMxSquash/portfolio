@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { animate, motion, useMotionValue, type PanInfo } from "framer-motion";
 import { relockSession } from "@/lib/boot";
+import { LOCK_SCREEN_CURTAIN_GLASS } from "@/lib/glass-presets";
 import { formatLockScreenDate, formatStatusBarClock } from "@/lib/ios";
 import { useLiveDate } from "@/lib/use-live-clock";
+import { QL_CONTENT_FLEX_COL_CENTER, useLiquidGlass } from "@/lib/use-liquid-glass";
 import { useBootStore } from "@/stores/useBootStore";
 
 /** Drag distance (px) past which releasing commits to locking instead of snapping back. */
@@ -31,13 +33,13 @@ const SNAP_CLOSED_TWEEN = { type: "tween", duration: 0.18, ease: "easeIn" } as c
  */
 export function LockCornerGesture() {
   const setBootStage = useBootStore((state) => state.setStage);
-  const [isDragging, setIsDragging] = useState(false);
   const dragY = useMotionValue(0);
-  const now = useLiveDate();
-
-  function handlePanStart() {
-    setIsDragging(true);
-  }
+  const [curtainEl, setCurtainEl] = useState<HTMLDivElement | null>(null);
+  // Tuned specifically for the live drag (see LOCK_SCREEN_CURTAIN_GLASS) —
+  // kept mounted permanently (parked off-screen via `top: -100%` + `dragY`
+  // at rest) rather than only while dragging, so this expensive-to-build
+  // engine is constructed once, not re-built on every gesture.
+  useLiquidGlass(curtainEl, LOCK_SCREEN_CURTAIN_GLASS);
 
   function handlePan(_event: PointerEvent | MouseEvent | TouchEvent, info: PanInfo) {
     dragY.set(Math.max(0, Math.min(info.offset.y, window.innerHeight)));
@@ -49,47 +51,63 @@ export function LockCornerGesture() {
         ...SNAP_CLOSED_TWEEN,
         onComplete: () => {
           relockSession(setBootStage);
-          setIsDragging(false);
           dragY.set(0);
         },
       });
     } else {
-      animate(dragY, 0, {
-        ...SNAP_BACK_SPRING,
-        onComplete: () => setIsDragging(false),
-      });
+      animate(dragY, 0, SNAP_BACK_SPRING);
     }
   }
 
   return (
     <>
       <motion.div
-        onPanStart={handlePanStart}
         onPan={handlePan}
         onPanEnd={handlePanEnd}
         aria-hidden="true"
         className="fixed top-0 left-0 z-1000 touch-none"
         style={{ width: CORNER_ZONE_SIZE, height: CORNER_ZONE_SIZE }}
       />
-      {isDragging ? (
-        <motion.div
-          aria-hidden="true"
-          // Starts fully above the viewport (`top: -100%` of its own
-          // 100dvh height) and the live drag `y` slides it down from
-          // there — same scrim treatment as the real `LockScreen`, so the
-          // handoff at the commit threshold is seamless.
-          className="fixed inset-x-0 z-1060 flex h-dvh flex-col items-center justify-center gap-1 bg-black/20 backdrop-blur-3xl dark:bg-black/30"
-          style={{ top: "-100%", y: dragY }}
-        >
-          <p className="text-lg font-medium text-white capitalize">
-            {now ? formatLockScreenDate(now) : " "}
-          </p>
-          <p className="text-7xl font-semibold text-white tabular-nums">
-            {now ? formatStatusBarClock(now) : " "}
-          </p>
-          <p className="mt-8 text-sm text-white/70">Relâcher pour verrouiller</p>
-        </motion.div>
-      ) : null}
+      <motion.div
+        ref={setCurtainEl}
+        aria-hidden="true"
+        // Starts fully above the viewport (`top: -100%` of its own 100dvh
+        // height) and the live drag `y` slides it down from there. Content
+        // is centered exactly like the real `LockScreen` it previews (not
+        // anchored to the curtain's own bottom edge) — it only becomes
+        // visible once the drag has revealed enough of the curtain to
+        // include the centered block, a deliberate trade for looking
+        // identical to the screen it hands off to.
+        className={`pointer-events-none fixed inset-x-0 z-1060 flex h-dvh flex-col items-center justify-center ${QL_CONTENT_FLEX_COL_CENTER} [&>.ql-content]:gap-1`}
+        style={{ top: "-100%", y: dragY }}
+      >
+        <CurtainClockText />
+        <p className="mt-8 text-center text-sm text-white/70">Relâcher pour verrouiller</p>
+      </motion.div>
+    </>
+  );
+}
+
+/**
+ * Isolated so the 1s clock tick only re-renders this leaf — the curtain
+ * stays mounted for the whole unlocked session (see the doc comment on
+ * `useLiquidGlass` above), not just while dragging, so without this split
+ * the date/time formatting and the full `LockCornerGesture` tree (drag
+ * zone included) would redo work every second regardless of whether the
+ * curtain is even visible (see `use-live-clock.ts`'s own isolation
+ * convention, e.g. `Clock.tsx`/`StatusBarClock.tsx`).
+ */
+function CurtainClockText() {
+  const now = useLiveDate();
+
+  return (
+    <>
+      <p className="text-center text-lg font-medium text-white capitalize">
+        {now ? formatLockScreenDate(now) : " "}
+      </p>
+      <p className="text-center text-7xl font-semibold text-white tabular-nums">
+        {now ? formatStatusBarClock(now) : " "}
+      </p>
     </>
   );
 }
