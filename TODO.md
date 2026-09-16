@@ -134,7 +134,7 @@
 
 ### Base de données
 
-- [ ] Table `projects` :
+- [x] Table `projects` :
   ```sql
   id uuid pk, name text, slug text unique, url text,
   logo_url text, display_mode text check (display_mode in ('iframe','external')),
@@ -144,23 +144,23 @@
   default_width int, default_height int,
   created_at timestamptz default now()
   ```
-- [ ] RLS : lecture publique (`visible = true`), écriture réservée aux utilisateurs authentifiés
-- [ ] Bucket Storage `logos` (public en lecture, upload authentifié)
-- [ ] Supabase Auth : email/password, **inscription désactivée** (un seul compte, créé à la main dans le dashboard)
+- [x] RLS : lecture publique (`visible = true`), écriture réservée aux utilisateurs authentifiés
+- [x] Bucket Storage `logos` (public en lecture, upload authentifié)
+- [ ] Supabase Auth : email/password, **inscription désactivée** (un seul compte, créé à la main dans le dashboard) — reste à faire à la main dans le dashboard Supabase (désactiver "Allow new users to sign up" + créer le compte admin)
 
 ### Backoffice `/admin`
 
-- [ ] Page de login (Supabase Auth) + middleware Next.js qui protège tout `/admin/*`
-- [ ] Liste des projets : nom, logo, URL, mode, visibilité, réordonnancement (drag ou flèches ↑↓)
-- [ ] Formulaire création/édition : nom, slug, URL, description, technos, **upload du logo** (→ Storage), mode `iframe`/`external`, visibilité desktop/mobile, taille de fenêtre par défaut
-- [ ] Suppression avec confirmation (+ suppression du logo dans le Storage)
-- [ ] Prévisualisation : vérifier que l'URL accepte l'iframe (test de chargement) → suggérer le mode
+- [x] Page de login (Supabase Auth) + middleware Next.js qui protège tout `/admin/*`
+- [x] Liste des projets : nom, logo, URL, mode, visibilité, réordonnancement (drag ou flèches ↑↓)
+- [x] Formulaire création/édition : nom, slug, URL, description, technos, **upload du logo** (→ Storage), mode `iframe`/`external`, visibilité desktop/mobile, taille de fenêtre par défaut
+- [x] Suppression avec confirmation (+ suppression du logo dans le Storage)
+- [x] Prévisualisation : vérifier que l'URL accepte l'iframe (test de chargement) → suggérer le mode
 
 ### Intégration portfolio
 
-- [ ] Le registre d'apps fusionne apps système (statiques) + projets (Supabase)
-- [ ] Fetch côté serveur (Server Component) + revalidation (`revalidatePath` après modif admin, ou ISR)
-- [ ] Les projets apparaissent automatiquement : bureau + Finder (desktop), springboard (mobile), dock si épinglé
+- [x] Le registre d'apps fusionne apps système (statiques) + projets (Supabase)
+- [x] Fetch côté serveur (Server Component) + revalidation (`revalidatePath` après modif admin, ou ISR)
+- [x] Les projets apparaissent automatiquement : bureau + Finder (desktop), springboard (mobile), dock si épinglé
 
 ## Phase 8 — Sous-domaines
 
