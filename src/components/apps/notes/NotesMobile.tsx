@@ -118,7 +118,10 @@ export function NotesMobile() {
           <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
             <ul className="bg-window-canvas overflow-hidden rounded-xl">
               {NOTES.map((note) => (
-                <li key={note.id} className="border-b border-black/8 last:border-b-0 dark:border-white/8">
+                <li
+                  key={note.id}
+                  className="border-b border-black/8 last:border-b-0 dark:border-white/8"
+                >
                   <button
                     type="button"
                     onClick={() => setSelectedNoteId(note.id)}
