@@ -44,6 +44,16 @@ export const IOS_STATUS_BAR_CLEARANCE =
   "calc(var(--ios-status-bar-height) + env(safe-area-inset-top))";
 
 /**
+ * Fade mask for the open-app status bar's blur/tint scrim (see
+ * `StatusBar.tsx`, `"content"` variant) — opaque near the notch/Dynamic
+ * Island, melting into the app's own content (now visible underneath, see
+ * `AppFullScreenView.tsx`) by the bar's bottom edge instead of ending on a
+ * hard line.
+ */
+export const IOS_STATUS_BAR_FADE_MASK =
+  "linear-gradient(to bottom, black 0%, black 55%, transparent 100%)";
+
+/**
  * Shared `layoutId` morph between a springboard icon and its full-screen app
  * (see `SpringboardIcon.tsx` / `AppFullScreenView.tsx`) — both ends need the
  * same explicit spring, matching the macOS window chrome's own feel. Pass it
