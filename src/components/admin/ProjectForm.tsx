@@ -138,7 +138,9 @@ export function ProjectForm({ action, project }: ProjectFormProps) {
             <div className="h-10 w-10">
               <AppIcon app={{ icon: project.logo_url, name: project.name }} />
             </div>
-            <span className="text-xs text-neutral-500">Logo actuel — laisser vide pour le garder</span>
+            <span className="text-xs text-neutral-500">
+              Logo actuel — laisser vide pour le garder
+            </span>
           </div>
         ) : null}
         <input
@@ -175,7 +177,11 @@ export function ProjectForm({ action, project }: ProjectFormProps) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Checkbox name="visible" label="Visible sur le portfolio" defaultChecked={project?.visible} />
+        <Checkbox
+          name="visible"
+          label="Visible sur le portfolio"
+          defaultChecked={project?.visible}
+        />
         <Checkbox
           name="show_on_desktop"
           label="Afficher sur le bureau (desktop)"

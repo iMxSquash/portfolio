@@ -255,8 +255,15 @@ export const updateProject = withAdmin(async function updateProject(
   redirect("/admin/projects");
 });
 
-export const deleteProject = withAdmin(async function deleteProject(supabase, id: string): Promise<void> {
-  const { data: row } = await supabase.from("projects").select("logo_url").eq("id", id).maybeSingle();
+export const deleteProject = withAdmin(async function deleteProject(
+  supabase,
+  id: string,
+): Promise<void> {
+  const { data: row } = await supabase
+    .from("projects")
+    .select("logo_url")
+    .eq("id", id)
+    .maybeSingle();
 
   // Independent writes once we know the logo path — the Storage object and
   // the DB row don't depend on each other.
@@ -350,17 +357,20 @@ export const checkEmbeddability = withAdmin(async function checkEmbeddability(
     if (csp && /frame-ancestors\s+'none'/i.test(csp)) {
       return {
         embeddable: false,
-        reason: "La CSP de ce site interdit frame-ancestors — utiliser le mode \"external\".",
+        reason: 'La CSP de ce site interdit frame-ancestors — utiliser le mode "external".',
       };
     }
     if (csp && /frame-ancestors/i.test(csp) && !/elwen\.dev/i.test(csp)) {
       return {
         embeddable: false,
         reason:
-          "La CSP de ce site restreint frame-ancestors à d'autres domaines — utiliser le mode \"external\".",
+          'La CSP de ce site restreint frame-ancestors à d\'autres domaines — utiliser le mode "external".',
       };
     }
-    return { embeddable: true, reason: "Aucun header ne bloque l'iframe — le mode \"iframe\" devrait fonctionner." };
+    return {
+      embeddable: true,
+      reason: 'Aucun header ne bloque l\'iframe — le mode "iframe" devrait fonctionner.',
+    };
   } catch {
     return {
       embeddable: false,
