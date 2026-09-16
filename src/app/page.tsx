@@ -2,8 +2,16 @@ import { headers } from "next/headers";
 import { userAgent } from "next/server";
 import { OS } from "@/components/os/OS";
 import { resolveOSModeFromUserAgent } from "@/lib/device";
+import { getVisibleProjectApps } from "@/lib/projects";
 
 export default async function Home() {
   const { device, os } = userAgent({ headers: await headers() });
-  return <OS initialMode={resolveOSModeFromUserAgent({ device, os })} />;
+  const initialProjectApps = await getVisibleProjectApps();
+
+  return (
+    <OS
+      initialMode={resolveOSModeFromUserAgent({ device, os })}
+      initialProjectApps={initialProjectApps}
+    />
+  );
 }

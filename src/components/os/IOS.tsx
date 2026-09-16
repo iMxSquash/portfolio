@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { AnimatePresence } from "framer-motion";
-import { APPS, getApp } from "@/lib/apps";
+import { getApp } from "@/lib/apps";
 import { getDefaultWallpaper, getWallpaper } from "@/lib/wallpapers";
+import { useAppsStore } from "@/stores/useAppsStore";
 import { useIOSAppStore } from "@/stores/useIOSAppStore";
 import { useWallpaperStore } from "@/stores/useWallpaperStore";
 import { AppFullScreenView } from "./ios/AppFullScreenView";
@@ -17,7 +18,8 @@ export function IOS({ inert = false }: { inert?: boolean }) {
   const wallpaperId = useWallpaperStore((state) => state.selected.ios);
   const wallpaper = getWallpaper(wallpaperId) ?? getDefaultWallpaper("ios");
   const activeAppId = useIOSAppStore((state) => state.activeAppId);
-  const activeApp = activeAppId ? getApp(APPS, activeAppId) : undefined;
+  const apps = useAppsStore((state) => state.apps);
+  const activeApp = activeAppId ? getApp(apps, activeAppId) : undefined;
   const isSwitcherOpen = useIOSAppStore((state) => state.isSwitcherOpen);
 
   return (
@@ -44,14 +46,14 @@ export function IOS({ inert = false }: { inert?: boolean }) {
         {activeApp ? (
           <AppFullScreenView key={activeApp.id} app={activeApp} />
         ) : (
-          <Springboard key="springboard" apps={APPS} />
+          <Springboard key="springboard" apps={apps} />
         )}
       </AnimatePresence>
 
-      {inert ? null : <IOSDock apps={APPS} hidden={Boolean(activeApp)} />}
+      {inert ? null : <IOSDock apps={apps} hidden={Boolean(activeApp)} />}
 
       <AnimatePresence>
-        {isSwitcherOpen && !inert ? <AppSwitcher key="switcher" apps={APPS} /> : null}
+        {isSwitcherOpen && !inert ? <AppSwitcher key="switcher" apps={apps} /> : null}
       </AnimatePresence>
     </div>
   );

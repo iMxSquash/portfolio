@@ -5,7 +5,6 @@ import { IconChevronLeft, IconChevronRight, IconLayoutGrid, IconList } from "@ta
 import type { TrashItem } from "@/components/apps/trash/trash-content";
 import { useWindowChrome } from "@/components/os/window/WindowChromeContext";
 import {
-  APPS,
   getDesktopApps,
   getProjectApps,
   getSystemComponentApps,
@@ -22,6 +21,7 @@ import {
 } from "@/lib/glass-presets";
 import { useIsDarkMode } from "@/lib/use-is-dark-mode";
 import { useLiquidGlass } from "@/lib/use-liquid-glass";
+import { useAppsStore } from "@/stores/useAppsStore";
 import { useTrashStore } from "@/stores/useTrashStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 import { DocumentIcon } from "./DocumentIcon";
@@ -53,6 +53,7 @@ type FinderViewProps = {
  */
 export function FinderView({ initialFavoriteId }: FinderViewProps) {
   const openWindow = useWindowStore((state) => state.openWindow);
+  const apps = useAppsStore((state) => state.apps);
   const [history, setHistory] = useState<FinderFavoriteId[]>([initialFavoriteId]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const currentFavoriteId = history[historyIndex];
@@ -102,16 +103,16 @@ export function FinderView({ initialFavoriteId }: FinderViewProps) {
   const items = useMemo(() => {
     switch (currentFavoriteId) {
       case "projects":
-        return getProjectApps(APPS).map(appToFileItem);
+        return getProjectApps(apps).map(appToFileItem);
       case "applications":
         return getSystemComponentApps(SYSTEM_APPS).map(appToFileItem);
       case "desktop":
-        return getDesktopApps(APPS).map(appToFileItem);
+        return getDesktopApps(apps).map(appToFileItem);
       case "trash":
         return trashItems.map(trashItemToFileItem);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- appToFileItem closes over stable openWindow; trashItems is a real, already-listed dep
-  }, [currentFavoriteId, trashItems]);
+  }, [currentFavoriteId, trashItems, apps]);
 
   const currentFavorite = FINDER_FAVORITES.find((favorite) => favorite.id === currentFavoriteId);
 

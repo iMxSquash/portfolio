@@ -2,9 +2,6 @@ import type { ComponentType } from "react";
 import dynamic from "next/dynamic";
 import { FinderIcon } from "@/components/apps/finder/FinderIcon";
 import { NotesIcon } from "@/components/apps/notes/NotesIcon";
-import { IllustratorIcon } from "@/components/apps/projects/IllustratorIcon";
-import { PhotoshopIcon } from "@/components/apps/projects/PhotoshopIcon";
-import { PremiereProIcon } from "@/components/apps/projects/PremiereProIcon";
 import { TrashIcon } from "@/components/apps/trash/TrashIcon";
 import type { Size } from "@/lib/window";
 
@@ -73,8 +70,8 @@ const Trash = dynamic(() => import("@/components/apps/trash/Trash").then((mod) =
 
 /**
  * System apps, declared statically — never sourced from Supabase (see
- * `PROJECT_APPS` below for the apps Phase 7's backoffice will manage
- * instead, see os-apps skill).
+ * `src/lib/projects.ts` for the project apps the Phase 7 backoffice
+ * manages instead, see os-apps skill).
  */
 export const SYSTEM_APPS: AppDefinition[] = [
   {
@@ -124,39 +121,24 @@ export const SYSTEM_APPS: AppDefinition[] = [
   },
 ];
 
-/** Shared window sizing for every project app — same tool-window proportions across Photoshop/Illustrator/Premiere Pro. */
-const PROJECT_APP_DEFAULT_SIZE = { width: 960, height: 640 };
-const PROJECT_APP_MIN_SIZE = { width: 560, height: 400 };
+/**
+ * Shared window sizing for project apps — used as a fallback when a
+ * Supabase `projects` row leaves `default_width`/`default_height` unset
+ * (see `src/lib/projects.ts`, which sources every project app from the
+ * Phase 7 backoffice — none are declared statically here anymore).
+ */
+export const PROJECT_APP_DEFAULT_SIZE = { width: 960, height: 640 };
+export const PROJECT_APP_MIN_SIZE = { width: 560, height: 400 };
 
 /**
- * Project apps, declared statically until the Phase 7 backoffice sources
- * them from Supabase instead (see `PROJECT_APPS` below and os-apps skill).
- * Each maps to its own subdomain, opened via `IframeWindow`.
+ * Builds the full request-time registry: `SYSTEM_APPS` + the Supabase-sourced
+ * project apps (see `src/lib/projects.ts`). Owned here rather than inlined at
+ * the `OS.tsx` call site, so "how the registry is assembled" stays in one
+ * place alongside the static apps it merges with.
  */
-const PROJECT_APP_SOURCES: Array<
-  Pick<AppDefinition, "id" | "name" | "icon"> & { subdomain: string }
-> = [
-  { id: "photoshop", name: "Photoshop", icon: PhotoshopIcon, subdomain: "photoshop" },
-  { id: "illustrator", name: "Illustrator", icon: IllustratorIcon, subdomain: "illustrator" },
-  { id: "premierepro", name: "Premiere Pro", icon: PremiereProIcon, subdomain: "premierepro" },
-];
-
-export const PROJECT_APPS: AppDefinition[] = PROJECT_APP_SOURCES.map(
-  ({ id, name, icon, subdomain }) => ({
-    id,
-    name,
-    icon,
-    type: "iframe",
-    url: `https://${subdomain}.elwen.dev`,
-    showOnDesktop: true,
-    showOnMobile: true,
-    defaultSize: PROJECT_APP_DEFAULT_SIZE,
-    minSize: PROJECT_APP_MIN_SIZE,
-  }),
-);
-
-/** Full registry: system apps + projects. Desktop, dock, Finder and the iOS springboard read this, never `SYSTEM_APPS` alone (see os-apps skill). */
-export const APPS: AppDefinition[] = [...SYSTEM_APPS, ...PROJECT_APPS];
+export function mergeAppRegistry(projectApps: AppDefinition[]): AppDefinition[] {
+  return [...SYSTEM_APPS, ...projectApps];
+}
 
 /** Opens `url` the same way everywhere it happens: external apps, an iframe window's title-bar/blocked-state escape hatch (see os-apps skill). */
 export function openInNewTab(url: string): void {
