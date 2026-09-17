@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { AboutThisMacIcon } from "@/components/apps/about/AboutThisMacIcon";
 import { FinderIcon } from "@/components/apps/finder/FinderIcon";
 import { NotesIcon } from "@/components/apps/notes/NotesIcon";
+import { TerminalIcon } from "@/components/apps/terminal/TerminalIcon";
 import { TrashIcon } from "@/components/apps/trash/TrashIcon";
 import type { Size } from "@/lib/window";
 
@@ -82,6 +83,9 @@ const Trash = dynamic(() => import("@/components/apps/trash/Trash").then((mod) =
 const AboutThisMac = dynamic(() =>
   import("@/components/apps/about/AboutThisMac").then((mod) => mod.AboutThisMac),
 );
+const Terminal = dynamic(() =>
+  import("@/components/apps/terminal/Terminal").then((mod) => mod.Terminal),
+);
 
 /**
  * System apps, declared statically — never sourced from Supabase (see
@@ -146,6 +150,19 @@ export const SYSTEM_APPS: AppDefinition[] = [
     isSystemPanel: true,
     defaultSize: { width: 360, height: 440 },
     minSize: { width: 360, height: 440 },
+  },
+  {
+    id: "terminal",
+    name: "Terminal",
+    icon: TerminalIcon,
+    type: "component",
+    component: Terminal,
+    // Easter egg: discoverable via Finder/Applications and Spotlight, but
+    // not surfaced on the desktop/dock/springboard (see TODO.md Phase 9).
+    showOnDesktop: false,
+    showOnMobile: false,
+    defaultSize: { width: 640, height: 420 },
+    minSize: { width: 420, height: 280 },
   },
 ];
 
