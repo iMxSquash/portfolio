@@ -12,6 +12,12 @@ export const SITE_DESCRIPTION =
 /** Public contact address — the portfolio's own mailbox, not a personal one. Single source of truth, reused by the JSON-LD, the SEO fallback content and `llms.txt`. */
 export const CONTACT_EMAIL = "contact@elwen.dev";
 
+/** Elwen's other profiles — fed into the `Person` JSON-LD's `sameAs` so search/AI engines can cross-reference the same entity across sites (see seo-geo-boost skill). */
+export const SOCIAL_LINKS = [
+  "https://github.com/iMxSquash",
+  "https://www.linkedin.com/in/elwen-coussot/",
+];
+
 /** `Person` (site owner) + `WebSite` JSON-LD — present on every page, see the seo-geo-boost skill. */
 export function buildSiteJsonLd() {
   return {
@@ -24,6 +30,7 @@ export function buildSiteJsonLd() {
         url: SITE_URL,
         jobTitle: "Développeur full-stack",
         email: `mailto:${CONTACT_EMAIL}`,
+        sameAs: SOCIAL_LINKS,
       },
       {
         "@type": "WebSite",
