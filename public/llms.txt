@@ -1,0 +1,13 @@
+# Elwen (Portfolio)
+
+> Portfolio d'Elwen, développeur full-stack. Le site reproduit fidèlement macOS (sur ordinateur) et iOS (sur mobile/tablette) : les projets s'ouvrent comme de vraies fenêtres ou depuis l'écran d'accueil iOS, plutôt que comme des pages classiques.
+
+Elwen est développeur full-stack, spécialisé React/Next.js/TypeScript côté front comme côté back, avec une attention particulière portée aux interfaces soignées, à l'accessibilité et à la performance. Contact : contact@elwen.dev
+
+## Pages
+
+- [Accueil](https://elwen.dev/): le portfolio lui-même, bureau macOS ou springboard iOS selon l'appareil, avec le parcours, les compétences et les projets d'Elwen accessibles depuis les fenêtres/apps.
+
+## Notes
+
+- Les projets présentés (Photoshop, Illustrator, Premiere Pro, etc.) sont chacun hébergés sur leur propre sous-domaine (`<projet>.elwen.dev`) et disposent de leur propre référencement.

@@ -1,0 +1,59 @@
+import { DISPLAY_NAME } from "@/lib/boot";
+import type { ProjectRow } from "@/lib/projects";
+
+/** Canonical production origin — see the domain/DNS decisions in TODO.md Phase 0/8. */
+export const SITE_URL = "https://elwen.dev";
+
+export const SITE_NAME = "Elwen Portfolio";
+/** Short — combined with `DISPLAY_NAME` for `<title>` (50-60 char SEO budget, see seo-geo-boost skill), separately for `og:description`'s lead-in. */
+export const SITE_TAGLINE = "Développeur full-stack";
+export const SITE_DESCRIPTION =
+  "Portfolio d'Elwen, développeur full-stack, qui reproduit fidèlement macOS sur ordinateur et iOS sur mobile. Projets, parcours et compétences, présentés dans un vrai bureau et un vrai springboard.";
+/** Public contact address — the portfolio's own mailbox, not a personal one. Single source of truth, reused by the JSON-LD, the SEO fallback content and `llms.txt`. */
+export const CONTACT_EMAIL = "contact@elwen.dev";
+
+/** `Person` (site owner) + `WebSite` JSON-LD — present on every page, see the seo-geo-boost skill. */
+export function buildSiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": `${SITE_URL}/#person`,
+        name: DISPLAY_NAME,
+        url: SITE_URL,
+        jobTitle: "Développeur full-stack",
+        email: `mailto:${CONTACT_EMAIL}`,
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: SITE_NAME,
+        description: SITE_DESCRIPTION,
+        inLanguage: "fr-FR",
+        author: { "@id": `${SITE_URL}/#person` },
+      },
+    ],
+  };
+}
+
+/** One `CreativeWork` per visible project, for the ItemList JSON-LD rendered alongside the fallback content (see SeoFallbackContent). */
+export function buildProjectsJsonLd(projects: ProjectRow[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: projects.map((project, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "CreativeWork",
+        name: project.name,
+        description: project.description ?? undefined,
+        url: project.url,
+        keywords: project.tech.length > 0 ? project.tech.join(", ") : undefined,
+        image: project.logo_url,
+      },
+    })),
+  };
+}
