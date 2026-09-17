@@ -122,7 +122,7 @@ export function Notes() {
               >
                 <span className="truncate font-semibold">{note.title}</span>
                 <span className="text-foreground/50 truncate text-[12px]">
-                  {note.date} — {note.preview}
+                  {note.date} {note.preview}
                 </span>
               </button>
             ))}

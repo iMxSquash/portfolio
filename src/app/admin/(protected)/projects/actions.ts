@@ -351,25 +351,25 @@ export const checkEmbeddability = withAdmin(async function checkEmbeddability(
     if (xFrameOptions && /deny|sameorigin/i.test(xFrameOptions)) {
       return {
         embeddable: false,
-        reason: `Header X-Frame-Options: ${xFrameOptions} — ce site refuse l'affichage en iframe, utiliser le mode "external".`,
+        reason: `Header X-Frame-Options: ${xFrameOptions} : ce site refuse l'affichage en iframe, utiliser le mode "external".`,
       };
     }
     if (csp && /frame-ancestors\s+'none'/i.test(csp)) {
       return {
         embeddable: false,
-        reason: 'La CSP de ce site interdit frame-ancestors — utiliser le mode "external".',
+        reason: 'La CSP de ce site interdit frame-ancestors : utiliser le mode "external".',
       };
     }
     if (csp && /frame-ancestors/i.test(csp) && !/elwen\.dev/i.test(csp)) {
       return {
         embeddable: false,
         reason:
-          'La CSP de ce site restreint frame-ancestors à d\'autres domaines — utiliser le mode "external".',
+          'La CSP de ce site restreint frame-ancestors à d\'autres domaines : utiliser le mode "external".',
       };
     }
     return {
       embeddable: true,
-      reason: 'Aucun header ne bloque l\'iframe — le mode "iframe" devrait fonctionner.',
+      reason: 'Aucun header ne bloque l\'iframe : le mode "iframe" devrait fonctionner.',
     };
   } catch {
     return {

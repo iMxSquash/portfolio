@@ -3,7 +3,7 @@ import { createProject } from "@/app/admin/(protected)/projects/actions";
 import { ProjectForm } from "@/components/admin/ProjectForm";
 
 export const metadata: Metadata = {
-  title: "Nouveau projet — Backoffice",
+  title: "Nouveau projet, Backoffice",
 };
 
 export default function NewProjectPage() {

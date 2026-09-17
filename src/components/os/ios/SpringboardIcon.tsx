@@ -8,6 +8,8 @@ import { useIOSAppStore } from "@/stores/useIOSAppStore";
 
 type SpringboardIconProps = {
   app: AppDefinition;
+  /** First icon of the first page only — see `AppIcon`'s doc comment. */
+  priority?: boolean;
 };
 
 /**
@@ -17,7 +19,7 @@ type SpringboardIconProps = {
  * `external` apps never open a screen — `launchApp` routes them straight to
  * a new tab, same helper the macOS dock/desktop use.
  */
-export function SpringboardIcon({ app }: SpringboardIconProps) {
+export function SpringboardIcon({ app, priority = false }: SpringboardIconProps) {
   const openApp = useIOSAppStore((state) => state.openApp);
   const reducedMotion = useReducedMotion();
 
@@ -33,7 +35,7 @@ export function SpringboardIcon({ app }: SpringboardIconProps) {
         transition={{ layout: reducedMotion ? IOS_MORPH_TRANSITION_REDUCED : IOS_MORPH_TRANSITION }}
         className="block w-(--ios-springboard-icon-size)"
       >
-        <AppIcon app={app} />
+        <AppIcon app={app} priority={priority} />
       </motion.span>
       <span className="max-w-[72px] truncate text-[11px] font-medium text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.5)]">
         {app.name}

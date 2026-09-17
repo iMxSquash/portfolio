@@ -40,12 +40,12 @@ export function projectRowToApp(row: ProjectRow): AppDefinition {
 }
 
 /**
- * Visible project apps for the OS registry, fetched anonymously (RLS scopes
- * this to `visible = true`). Used server-side in `page.tsx` — see os-apps
- * skill for how the result gets merged with `SYSTEM_APPS` and handed to the
- * client via `useAppsStore`.
+ * Visible projects, fetched anonymously (RLS scopes this to `visible =
+ * true`). Used server-side in `page.tsx`, both for the OS app registry (via
+ * `getVisibleProjectApps`) and for the SEO fallback content, which needs the
+ * raw `description`/`tech` fields `AppDefinition` doesn't carry.
  */
-export async function getVisibleProjectApps(): Promise<AppDefinition[]> {
+export async function getVisibleProjectRows(): Promise<ProjectRow[]> {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("projects")
@@ -58,7 +58,13 @@ export async function getVisibleProjectApps(): Promise<AppDefinition[]> {
     return [];
   }
 
-  return (data as ProjectRow[]).map(projectRowToApp);
+  return data as ProjectRow[];
+}
+
+/** Project apps for the OS registry — see os-apps skill for how the result gets merged with `SYSTEM_APPS` and handed to the client via `useAppsStore`. */
+export async function getVisibleProjectApps(): Promise<AppDefinition[]> {
+  const rows = await getVisibleProjectRows();
+  return rows.map(projectRowToApp);
 }
 
 /** Every project (including hidden ones), for the `/admin/projects` list — requires an authenticated session (RLS). */

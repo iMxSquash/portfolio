@@ -6,7 +6,7 @@ import { AppIcon } from "@/components/os/AppIcon";
 import { getAllProjectRows } from "@/lib/projects";
 
 export const metadata: Metadata = {
-  title: "Projets — Backoffice",
+  title: "Projets, Backoffice",
 };
 
 export default async function ProjectsPage() {

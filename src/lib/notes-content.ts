@@ -30,9 +30,9 @@ export const NOTES: Note[] = [
     folderId: "about",
     title: "À propos de moi",
     date: "10 sept. 2026",
-    preview: "Développeur front-end passionné par les interfaces soignées et les détails qui...",
+    preview: "Développeur full-stack passionné par les interfaces soignées et les détails qui...",
     body: [
-      "Développeur front-end passionné par les interfaces soignées et les détails qui font qu'un produit semble vivant plutôt que fonctionnel.",
+      "Développeur full-stack passionné par les interfaces soignées et les détails qui font qu'un produit semble vivant plutôt que fonctionnel.",
       "Ce portfolio reproduit macOS et iOS jusque dans leurs petits détails : vibrancy, magnification du dock, traffic lights, springboard. C'est autant une vitrine de mes projets qu'un terrain de jeu technique.",
       "J'aime les stacks modernes (Next.js, TypeScript, Tailwind) et le travail bien fini, du store Zustand jusqu'au dernier pixel d'une ombre de fenêtre.",
     ],
@@ -70,8 +70,8 @@ export const NOTES: Note[] = [
     date: "10 sept. 2026",
     preview: "Le moyen le plus simple de me joindre reste l'e-mail...",
     body: [
-      "Le moyen le plus simple de me joindre reste l'e-mail : coussotelwen@gmail.com",
-      "Toujours partant pour discuter d'un projet, d'une opportunité, ou simplement échanger sur du développement front-end.",
+      "Le moyen le plus simple de me joindre reste l'e-mail : contact@elwen.dev",
+      "Toujours partant pour discuter d'un projet, d'une opportunité, ou simplement échanger sur du développement web.",
     ],
   },
 ];

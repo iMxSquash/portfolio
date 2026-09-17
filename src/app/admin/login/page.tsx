@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { LoginForm } from "@/components/admin/LoginForm";
 
 export const metadata: Metadata = {
-  title: "Connexion — Backoffice",
+  title: "Connexion, Backoffice",
+  robots: { index: false, follow: false },
 };
 
 export default function AdminLoginPage() {

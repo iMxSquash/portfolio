@@ -5,6 +5,8 @@ import type { AppDefinition } from "@/lib/apps";
 type AppIconProps = {
   app: Pick<AppDefinition, "icon" | "name">;
   className?: string;
+  /** Pass for the first above-the-fold icon on a surface visible at initial load (desktop, springboard) — Next flags whichever image ends up the LCP element without it (see TODO.md Phase 9 performance pass). */
+  priority?: boolean;
 };
 
 /**
@@ -17,13 +19,21 @@ type AppIconProps = {
  * glossy bevel Tahoe gives every system app icon — centralized here rather
  * than redrawn inside each icon SVG.
  */
-export function AppIcon({ app, className = "" }: AppIconProps) {
+export function AppIcon({ app, className = "", priority = false }: AppIconProps) {
   return (
     <span
       className={`relative block aspect-square w-full overflow-hidden rounded-[22.5%] ${className}`}
     >
       {typeof app.icon === "string" ? (
-        <Image src={app.icon} alt="" fill sizes="80px" className="object-cover" draggable={false} />
+        <Image
+          src={app.icon}
+          alt=""
+          fill
+          sizes="80px"
+          className="object-cover"
+          draggable={false}
+          priority={priority}
+        />
       ) : (
         <IconComponent icon={app.icon} />
       )}

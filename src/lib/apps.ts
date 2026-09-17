@@ -1,7 +1,9 @@
 import type { ComponentType } from "react";
 import dynamic from "next/dynamic";
+import { AboutThisMacIcon } from "@/components/apps/about/AboutThisMacIcon";
 import { FinderIcon } from "@/components/apps/finder/FinderIcon";
 import { NotesIcon } from "@/components/apps/notes/NotesIcon";
+import { TerminalIcon } from "@/components/apps/terminal/TerminalIcon";
 import { TrashIcon } from "@/components/apps/trash/TrashIcon";
 import type { Size } from "@/lib/window";
 
@@ -52,6 +54,14 @@ export type AppDefinition = {
    * for the traffic lights to live; verified against real macOS Finder.
    */
   windowStyle?: "standard" | "unified";
+  /**
+   * A true system panel (only "About This Mac" today), not a browsable app —
+   * real macOS never lists it in Finder/Applications and never shows it in
+   * the Dock, even while its window is open. Excluded from
+   * `getSystemComponentApps` and from the Dock's running-apps list (see
+   * `Dock.tsx`) by this one flag rather than by id in each consumer.
+   */
+  isSystemPanel?: boolean;
 };
 
 /**
@@ -61,12 +71,21 @@ export type AppDefinition = {
  */
 export const TRASH_APP_ID = "trash";
 
+/** Well-known id for the "About This Mac" easter egg (see os-apps skill / TODO.md Phase 9) — looked up to open it from the Apple menu, see `MenuBar.tsx`. */
+export const ABOUT_THIS_MAC_APP_ID = "about-this-mac";
+
 const Finder = dynamic(() => import("@/components/apps/finder/Finder").then((mod) => mod.Finder));
 const Notes = dynamic(() => import("@/components/apps/notes/Notes").then((mod) => mod.Notes));
 const NotesMobile = dynamic(() =>
   import("@/components/apps/notes/NotesMobile").then((mod) => mod.NotesMobile),
 );
 const Trash = dynamic(() => import("@/components/apps/trash/Trash").then((mod) => mod.Trash));
+const AboutThisMac = dynamic(() =>
+  import("@/components/apps/about/AboutThisMac").then((mod) => mod.AboutThisMac),
+);
+const Terminal = dynamic(() =>
+  import("@/components/apps/terminal/Terminal").then((mod) => mod.Terminal),
+);
 
 /**
  * System apps, declared statically — never sourced from Supabase (see
@@ -118,6 +137,32 @@ export const SYSTEM_APPS: AppDefinition[] = [
     // Same chrome as Finder (own sidebar carries the traffic lights) — the
     // Trash is technically a Finder window, see os-apps skill.
     windowStyle: "unified",
+  },
+  {
+    id: ABOUT_THIS_MAC_APP_ID,
+    name: "À propos de ce Mac",
+    icon: AboutThisMacIcon,
+    type: "component",
+    component: AboutThisMac,
+    // Opened from the Apple menu only — never on the desktop/dock/springboard/Finder.
+    showOnDesktop: false,
+    showOnMobile: false,
+    isSystemPanel: true,
+    defaultSize: { width: 360, height: 440 },
+    minSize: { width: 360, height: 440 },
+  },
+  {
+    id: "terminal",
+    name: "Terminal",
+    icon: TerminalIcon,
+    type: "component",
+    component: Terminal,
+    // Easter egg: discoverable via Finder/Applications and Spotlight, but
+    // not surfaced on the desktop/dock/springboard (see TODO.md Phase 9).
+    showOnDesktop: false,
+    showOnMobile: false,
+    defaultSize: { width: 640, height: 420 },
+    minSize: { width: 420, height: 280 },
   },
 ];
 
@@ -181,7 +226,18 @@ export function getProjectApps(apps: AppDefinition[]): AppDefinition[] {
   return apps.filter((app) => app.type === "iframe" || app.type === "external");
 }
 
-/** Component-type (system) apps — what Finder's "Applications" favorite lists. */
+/** Component-type (system) apps — what Finder's "Applications" favorite lists. Excludes system panels (see `AppDefinition.isSystemPanel`). */
 export function getSystemComponentApps(apps: AppDefinition[]): AppDefinition[] {
-  return apps.filter((app) => app.type === "component");
+  return apps.filter((app) => app.type === "component" && !app.isSystemPanel);
+}
+
+/**
+ * The first app whose icon is an image asset rather than an SVG component —
+ * only that kind renders a next/image `<Image>` (see `AppIcon`), so it's the
+ * only one that can be the page's LCP element. Shared by the desktop icon
+ * column and the iOS springboard's first page so each marks the right icon
+ * `priority` without re-deriving this per grid.
+ */
+export function findFirstImageIconId(apps: AppDefinition[]): string | undefined {
+  return apps.find((app) => typeof app.icon === "string")?.id;
 }

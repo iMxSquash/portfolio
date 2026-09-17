@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import type { OSMode } from "@/lib/device";
 import { hasSeenBootThisSession, markBootSeenThisSession } from "@/lib/boot";
+import { playSystemSound } from "@/lib/sounds";
 import { useIsomorphicLayoutEffect } from "@/lib/use-isomorphic-layout-effect";
 import { useBootStore } from "@/stores/useBootStore";
 import { BootIntro } from "./boot/BootIntro";
@@ -55,7 +56,13 @@ export function BootScreen({ mode }: { mode: OSMode }) {
           <UnlockScreen
             key="login"
             unlocking={stage === "unlocking"}
-            onUnlockClick={() => setStage("unlocking")}
+            onUnlockClick={() => {
+              // The click/swipe that unlocks is a real user gesture, which
+              // browsers require before any audio can play — see
+              // `playSystemSound`'s doc comment.
+              playSystemSound("startup");
+              setStage("unlocking");
+            }}
             onUnlockComplete={() => {
               markBootSeenThisSession();
               setStage("done");
