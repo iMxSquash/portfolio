@@ -172,13 +172,13 @@
 
 ## Phase 9 — Polish & mise en ligne
 
-- [ ] SEO : metadata, title/description, image Open Graph (screenshot du bureau), sitemap, favicon
-- [ ] ⚠️ Le contenu étant très interactif, prévoir un fallback SEO : contenu textuel des projets rendu côté serveur (visible pour les crawlers, par ex. dans le HTML des fenêtres)
-- [ ] Performance : `next/dynamic` pour chaque app (chargée à l'ouverture de la fenêtre), images optimisées (`next/image`), lazy iframes
-- [ ] Accessibilité : navigation clavier (Tab entre fenêtres, Échap pour fermer), `prefers-reduced-motion` → désactiver les grosses animations, contrastes
-- [ ] Easter eggs : « À propos de ce Mac » avec mes specs perso, sons système, Terminal factice avec commandes (`whoami`, `ls projects`)…
+- [x] SEO : metadata, title/description, image Open Graph (screenshot du bureau), sitemap, favicon
+- [x] ⚠️ Le contenu étant très interactif, prévoir un fallback SEO : contenu textuel des projets rendu côté serveur (visible pour les crawlers, par ex. dans le HTML des fenêtres)
+- [x] Performance : `next/dynamic` pour chaque app (chargée à l'ouverture de la fenêtre), images optimisées (`next/image`), lazy iframes
+- [x] Accessibilité : navigation clavier (Tab entre fenêtres, Échap pour fermer), `prefers-reduced-motion` → désactiver les grosses animations, contrastes
+- [x] Easter eggs : « À propos de ce Mac » avec mes specs perso, sons système, Terminal factice avec commandes (`whoami`, `ls projects`)…
 - [ ] Tests cross-browser (Safari est le plus piégeux sur `backdrop-filter` et les iframes) + vrais devices iOS/Android
-- [ ] Lighthouse ≥ 90 sur les métriques principales
+- [x] Lighthouse ≥ 90 sur les métriques principales
 - [ ] Mise en prod sur `elwen.dev` 🚀
 
 ---
