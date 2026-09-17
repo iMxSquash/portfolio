@@ -312,17 +312,103 @@ const PRIVATE_HOSTNAME_PATTERNS = [
 
 export type EmbedCheckResult = { embeddable: boolean; reason: string };
 
-/** HEAD is enough to read the embedding-relevant headers — falls back to GET only if the server rejects HEAD. */
-async function fetchForEmbedCheck(url: URL): Promise<Response> {
-  const headResponse = await fetch(url, {
-    method: "HEAD",
-    redirect: "follow",
-    signal: AbortSignal.timeout(8000),
-  });
-  if (headResponse.status === 405 || headResponse.status === 501) {
-    return fetch(url, { method: "GET", redirect: "follow", signal: AbortSignal.timeout(8000) });
+const MAX_EMBED_CHECK_REDIRECTS = 5;
+
+function isPrivateIPv4(address: string): boolean {
+  const octets = address.split(".").map(Number);
+  if (octets.length !== 4 || octets.some((octet) => !Number.isInteger(octet))) return true;
+  const [a, b] = octets;
+  return (
+    a === 0 ||
+    a === 127 ||
+    a === 10 ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168) ||
+    (a === 169 && b === 254) ||
+    (a === 100 && b >= 64 && b <= 127) // CGNAT — also used internally by some cloud providers
+  );
+}
+
+function isPrivateIPv6(address: string): boolean {
+  const normalized = address.toLowerCase();
+  if (normalized === "::1" || normalized === "::") return true;
+  if (
+    normalized.startsWith("fe80:") ||
+    normalized.startsWith("fc") ||
+    normalized.startsWith("fd")
+  ) {
+    return true;
   }
-  return headResponse;
+  // IPv4-mapped (::ffff:a.b.c.d) — validate the embedded IPv4 address too.
+  const mapped = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/.exec(normalized);
+  return mapped ? isPrivateIPv4(mapped[1]) : false;
+}
+
+/**
+ * Resolves `hostname` and rejects it if it (or any of its resolved IPs) is
+ * private/loopback/link-local — blocks SSRF toward internal infrastructure
+ * (including cloud metadata endpoints like 169.254.169.254) via a public
+ * domain name that resolves to an internal address (DNS rebinding). A
+ * literal-hostname check alone doesn't catch this — see check-security
+ * skill, A10.
+ */
+async function assertPublicHostname(hostname: string): Promise<void> {
+  if (PRIVATE_HOSTNAME_PATTERNS.some((pattern) => pattern.test(hostname))) {
+    throw new Error("private hostname");
+  }
+  const { lookup } = await import("node:dns/promises");
+  const records = await lookup(hostname, { all: true, verbatim: true });
+  if (records.length === 0) {
+    throw new Error("hostname did not resolve");
+  }
+  for (const record of records) {
+    const isPrivate =
+      record.family === 4 ? isPrivateIPv4(record.address) : isPrivateIPv6(record.address);
+    if (isPrivate) {
+      throw new Error("hostname resolves to a private address");
+    }
+  }
+}
+
+/**
+ * HEAD is enough to read the embedding-relevant headers — falls back to GET
+ * only if the server rejects HEAD. Redirects are followed manually (instead
+ * of `redirect: "follow"`) so every hop's hostname is re-resolved and
+ * re-validated against private/internal ranges before being fetched — a
+ * redirect can point somewhere the original URL didn't.
+ */
+async function fetchForEmbedCheck(url: URL): Promise<Response> {
+  let currentUrl = url;
+
+  for (let hop = 0; hop <= MAX_EMBED_CHECK_REDIRECTS; hop++) {
+    if (currentUrl.protocol !== "https:") {
+      throw new Error("redirected to a non-https URL");
+    }
+    await assertPublicHostname(currentUrl.hostname);
+
+    let response = await fetch(currentUrl, {
+      method: "HEAD",
+      redirect: "manual",
+      signal: AbortSignal.timeout(8000),
+    });
+    if (response.status === 405 || response.status === 501) {
+      response = await fetch(currentUrl, {
+        method: "GET",
+        redirect: "manual",
+        signal: AbortSignal.timeout(8000),
+      });
+    }
+
+    if (response.status >= 300 && response.status < 400) {
+      const location = response.headers.get("location");
+      if (!location) return response;
+      currentUrl = new URL(location, currentUrl);
+      continue;
+    }
+    return response;
+  }
+
+  throw new Error("too many redirects");
 }
 
 /** Fetches `url` server-side and inspects the headers that control iframe embedding — suggests `iframe` vs `external` for the form (see TODO.md Phase 7). */
@@ -339,7 +425,9 @@ export const checkEmbeddability = withAdmin(async function checkEmbeddability(
   if (parsedUrl.protocol !== "https:") {
     return { embeddable: false, reason: "L'URL doit être en https." };
   }
-  if (PRIVATE_HOSTNAME_PATTERNS.some((pattern) => pattern.test(parsedUrl.hostname))) {
+  try {
+    await assertPublicHostname(parsedUrl.hostname);
+  } catch {
     return { embeddable: false, reason: "Cette adresse n'est pas vérifiable." };
   }
 
