@@ -185,3 +185,14 @@ export function getProjectApps(apps: AppDefinition[]): AppDefinition[] {
 export function getSystemComponentApps(apps: AppDefinition[]): AppDefinition[] {
   return apps.filter((app) => app.type === "component");
 }
+
+/**
+ * The first app whose icon is an image asset rather than an SVG component —
+ * only that kind renders a next/image `<Image>` (see `AppIcon`), so it's the
+ * only one that can be the page's LCP element. Shared by the desktop icon
+ * column and the iOS springboard's first page so each marks the right icon
+ * `priority` without re-deriving this per grid.
+ */
+export function findFirstImageIconId(apps: AppDefinition[]): string | undefined {
+  return apps.find((app) => typeof app.icon === "string")?.id;
+}

@@ -3,7 +3,7 @@
 import type { KeyboardEvent } from "react";
 import { AppIcon } from "@/components/os/AppIcon";
 import { focusListSibling } from "@/lib/arrow-key-nav";
-import { getDesktopApps, launchApp, type AppDefinition } from "@/lib/apps";
+import { findFirstImageIconId, getDesktopApps, launchApp, type AppDefinition } from "@/lib/apps";
 import { useWindowStore } from "@/stores/useWindowStore";
 
 type DesktopIconsProps = {
@@ -22,6 +22,7 @@ type DesktopIconsProps = {
 export function DesktopIcons({ apps, selectedIds, onSelect }: DesktopIconsProps) {
   const openWindow = useWindowStore((state) => state.openWindow);
   const desktopApps = getDesktopApps(apps);
+  const firstImageIconId = findFirstImageIconId(desktopApps);
 
   if (desktopApps.length === 0) return null;
 
@@ -49,7 +50,7 @@ export function DesktopIcons({ apps, selectedIds, onSelect }: DesktopIconsProps)
           className="pointer-events-auto flex w-20 flex-col items-center gap-1 rounded p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           <span className="w-12">
-            <AppIcon app={app} />
+            <AppIcon app={app} priority={app.id === firstImageIconId} />
           </span>
           <span
             className={`rounded px-1.5 py-0.5 text-center text-[12px] text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.6)] ${

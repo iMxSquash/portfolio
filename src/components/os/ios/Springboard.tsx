@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { getMobileApps, type AppDefinition } from "@/lib/apps";
+import { findFirstImageIconId, getMobileApps, type AppDefinition } from "@/lib/apps";
 import {
   chunkIntoPages,
   IOS_STATUS_BAR_CLEARANCE,
@@ -41,6 +41,8 @@ export function Springboard({ apps }: SpringboardProps) {
   // Every mobile-visible app, dock ones included — real iOS allows an app to
   // live on a springboard page and in the dock at once (see getIOSDockApps).
   const pages = chunkIntoPages(getMobileApps(apps), columns * rows);
+  // Scoped to the first page only — that's the only one visible at initial load.
+  const firstImageIconId = findFirstImageIconId(pages[0] ?? []);
 
   function handleScroll() {
     const el = scrollRef.current;
@@ -74,7 +76,7 @@ export function Springboard({ apps }: SpringboardProps) {
             }}
           >
             {pageApps.map((app) => (
-              <SpringboardIcon key={app.id} app={app} />
+              <SpringboardIcon key={app.id} app={app} priority={app.id === firstImageIconId} />
             ))}
           </div>
         ))}
