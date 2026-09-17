@@ -9,7 +9,10 @@ export type ProjectFormState = { error?: string };
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
 const DISPLAY_MODES = ["iframe", "external"] as const;
-const ALLOWED_LOGO_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/svg+xml"]);
+// SVG deliberately excluded — it can embed <script>, which would be a
+// stored-XSS vector served straight from the public `logos` bucket (see
+// check-security skill, "Invariants elwen.dev").
+const ALLOWED_LOGO_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 const MAX_LOGO_SIZE_BYTES = 2 * 1024 * 1024;
 const LOGOS_PUBLIC_PATH_MARKER = "/storage/v1/object/public/logos/";
 
@@ -127,13 +130,13 @@ async function uploadLogo(
   slug: string,
 ): Promise<{ url: string } | { error: string }> {
   if (!ALLOWED_LOGO_TYPES.has(file.type)) {
-    return { error: "Format de logo non supporté (PNG, JPEG, WebP ou SVG uniquement)." };
+    return { error: "Format de logo non supporté (PNG, JPEG ou WebP uniquement)." };
   }
   if (file.size > MAX_LOGO_SIZE_BYTES) {
     return { error: "Le logo dépasse la taille maximale de 2 Mo." };
   }
 
-  const extension = file.type === "image/svg+xml" ? "svg" : file.type.split("/")[1];
+  const extension = file.type.split("/")[1];
   const path = `${slug}-${Date.now()}.${extension}`;
 
   const { error } = await supabase.storage.from("logos").upload(path, file, {
