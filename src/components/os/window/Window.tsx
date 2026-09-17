@@ -9,6 +9,7 @@ import type {
 import { motion, useMotionValue, useReducedMotion } from "framer-motion";
 import type { AppDefinition } from "@/lib/apps";
 import { TITLE_BAR_GLASS, TITLE_BAR_GLASS_INACTIVE } from "@/lib/glass-presets";
+import { playSystemSound } from "@/lib/sounds";
 import { useLiquidGlass } from "@/lib/use-liquid-glass";
 import {
   WINDOW_OPEN_TRANSITION,
@@ -231,8 +232,14 @@ export function Window({ app, state, children, titleBarTrailing }: WindowProps) 
   const isUnified = app.windowStyle === "unified";
   const contentBgClass = isUnified ? "" : "bg-window-canvas";
 
-  const handleClose = useCallback(() => closeWindow(app.id), [closeWindow, app.id]);
-  const handleMinimize = useCallback(() => minimizeWindow(app.id), [minimizeWindow, app.id]);
+  const handleClose = useCallback(() => {
+    playSystemSound("close");
+    closeWindow(app.id);
+  }, [closeWindow, app.id]);
+  const handleMinimize = useCallback(() => {
+    playSystemSound("minimize");
+    minimizeWindow(app.id);
+  }, [minimizeWindow, app.id]);
 
   const trafficLights = useMemo(
     () => (
