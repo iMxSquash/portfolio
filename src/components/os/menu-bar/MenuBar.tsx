@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { SiteLogo } from "@/components/icons/SiteLogo";
 import { SpotlightIcon } from "@/components/os/spotlight/Spotlight";
-import { getApp, type AppDefinition } from "@/lib/apps";
+import { ABOUT_THIS_MAC_APP_ID, getApp, launchApp, type AppDefinition } from "@/lib/apps";
 import { relockSession } from "@/lib/boot";
 import { APPLE_MENU_ITEMS, DEFAULT_APP_MENUS } from "@/lib/menu-bar";
 import { useBootStore } from "@/stores/useBootStore";
@@ -28,6 +28,7 @@ export function MenuBar({ apps }: MenuBarProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const focusedAppId = useWindowStore((state) => state.focusedAppId);
+  const openWindow = useWindowStore((state) => state.openWindow);
   const setBootStage = useBootStore((state) => state.setStage);
 
   const toggleSpotlight = useSpotlightStore((state) => state.toggle);
@@ -100,6 +101,9 @@ export function MenuBar({ apps }: MenuBarProps) {
                 setOpenMenuId(null);
                 if (item.id === "lock") {
                   relockSession(setBootStage);
+                } else if (item.id === "about") {
+                  const aboutApp = getApp(apps, ABOUT_THIS_MAC_APP_ID);
+                  if (aboutApp) launchApp(aboutApp, openWindow);
                 }
               }}
             />

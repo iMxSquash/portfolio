@@ -37,11 +37,18 @@ export function Dock({ apps }: DockProps) {
   const trashApp = getApp(apps, TRASH_APP_ID);
   // `windows` only ever holds open windows (closeWindow removes the entry —
   // see useWindowStore), so "running" is just "present here", regardless of
-  // isMinimized.
+  // isMinimized. System panels (see `AppDefinition.isSystemPanel`) never
+  // show here even while open — real macOS doesn't put "About This Mac" in
+  // the Dock either.
   const runningUnpinnedApps = Object.values(windows)
-    .filter((win) => win.appId !== TRASH_APP_ID && !pinnedApps.some((app) => app.id === win.appId))
+    .filter((win) => win.appId !== TRASH_APP_ID)
     .map((win) => getApp(apps, win.appId))
-    .filter((app): app is AppDefinition => app !== undefined);
+    .filter(
+      (app): app is AppDefinition =>
+        app !== undefined &&
+        !app.isSystemPanel &&
+        !pinnedApps.some((pinned) => pinned.id === app.id),
+    );
 
   if (pinnedApps.length === 0 && runningUnpinnedApps.length === 0 && !trashApp) return null;
 
