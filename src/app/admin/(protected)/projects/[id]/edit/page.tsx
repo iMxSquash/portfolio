@@ -5,7 +5,7 @@ import { ProjectForm } from "@/components/admin/ProjectForm";
 import { getProjectRowById } from "@/lib/projects";
 
 export const metadata: Metadata = {
-  title: "Modifier un projet — Backoffice",
+  title: "Modifier un projet, Backoffice",
 };
 
 export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {

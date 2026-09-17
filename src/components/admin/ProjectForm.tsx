@@ -51,7 +51,7 @@ export function ProjectForm({ action, project }: ProjectFormProps) {
       <Field
         label="Slug"
         htmlFor="slug"
-        hint="Identifiant unique (ex. photoshop) — dérivé du nom si laissé vide."
+        hint="Identifiant unique (ex. photoshop), dérivé du nom si laissé vide."
       >
         <input
           id="slug"
@@ -139,7 +139,7 @@ export function ProjectForm({ action, project }: ProjectFormProps) {
               <AppIcon app={{ icon: project.logo_url, name: project.name }} />
             </div>
             <span className="text-xs text-neutral-500">
-              Logo actuel — laisser vide pour le garder
+              Logo actuel, laisser vide pour le garder
             </span>
           </div>
         ) : null}
