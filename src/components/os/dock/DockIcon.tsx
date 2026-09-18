@@ -10,7 +10,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { AppIcon } from "@/components/os/AppIcon";
-import { launchApp, type AppDefinition } from "@/lib/apps";
+import { launchApp, TRASH_APP_ID, type AppDefinition } from "@/lib/apps";
 import {
   DOCK_ICON_MAGNIFIED_SIZE,
   DOCK_ICON_REST_SIZE,
@@ -94,7 +94,7 @@ export function DockIcon({ app, mouseX, isOpen }: DockIconProps) {
         }}
         className="flex items-end justify-center"
       >
-        <AppIcon app={app} />
+        <AppIcon app={app} glossOverlay={app.id !== TRASH_APP_ID} />
       </motion.button>
 
       <span

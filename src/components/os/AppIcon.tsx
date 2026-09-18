@@ -7,6 +7,8 @@ type AppIconProps = {
   className?: string;
   /** Pass for the first above-the-fold icon on a surface visible at initial load (desktop, springboard) — Next flags whichever image ends up the LCP element without it (see TODO.md Phase 9 performance pass). */
   priority?: boolean;
+  /** Set false to skip the glass gloss overlay — the Trash's dock icon is real photographed artwork with its own lighting, see `DockIcon.tsx`. */
+  glossOverlay?: boolean;
 };
 
 /**
@@ -19,7 +21,12 @@ type AppIconProps = {
  * glossy bevel Tahoe gives every system app icon — centralized here rather
  * than redrawn inside each icon SVG.
  */
-export function AppIcon({ app, className = "", priority = false }: AppIconProps) {
+export function AppIcon({
+  app,
+  className = "",
+  priority = false,
+  glossOverlay = true,
+}: AppIconProps) {
   return (
     <span
       className={`relative block aspect-square w-full overflow-hidden rounded-[22.5%] ${className}`}
@@ -37,15 +44,17 @@ export function AppIcon({ app, className = "", priority = false }: AppIconProps)
       ) : (
         <IconComponent icon={app.icon} />
       )}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(155deg, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0.12) 18%, rgb(255 255 255 / 0) 45%, rgb(0 0 0 / 0.1) 100%)",
-          boxShadow: "inset 0 -1px 1px rgb(0 0 0 / 0.15), inset 0 1px 0 rgb(255 255 255 / 0.35)",
-        }}
-      />
+      {glossOverlay ? (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(155deg, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0.12) 18%, rgb(255 255 255 / 0) 45%, rgb(0 0 0 / 0.1) 100%)",
+            boxShadow: "inset 0 -1px 1px rgb(0 0 0 / 0.15), inset 0 1px 0 rgb(255 255 255 / 0.35)",
+          }}
+        />
+      ) : null}
     </span>
   );
 }
