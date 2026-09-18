@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { fetchWithSsrfGuard, isPublicHostname } from "@/lib/ssrf-guard";
 import { createClient } from "@/lib/supabase/server";
 
 export type ProjectFormState = { error?: string };
@@ -9,7 +10,10 @@ export type ProjectFormState = { error?: string };
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
 const DISPLAY_MODES = ["iframe", "external"] as const;
-const ALLOWED_LOGO_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/svg+xml"]);
+// SVG deliberately excluded — it can embed <script>, which would be a
+// stored-XSS vector served straight from the public `logos` bucket (see
+// check-security skill, "Invariants elwen.dev").
+const ALLOWED_LOGO_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 const MAX_LOGO_SIZE_BYTES = 2 * 1024 * 1024;
 const LOGOS_PUBLIC_PATH_MARKER = "/storage/v1/object/public/logos/";
 
@@ -127,13 +131,13 @@ async function uploadLogo(
   slug: string,
 ): Promise<{ url: string } | { error: string }> {
   if (!ALLOWED_LOGO_TYPES.has(file.type)) {
-    return { error: "Format de logo non supporté (PNG, JPEG, WebP ou SVG uniquement)." };
+    return { error: "Format de logo non supporté (PNG, JPEG ou WebP uniquement)." };
   }
   if (file.size > MAX_LOGO_SIZE_BYTES) {
     return { error: "Le logo dépasse la taille maximale de 2 Mo." };
   }
 
-  const extension = file.type === "image/svg+xml" ? "svg" : file.type.split("/")[1];
+  const extension = file.type.split("/")[1];
   const path = `${slug}-${Date.now()}.${extension}`;
 
   const { error } = await supabase.storage.from("logos").upload(path, file, {
@@ -299,28 +303,16 @@ export const moveProject = withAdmin(async function moveProject(
   revalidateProjectPaths();
 });
 
-const PRIVATE_HOSTNAME_PATTERNS = [
-  /^localhost$/i,
-  /^0\.0\.0\.0$/,
-  /^127\./,
-  /^10\./,
-  /^192\.168\./,
-  /^172\.(1[6-9]|2\d|3[0-1])\./,
-  /^169\.254\./,
-  /^\[?::1\]?$/,
-];
-
 export type EmbedCheckResult = { embeddable: boolean; reason: string };
 
-/** HEAD is enough to read the embedding-relevant headers — falls back to GET only if the server rejects HEAD. */
+/** HEAD is enough to read the embedding-relevant headers — falls back to GET only if the server rejects HEAD. Redirect hosts are re-validated against private/internal IP ranges by `fetchWithSsrfGuard` (see src/lib/ssrf-guard.ts). */
 async function fetchForEmbedCheck(url: URL): Promise<Response> {
-  const headResponse = await fetch(url, {
+  const headResponse = await fetchWithSsrfGuard(url, {
     method: "HEAD",
-    redirect: "follow",
     signal: AbortSignal.timeout(8000),
   });
   if (headResponse.status === 405 || headResponse.status === 501) {
-    return fetch(url, { method: "GET", redirect: "follow", signal: AbortSignal.timeout(8000) });
+    return fetchWithSsrfGuard(url, { method: "GET", signal: AbortSignal.timeout(8000) });
   }
   return headResponse;
 }
@@ -339,7 +331,7 @@ export const checkEmbeddability = withAdmin(async function checkEmbeddability(
   if (parsedUrl.protocol !== "https:") {
     return { embeddable: false, reason: "L'URL doit être en https." };
   }
-  if (PRIVATE_HOSTNAME_PATTERNS.some((pattern) => pattern.test(parsedUrl.hostname))) {
+  if (!(await isPublicHostname(parsedUrl.hostname))) {
     return { embeddable: false, reason: "Cette adresse n'est pas vérifiable." };
   }
 

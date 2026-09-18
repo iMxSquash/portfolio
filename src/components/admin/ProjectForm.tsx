@@ -131,7 +131,7 @@ export function ProjectForm({ action, project }: ProjectFormProps) {
       <Field
         label={project ? "Remplacer le logo" : "Logo"}
         htmlFor="logo"
-        hint="PNG, JPEG, WebP ou SVG, 2 Mo maximum."
+        hint="PNG, JPEG ou WebP, 2 Mo maximum."
       >
         {project?.logo_url ? (
           <div className="mb-2 flex items-center gap-3">
@@ -147,7 +147,7 @@ export function ProjectForm({ action, project }: ProjectFormProps) {
           id="logo"
           name="logo"
           type="file"
-          accept="image/png,image/jpeg,image/webp,image/svg+xml"
+          accept="image/png,image/jpeg,image/webp"
           required={!project}
           className="text-sm"
         />
