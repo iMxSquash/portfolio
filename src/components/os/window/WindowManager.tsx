@@ -83,7 +83,7 @@ export function WindowManager({ apps }: WindowManagerProps) {
             titleBarTrailing={iframeUrl ? <OpenFullscreenButton url={iframeUrl} /> : null}
           >
             {app.type === "component" && app.component ? <app.component /> : null}
-            {iframeUrl ? <IframeWindow url={iframeUrl} /> : null}
+            {iframeUrl ? <IframeWindow appId={app.id} url={iframeUrl} /> : null}
           </Window>
         );
       })}
