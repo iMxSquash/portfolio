@@ -1,4 +1,6 @@
 import type { ComponentType } from "react";
+import { ApplicationsIcon } from "@/components/icons/ApplicationsIcon";
+import { DesktopIcon } from "@/components/icons/DesktopIcon";
 import { FolderIcon } from "@/components/icons/FolderIcon";
 import { TrashGlyphIcon } from "@/components/icons/TrashGlyphIcon";
 
@@ -19,7 +21,7 @@ export type FinderFavorite = {
  */
 export const FINDER_FAVORITES: FinderFavorite[] = [
   { id: "projects", label: "Projets", icon: FolderIcon },
-  { id: "applications", label: "Applications", icon: FolderIcon },
-  { id: "desktop", label: "Bureau", icon: FolderIcon },
+  { id: "applications", label: "Applications", icon: ApplicationsIcon },
+  { id: "desktop", label: "Bureau", icon: DesktopIcon },
   { id: "trash", label: "Corbeille", icon: TrashGlyphIcon },
 ];
