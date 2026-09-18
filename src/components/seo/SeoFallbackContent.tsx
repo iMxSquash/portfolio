@@ -1,7 +1,13 @@
 import { DISPLAY_NAME } from "@/lib/boot";
 import { NOTE_FOLDERS, NOTES } from "@/lib/notes-content";
 import type { ProjectRow } from "@/lib/projects";
-import { buildProjectsJsonLd, buildSiteJsonLd, CONTACT_EMAIL, SITE_TAGLINE } from "@/lib/seo";
+import {
+  buildProjectsJsonLd,
+  buildSiteJsonLd,
+  CONTACT_EMAIL,
+  safeJsonLdStringify,
+  SITE_TAGLINE,
+} from "@/lib/seo";
 
 type SeoFallbackContentProps = {
   projects: ProjectRow[];
@@ -71,13 +77,12 @@ export function SeoFallbackContent({ projects }: SeoFallbackContentProps) {
 
       <script
         type="application/ld+json"
-        // JSON-LD only — see buildSiteJsonLd/buildProjectsJsonLd, no user input reaches this
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildSiteJsonLd()) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(buildSiteJsonLd()) }}
       />
       {projects.length > 0 ? (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildProjectsJsonLd(projects)) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(buildProjectsJsonLd(projects)) }}
         />
       ) : null}
     </div>
