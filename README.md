@@ -35,13 +35,13 @@ _A portfolio that behaves like a real OS, not a website pretending to be one_
 
 Everything lives in one Next.js (App Router) project: the portfolio itself, the `/admin` backoffice, and its API routes.
 
-| Concern | Approach |
-| --- | --- |
-| Window state | One Zustand store (`useWindowStore`): no window position/size ever lives in local component state |
-| App registry | `src/lib/apps.ts`: every openable thing (system app, iframe project, external link) is declared once; desktop, dock, Finder and the iOS springboard only read it |
-| Liquid Glass | `src/lib/glass-presets.ts`: a typed `LiquidGlassConfig` per HIG role (dock, sidebar, title bar, popover, ...), the single source of truth for every translucent surface |
-| Managed content | Projects live in Supabase (Postgres + Storage for logos); editorial content (CV notes, trash content) ships in the repo as TypeScript/MDX |
-| Auth | Supabase Auth, single admin account, protecting `/admin` |
+| Concern         | Approach                                                                                                                                                                |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Window state    | One Zustand store (`useWindowStore`): no window position/size ever lives in local component state                                                                       |
+| App registry    | `src/lib/apps.ts`: every openable thing (system app, iframe project, external link) is declared once; desktop, dock, Finder and the iOS springboard only read it        |
+| Liquid Glass    | `src/lib/glass-presets.ts`: a typed `LiquidGlassConfig` per HIG role (dock, sidebar, title bar, popover, ...), the single source of truth for every translucent surface |
+| Managed content | Projects live in Supabase (Postgres + Storage for logos); editorial content (CV notes, trash content) ships in the repo as TypeScript/MDX                               |
+| Auth            | Supabase Auth, single admin account, protecting `/admin`                                                                                                                |
 
 Desktop renders the windowed macOS experience; mobile/tablet (detected via `pointer: coarse` + width, not width alone) renders the iOS springboard instead. Finder and Trash are desktop-only. Apps are code-split with `next/dynamic` on first open and stay mounted once minimized.
 
@@ -66,11 +66,11 @@ cp .env.example .env.local
 
 Fill in `.env.local`:
 
-| Variable | Description |
-| --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL (dashboard → Settings → API) |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key (same page) |
-| `404_URL` | Where unknown routes redirect to (the `introuvable` mini-game, server-side only) |
+| Variable                        | Description                                                                      |
+| ------------------------------- | -------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL (dashboard → Settings → API)                                |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key (same page)                                               |
+| `404_URL`                       | Where unknown routes redirect to (the `introuvable` mini-game, server-side only) |
 
 ### Run locally
 
@@ -82,13 +82,13 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Scripts
 
-| Script | Description |
-| --- | --- |
-| `npm run dev` | Start the dev server |
-| `npm run build` | Production build |
-| `npm run start` | Start the production build |
-| `npm run lint` | Run ESLint |
-| `npm run typecheck` | Run `tsc --noEmit` |
+| Script                            | Description                     |
+| --------------------------------- | ------------------------------- |
+| `npm run dev`                     | Start the dev server            |
+| `npm run build`                   | Production build                |
+| `npm run start`                   | Start the production build      |
+| `npm run lint`                    | Run ESLint                      |
+| `npm run typecheck`               | Run `tsc --noEmit`              |
 | `npm run format` / `format:check` | Format (or check) with Prettier |
 
 ## Project structure
