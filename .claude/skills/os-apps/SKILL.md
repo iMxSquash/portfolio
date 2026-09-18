@@ -48,6 +48,7 @@ Composant unique `<IframeWindow url>` pour tous les projets iframe :
 - ⚠️ Rappel window manager : pendant drag/resize, l'iframe doit passer en `pointer-events: none` (voir skill os-window-manager).
 - Ne **pas** démonter l'iframe au minimize (l'état du projet embarqué serait perdu).
 - Côté projet embarqué : header `Content-Security-Policy: frame-ancestors 'self' https://elwen.dev` requis, et ne pas envoyer `X-Frame-Options: DENY`.
+- **Menu bar pilotée par l'iframe** : canal `postMessage` générique (`src/lib/iframe-app-channel.ts`, store `useIframeAppChannelStore`, listener unique `IframeAppChannelListener` monté dans `OS.tsx`). L'iframe envoie ses `MenuDefinition[]` (`{ separator: true }` autorisé), la menu bar les affiche en priorité sur `AppDefinition.menus`, et un clic sur un item est renvoyé à l'iframe (`menu-command`). `event.origin` est vérifié contre l'URL du registre, jamais contre l'identité déclarée dans le message. Miroir côté projet : `src/lib/portfolio-channel.ts` de `adobe-apps` (à garder synchronisé, pas de package partagé).
 
 ## Apps `external`
 

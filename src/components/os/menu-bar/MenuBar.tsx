@@ -3,10 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import { SiteLogo } from "@/components/icons/SiteLogo";
 import { SpotlightIcon } from "@/components/os/spotlight/Spotlight";
-import { ABOUT_THIS_MAC_APP_ID, getApp, launchApp, type AppDefinition } from "@/lib/apps";
+import {
+  ABOUT_THIS_MAC_APP_ID,
+  getApp,
+  isMenuSeparator,
+  launchApp,
+  type AppDefinition,
+} from "@/lib/apps";
 import { relockSession } from "@/lib/boot";
 import { APPLE_MENU_ITEMS, DEFAULT_APP_MENUS } from "@/lib/menu-bar";
 import { useBootStore } from "@/stores/useBootStore";
+import { useIframeAppChannelStore } from "@/stores/useIframeAppChannelStore";
 import { useSpotlightStore } from "@/stores/useSpotlightStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 import { Clock } from "./Clock";
@@ -30,12 +37,18 @@ export function MenuBar({ apps }: MenuBarProps) {
   const focusedAppId = useWindowStore((state) => state.focusedAppId);
   const openWindow = useWindowStore((state) => state.openWindow);
   const setBootStage = useBootStore((state) => state.setStage);
+  const sendMenuCommand = useIframeAppChannelStore((state) => state.sendMenuCommand);
+  const liveMenus = useIframeAppChannelStore((state) =>
+    focusedAppId ? state.menusByAppId[focusedAppId] : undefined,
+  );
 
   const toggleSpotlight = useSpotlightStore((state) => state.toggle);
 
   const focusedApp = focusedAppId ? getApp(apps, focusedAppId) : undefined;
   const appName = focusedApp?.name ?? "Finder";
-  const menus = focusedApp?.menus ?? DEFAULT_APP_MENUS;
+  // A live iframe app (see useIframeAppChannelStore) always wins over the
+  // registry's static fallback — it reflects what that app actually has open.
+  const menus = liveMenus ?? focusedApp?.menus ?? DEFAULT_APP_MENUS;
 
   useEffect(() => {
     if (!openMenuId) return;
@@ -123,14 +136,26 @@ export function MenuBar({ apps }: MenuBarProps) {
           onOpenChange={setOpenMenuId}
           label={menu.label}
         >
-          {menu.items.map((item) => (
-            <MenuBarMenuItem
-              key={item.label}
-              label={item.label}
-              shortcut={item.shortcut}
-              onSelect={() => setOpenMenuId(null)}
-            />
-          ))}
+          {menu.items.map((item, index) =>
+            isMenuSeparator(item) ? (
+              <MenuBarMenuSeparator key={`separator-${index}`} />
+            ) : (
+              <MenuBarMenuItem
+                key={item.label}
+                label={item.label}
+                shortcut={item.shortcut}
+                onSelect={() => {
+                  setOpenMenuId(null);
+                  // Only a live iframe app (see useIframeAppChannelStore) has
+                  // anything listening on the other end — every other menu
+                  // stays decorative, same as today.
+                  if (focusedAppId && liveMenus) {
+                    sendMenuCommand(focusedAppId, menu.label, item.label);
+                  }
+                }}
+              />
+            ),
+          )}
         </MenuBarButton>
       ))}
 

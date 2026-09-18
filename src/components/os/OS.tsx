@@ -12,6 +12,7 @@ import { useAppsStore } from "@/stores/useAppsStore";
 import { useBootStore } from "@/stores/useBootStore";
 import { useOSStore } from "@/stores/useOSStore";
 import { BootScreen } from "./BootScreen";
+import { IframeAppChannelListener } from "./iframe-app-channel/IframeAppChannelListener";
 import { MacOS } from "./MacOS";
 import { IOS } from "./IOS";
 
@@ -59,19 +60,20 @@ export function OS({
     };
   }, [initialMode, setStoreMode]);
 
-  if (mode === "ios") {
-    return (
-      <>
-        <IOS inert={bootStage !== "done"} />
-        <BootScreen mode="ios" />
-      </>
-    );
-  }
-
   return (
     <>
-      <MacOS inert={bootStage !== "done"} />
-      <BootScreen mode="macos" />
+      <IframeAppChannelListener />
+      {mode === "ios" ? (
+        <>
+          <IOS inert={bootStage !== "done"} />
+          <BootScreen mode="ios" />
+        </>
+      ) : (
+        <>
+          <MacOS inert={bootStage !== "done"} />
+          <BootScreen mode="macos" />
+        </>
+      )}
     </>
   );
 }

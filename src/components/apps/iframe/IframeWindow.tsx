@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { IconWorldOff } from "@tabler/icons-react";
 import { openInNewTab } from "@/lib/apps";
+import { useIframeAppChannelStore } from "@/stores/useIframeAppChannelStore";
 
 /**
  * `onLoad` doesn't fire reliably when a host blocks embedding (it often
@@ -14,6 +15,7 @@ const LOAD_TIMEOUT_MS = 8000;
 type LoadStatus = "loading" | "loaded" | "blocked";
 
 type IframeWindowProps = {
+  appId: string;
   url: string;
 };
 
@@ -22,9 +24,13 @@ type IframeWindowProps = {
  * skill). Stays mounted across minimize so the embedded project keeps its
  * state — the window manager only hides it visually, never unmounts it.
  */
-export function IframeWindow({ url }: IframeWindowProps) {
+export function IframeWindow({ appId, url }: IframeWindowProps) {
   const [status, setStatus] = useState<LoadStatus>("loading");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const registerFrame = useIframeAppChannelStore((state) => state.registerFrame);
+  const unregisterFrame = useIframeAppChannelStore((state) => state.unregisterFrame);
+  const requestMenus = useIframeAppChannelStore((state) => state.requestMenus);
 
   // Runs once per mounted iframe window — a given window instance keeps the
   // same `url` for its whole life (see os-apps skill), so there's no case to
@@ -38,9 +44,19 @@ export function IframeWindow({ url }: IframeWindowProps) {
     };
   }, []);
 
+  // Unregisters this app's frame from the menu-bar channel (see
+  // useIframeAppChannelStore) whenever the window itself is closed —
+  // otherwise a stale `contentWindow` reference could linger in the store.
+  useEffect(() => () => unregisterFrame(appId), [appId, unregisterFrame]);
+
   function handleLoad() {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setStatus("loaded");
+    const contentWindow = iframeRef.current?.contentWindow;
+    if (contentWindow) {
+      registerFrame(appId, { window: contentWindow, origin: new URL(url).origin });
+      requestMenus(appId);
+    }
   }
 
   return (
@@ -62,6 +78,7 @@ export function IframeWindow({ url }: IframeWindowProps) {
       ) : (
         <>
           <iframe
+            ref={iframeRef}
             src={url}
             title={url}
             loading="lazy"

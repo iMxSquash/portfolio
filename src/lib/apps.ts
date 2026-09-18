@@ -12,10 +12,20 @@ export type MenuItemDefinition = {
   shortcut?: string;
 };
 
+export type MenuSeparatorDefinition = {
+  separator: true;
+};
+
+export type MenuEntryDefinition = MenuItemDefinition | MenuSeparatorDefinition;
+
 export type MenuDefinition = {
   label: string;
-  items: MenuItemDefinition[];
+  items: MenuEntryDefinition[];
 };
+
+export function isMenuSeparator(entry: MenuEntryDefinition): entry is MenuSeparatorDefinition {
+  return "separator" in entry;
+}
 
 /**
  * Everything openable (system app, iframe project, external link) is

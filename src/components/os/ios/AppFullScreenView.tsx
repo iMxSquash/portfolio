@@ -42,7 +42,7 @@ export function AppFullScreenView({ app }: AppFullScreenViewProps) {
     >
       <div className="h-full w-full">
         {app.type === "iframe" && app.url ? (
-          <IframeWindow url={app.url} />
+          <IframeWindow appId={app.id} url={app.url} />
         ) : Component ? (
           <Component />
         ) : null}
