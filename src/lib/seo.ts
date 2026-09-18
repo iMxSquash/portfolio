@@ -45,6 +45,18 @@ export function buildSiteJsonLd() {
   };
 }
 
+/**
+ * Serialize a value to a JSON string safe for embedding in a `<script>` tag.
+ * Escapes `<`, `>`, and `&` as unicode escapes so that sequences like
+ * `</script>` inside data values cannot break out of the JSON-LD block.
+ */
+export function safeJsonLdStringify(value: unknown): string {
+  return JSON.stringify(value).replace(/[<>&]/g, (ch) => {
+    const code = ch.charCodeAt(0).toString(16);
+    return `\\u${code.padStart(4, "0")}`;
+  });
+}
+
 /** One `CreativeWork` per visible project, for the ItemList JSON-LD rendered alongside the fallback content (see SeoFallbackContent). */
 export function buildProjectsJsonLd(projects: ProjectRow[]) {
   return {
