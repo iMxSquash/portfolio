@@ -24,11 +24,25 @@ export function FinderIcon() {
         />
       </g>
       <defs>
-        <linearGradient id={`finder-left-${uid}`} x1="0" y1="4734.42" x2="0" y2="-3.8147e-06" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id={`finder-left-${uid}`}
+          x1="0"
+          y1="4734.42"
+          x2="0"
+          y2="-3.8147e-06"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#1E73F2" />
           <stop offset="1" stopColor="#19D3FD" />
         </linearGradient>
-        <linearGradient id={`finder-right-${uid}`} x1="19.7512" y1="4734.42" x2="19.7512" y2="-7.62939e-06" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id={`finder-right-${uid}`}
+          x1="19.7512"
+          y1="4734.42"
+          x2="19.7512"
+          y2="-7.62939e-06"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#DBE9F4" />
           <stop offset="1" stopColor="#F7F6F6" />
         </linearGradient>

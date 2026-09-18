@@ -30,7 +30,14 @@ export function NotesIcon() {
         fill={`url(#notes-header-${uid})`}
       />
       <defs>
-        <linearGradient id={`notes-header-${uid}`} x1="23.3834" y1="0.013" x2="23.3834" y2="14.443" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id={`notes-header-${uid}`}
+          x1="23.3834"
+          y1="0.013"
+          x2="23.3834"
+          y2="14.443"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#FFDB4C" />
           <stop offset="1" stopColor="#FFCD02" />
         </linearGradient>

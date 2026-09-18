@@ -21,7 +21,12 @@ type AppIconProps = {
  * glossy bevel Tahoe gives every system app icon — centralized here rather
  * than redrawn inside each icon SVG.
  */
-export function AppIcon({ app, className = "", priority = false, glossOverlay = true }: AppIconProps) {
+export function AppIcon({
+  app,
+  className = "",
+  priority = false,
+  glossOverlay = true,
+}: AppIconProps) {
   return (
     <span
       className={`relative block aspect-square w-full overflow-hidden rounded-[22.5%] ${className}`}
