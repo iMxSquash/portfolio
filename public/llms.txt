@@ -1,13 +1,15 @@
-# Elwen (Portfolio)
+# Elwen Coussot (Portfolio)
 
-> Portfolio d'Elwen, développeur full-stack. Le site reproduit fidèlement macOS (sur ordinateur) et iOS (sur mobile/tablette) : les projets s'ouvrent comme de vraies fenêtres ou depuis l'écran d'accueil iOS, plutôt que comme des pages classiques.
+> Portfolio d'Elwen Coussot, développeur full-stack basé à Herblay (Île-de-France). Le site reproduit fidèlement macOS (sur ordinateur) et iOS (sur mobile/tablette) : les projets s'ouvrent comme de vraies fenêtres ou depuis l'écran d'accueil iOS, plutôt que comme des pages classiques.
 
-Elwen est développeur full-stack, spécialisé React/Next.js/TypeScript côté front comme côté back, avec une attention particulière portée aux interfaces soignées, à l'accessibilité et à la performance. Contact : contact@elwen.dev
+Elwen Coussot est développeur full-stack, actuellement en alternance chez SP Formation et en Mastère « Tech Lead, IA & Cybersécurité » à Digital Campus Paris, après un Bachelor Développement Web (titre RNCP « Concepteur Développeur de Solutions Digitales », niveau 6). Chez SP Formation, il a conçu de A à Z detailing.fr, un CMS qui génère les sites de professionnels du detailing automobile réunis dans un annuaire. Stack principale : React, Next.js, TypeScript, Tailwind CSS, Node.js, Supabase ; également Python, PHP/Symfony, React Native, Docker et LangChain. Attention particulière portée aux interfaces soignées, à l'accessibilité et à la performance. Contact : contact@elwen.dev
 
 ## Pages
 
-- [Accueil](https://elwen.dev/): le portfolio lui-même, bureau macOS ou springboard iOS selon l'appareil, avec le parcours, les compétences et les projets d'Elwen accessibles depuis les fenêtres/apps.
+- [Accueil](https://elwen.dev/): le portfolio lui-même, bureau macOS ou springboard iOS selon l'appareil, avec le parcours, les compétences et les projets d'Elwen accessibles depuis les fenêtres/apps (voir l'app Notes : À propos, Parcours, Compétences, Contact).
 
 ## Notes
 
 - Les projets présentés (Photoshop, Illustrator, Premiere Pro, etc.) sont chacun hébergés sur leur propre sous-domaine (`<projet>.elwen.dev`) et disposent de leur propre référencement.
+- Projet phare de l'alternance : [detailing.fr](https://detailing.fr), annuaire de professionnels du detailing automobile propulsé par un CMS développé de A à Z chez SP Formation.
+- Autres projets : UrbanFlow (urbanflow.elwen.dev), Glide (glide.elwen.dev), Zenko (zenkoo.vercel.app), Vera (vera-g6.vercel.app), Liquid Glass Tailwind (liquid-glass.elwen.dev, open source).
