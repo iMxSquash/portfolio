@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "framer-motion";
 import { IconChevronLeft } from "@tabler/icons-react";
+import { LinkifiedText } from "@/components/apps/notes/LinkifiedText";
 import { IOS_STATUS_BAR_CLEARANCE } from "@/lib/ios";
 import { NOTES } from "@/lib/notes-content";
 
@@ -29,10 +30,10 @@ const LIST_PARALLAX_OFFSET = "-25%";
  * skill) instead of desktop `Notes.tsx`'s three-column layout, which depends
  * on `useWindowChrome()` (traffic lights, drag handlers) that has no meaning
  * in a full-screen iOS app. Reuses the same content source (`NOTES`), no
- * window chrome dependency. Folders collapse away here: every folder in
- * `NOTE_FOLDERS` holds exactly one note today, so a flat note list already
- * reads the same as a folder list — matching the skill's two-level "liste →
- * note" nav rather than inventing a third folder screen it doesn't ask for.
+ * window chrome dependency. Folders collapse away here: `NOTES` is small
+ * enough overall that one flat list reads fine without a folder screen —
+ * matching the skill's two-level "liste → note" nav rather than inventing a
+ * third folder screen it doesn't ask for.
  */
 export function NotesMobile() {
   const reducedMotion = useReducedMotion();
@@ -82,7 +83,7 @@ export function NotesMobile() {
             <p className="mb-4 text-[13px] text-white/50">{selectedNote.date}</p>
             {selectedNote.body.map((paragraph, index) => (
               <p key={index} className="mb-3 leading-relaxed">
-                {paragraph}
+                <LinkifiedText text={paragraph} />
               </p>
             ))}
           </article>

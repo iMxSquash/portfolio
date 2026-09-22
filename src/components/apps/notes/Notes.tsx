@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type KeyboardEvent } from "react";
 import { FolderIcon } from "@/components/icons/FolderIcon";
+import { LinkifiedText } from "@/components/apps/notes/LinkifiedText";
 import { useWindowChrome } from "@/components/os/window/WindowChromeContext";
 import { focusListSibling } from "@/lib/arrow-key-nav";
 import {
@@ -137,7 +138,7 @@ export function Notes() {
                 <p className="text-foreground/50 mb-4 text-[12px]">{selectedNote.date}</p>
                 {selectedNote.body.map((paragraph, index) => (
                   <p key={index} className="mb-3 leading-relaxed">
-                    {paragraph}
+                    <LinkifiedText text={paragraph} />
                   </p>
                 ))}
               </article>
