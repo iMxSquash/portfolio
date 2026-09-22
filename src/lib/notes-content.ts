@@ -1,3 +1,5 @@
+import { CONTACT_EMAIL, SOCIAL_LINKS } from "@/lib/seo";
+
 export type NoteFolder = {
   id: string;
   name: string;
@@ -21,7 +23,6 @@ export const NOTE_FOLDERS: NoteFolder[] = [
   { id: "about", name: "À propos" },
   { id: "background", name: "Parcours" },
   { id: "skills", name: "Compétences" },
-  { id: "contact", name: "Contact" },
 ];
 
 export const NOTES: Note[] = [
@@ -65,12 +66,13 @@ export const NOTES: Note[] = [
   },
   {
     id: "contact-info",
-    folderId: "contact",
+    folderId: "about",
     title: "Contact",
     date: "10 sept. 2026",
     preview: "Le moyen le plus simple de me joindre reste l'e-mail...",
     body: [
-      "Le moyen le plus simple de me joindre reste l'e-mail : contact@elwen.dev",
+      `Le moyen le plus simple de me joindre reste l'e-mail : ${CONTACT_EMAIL}`,
+      `On peut aussi me retrouver sur ${SOCIAL_LINKS.map((link) => `${link.label} (${link.href})`).join(" et ")}.`,
       "Toujours partant pour discuter d'un projet, d'une opportunité, ou simplement échanger sur du développement web.",
     ],
   },
