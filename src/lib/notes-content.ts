@@ -49,7 +49,7 @@ export const NOTES: Note[] = [
     body: [
       `Le moyen le plus simple de me joindre reste l'e-mail : ${CONTACT_EMAIL}`,
       `On peut aussi me retrouver sur ${SOCIAL_LINKS.map((link) => `${link.label} (${link.href})`).join(" et ")}.`,
-      "Toujours partant pour discuter d'un projet, d'une opportunité, ou simplement échanger sur du développement web.",
+      "Toujours partant pour discuter d'un projet ou d'une opportunité.",
     ],
   },
   {
