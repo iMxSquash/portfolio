@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { useLayoutEffect, useRef, useState } from "react";
 import { MENU_POPOVER_GLASS } from "@/lib/glass-presets";
 import { useLiquidGlass } from "@/lib/use-liquid-glass";
-import { getWallpapersFor } from "@/lib/wallpapers";
 import { useWallpaperStore } from "@/stores/useWallpaperStore";
+import { WallpaperGrid } from "./WallpaperGrid";
 
 type Point = { x: number; y: number };
 
@@ -13,7 +12,6 @@ type Point = { x: number; y: number };
 export function WallpaperPicker({ position, onClose }: { position: Point; onClose: () => void }) {
   const selected = useWallpaperStore((state) => state.selected.macos);
   const setWallpaper = useWallpaperStore((state) => state.setWallpaper);
-  const wallpapers = getWallpapersFor("macos");
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [menuEl, setMenuEl] = useState<HTMLDivElement | null>(null);
@@ -43,25 +41,15 @@ export function WallpaperPicker({ position, onClose }: { position: Point; onClos
       style={{ top: clamped.y, left: clamped.x }}
     >
       <p className="mb-2 px-1 text-xs font-medium opacity-60">Fond d&apos;écran</p>
-      <div className="grid grid-cols-3 gap-2">
-        {wallpapers.map((wallpaper) => (
-          <button
-            key={wallpaper.id}
-            type="button"
-            onClick={() => {
-              setWallpaper("macos", wallpaper.id);
-              onClose();
-            }}
-            aria-label={wallpaper.label}
-            aria-pressed={selected === wallpaper.id}
-            className={`relative aspect-video overflow-hidden rounded-md ${
-              selected === wallpaper.id ? "ring-2 ring-system-blue" : ""
-            }`}
-          >
-            <Image src={wallpaper.src} alt="" fill sizes="80px" className="object-cover" />
-          </button>
-        ))}
-      </div>
+      <WallpaperGrid
+        os="macos"
+        selectedId={selected}
+        imageSizes="80px"
+        onSelect={(id) => {
+          setWallpaper("macos", id);
+          onClose();
+        }}
+      />
     </div>
   );
 }
