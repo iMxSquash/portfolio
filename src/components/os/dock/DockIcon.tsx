@@ -1,25 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
+import { AnimatePresence, motion, useSpring, useTransform, type MotionValue } from "framer-motion";
 import { AppIcon } from "@/components/os/AppIcon";
 import { launchApp, TRASH_APP_ID, type AppDefinition } from "@/lib/apps";
 import {
-  DOCK_ICON_MAGNIFIED_SIZE,
-  DOCK_ICON_REST_SIZE,
   DOCK_MAGNIFICATION_DISTANCE,
   DOCK_MAGNIFICATION_SPRING,
   DOCK_TOOLTIP_DELAY_S,
 } from "@/lib/dock";
 import { DOCK_TOOLTIP_GLASS } from "@/lib/glass-presets";
+import type { DockSettings } from "@/lib/settings";
 import { useLiquidGlass } from "@/lib/use-liquid-glass";
+import { useReduceMotion } from "@/lib/use-reduce-motion";
 import { useDockIconStore } from "@/stores/useDockIconStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 
@@ -27,13 +20,14 @@ type DockIconProps = {
   app: AppDefinition;
   mouseX: MotionValue<number>;
   isOpen: boolean;
+  dock: DockSettings;
 };
 
-export function DockIcon({ app, mouseX, isOpen }: DockIconProps) {
+export function DockIcon({ app, mouseX, isOpen, dock }: DockIconProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const registerIconRef = useDockIconStore((state) => state.registerIconRef);
   const openWindow = useWindowStore((state) => state.openWindow);
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReduceMotion();
   const [hovered, setHovered] = useState(false);
   // `external` apps open no window (see os-apps skill), so a launch click
   // needs its own feedback — a real-macOS-style bounce — instead of relying
@@ -50,9 +44,12 @@ export function DockIcon({ app, mouseX, isOpen }: DockIconProps) {
   const size = useTransform(
     distance,
     [-DOCK_MAGNIFICATION_DISTANCE, 0, DOCK_MAGNIFICATION_DISTANCE],
-    [DOCK_ICON_REST_SIZE, DOCK_ICON_MAGNIFIED_SIZE, DOCK_ICON_REST_SIZE],
+    [dock.iconSize, dock.magnifiedSize, dock.iconSize],
   );
   const springSize = useSpring(size, DOCK_MAGNIFICATION_SPRING);
+  // No magnification: a fixed size, no spring at all — real macOS doesn't
+  // just clamp the spring's range to zero, it removes the effect entirely.
+  const fixedSize = !dock.magnification || reducedMotion;
 
   useEffect(() => {
     registerIconRef(app.id, buttonRef.current);
@@ -89,8 +86,8 @@ export function DockIcon({ app, mouseX, isOpen }: DockIconProps) {
         onAnimationComplete={() => setBouncing(false)}
         transition={bouncing ? { duration: 0.5, ease: "easeOut" } : { duration: 0 }}
         style={{
-          width: reducedMotion ? DOCK_ICON_REST_SIZE : springSize,
-          height: reducedMotion ? DOCK_ICON_REST_SIZE : springSize,
+          width: fixedSize ? dock.iconSize : springSize,
+          height: fixedSize ? dock.iconSize : springSize,
         }}
         className="flex items-end justify-center"
       >

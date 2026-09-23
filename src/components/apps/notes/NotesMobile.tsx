@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "framer-motion";
+import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { LinkifiedText } from "@/components/apps/notes/LinkifiedText";
 import { IOS_STATUS_BAR_CLEARANCE } from "@/lib/ios";
 import { NOTES } from "@/lib/notes-content";
+import { useReduceMotion } from "@/lib/use-reduce-motion";
 
 // Approximates real iOS's push/pop navigation curve.
 const NAV_TRANSITION = { type: "tween", duration: 0.32, ease: [0.32, 0.72, 0, 1] } as const;
@@ -36,7 +37,7 @@ const LIST_PARALLAX_OFFSET = "-25%";
  * third folder screen it doesn't ask for.
  */
 export function NotesMobile() {
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReduceMotion();
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const selectedNote = NOTES.find((note) => note.id === selectedNoteId);
   const transition = reducedMotion ? NAV_TRANSITION_REDUCED : NAV_TRANSITION;

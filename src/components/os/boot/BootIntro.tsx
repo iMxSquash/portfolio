@@ -1,11 +1,12 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import { BOOT_DURATION_S, BOOT_DURATION_S_REDUCED } from "@/lib/boot";
+import { motion } from "framer-motion";
 import { SiteLogo } from "@/components/icons/SiteLogo";
+import { BOOT_DURATION_S, BOOT_DURATION_S_REDUCED } from "@/lib/boot";
+import { useReduceMotion } from "@/lib/use-reduce-motion";
 
 export function BootIntro({ onComplete }: { onComplete: () => void }) {
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReduceMotion();
   const duration = reducedMotion ? BOOT_DURATION_S_REDUCED : BOOT_DURATION_S;
 
   return (

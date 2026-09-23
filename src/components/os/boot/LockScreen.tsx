@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { UNLOCK_DURATION_S, UNLOCK_DURATION_S_REDUCED } from "@/lib/boot";
 import { LOCK_SCREEN_GLASS } from "@/lib/glass-presets";
 import { formatLockScreenDate, formatStatusBarClock } from "@/lib/ios";
 import { useLiveDate } from "@/lib/use-live-clock";
 import { QL_CONTENT_FLEX_COL_CENTER, useLiquidGlass } from "@/lib/use-liquid-glass";
+import { useReduceMotion } from "@/lib/use-reduce-motion";
 import { HomeIndicator } from "../ios/HomeIndicator";
 
 /**
@@ -23,7 +24,7 @@ export function LockScreen({
   onUnlockClick: () => void;
   onUnlockComplete: () => void;
 }) {
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReduceMotion();
   const duration = reducedMotion ? UNLOCK_DURATION_S_REDUCED : UNLOCK_DURATION_S;
   // One shared tick for both derived strings (time + date), instead of two
   // independent `setInterval`s for the same underlying clock.

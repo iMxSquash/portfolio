@@ -3,9 +3,11 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import { SettingsEffectsProvider } from "@/components/os/SettingsEffectsProvider";
 import { ThemeProvider } from "@/components/os/ThemeProvider";
 import { BOOT_STORAGE_KEY, DISPLAY_NAME } from "@/lib/boot";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/seo";
+import { SETTINGS_STORAGE_KEY } from "@/lib/settings";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
 import "./globals.css";
 
@@ -67,6 +69,24 @@ const bootInitScript = `(function () {
   } catch (e) {}
 })();`;
 
+// Applies the persisted accent color / increase-contrast setting before
+// hydration, same anti-FOUC reasoning as themeInitScript above — see
+// SettingsEffectsProvider.tsx for the runtime (post-hydration) sync. Only
+// ever reads our own localStorage key.
+const settingsInitScript = `(function () {
+  try {
+    var raw = localStorage.getItem(${JSON.stringify(SETTINGS_STORAGE_KEY)});
+    var state = raw ? JSON.parse(raw).state : null;
+    var accent = state && state.appearance ? state.appearance.accentColor : "multicolor";
+    if (accent && accent !== "multicolor") {
+      document.documentElement.setAttribute("data-accent", accent);
+    }
+    if (state && state.accessibility && state.accessibility.increaseContrast) {
+      document.documentElement.classList.add("increase-contrast");
+    }
+  } catch (e) {}
+})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -85,7 +105,11 @@ export default function RootLayout({
         <Script id="boot-init" strategy="beforeInteractive">
           {bootInitScript}
         </Script>
+        <Script id="settings-init" strategy="beforeInteractive">
+          {settingsInitScript}
+        </Script>
         <ThemeProvider />
+        <SettingsEffectsProvider />
         {children}
         <Analytics />
         <SpeedInsights />

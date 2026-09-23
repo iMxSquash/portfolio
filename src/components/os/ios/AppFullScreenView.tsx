@@ -1,9 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { IframeWindow } from "@/components/apps/iframe/IframeWindow";
 import type { AppDefinition } from "@/lib/apps";
 import { IOS_MORPH_TRANSITION, IOS_MORPH_TRANSITION_REDUCED } from "@/lib/ios";
+import { useReduceMotion } from "@/lib/use-reduce-motion";
 import { useIOSAppStore } from "@/stores/useIOSAppStore";
 import { HomeIndicator } from "./HomeIndicator";
 
@@ -29,7 +30,7 @@ type AppFullScreenViewProps = {
 export function AppFullScreenView({ app }: AppFullScreenViewProps) {
   const closeApp = useIOSAppStore((state) => state.closeApp);
   const openSwitcher = useIOSAppStore((state) => state.openSwitcher);
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReduceMotion();
   const Component = app.mobileComponent ?? app.component;
 
   return (

@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { AboutThisMacIcon } from "@/components/apps/about/AboutThisMacIcon";
 import { FinderIcon } from "@/components/apps/finder/FinderIcon";
 import { NotesIcon } from "@/components/apps/notes/NotesIcon";
+import { SettingsIcon } from "@/components/apps/settings/SettingsIcon";
 import { TerminalIcon } from "@/components/apps/terminal/TerminalIcon";
 import { TrashIcon } from "@/components/apps/trash/TrashIcon";
 import type { Size } from "@/lib/window";
@@ -84,6 +85,9 @@ export const TRASH_APP_ID = "trash";
 /** Well-known id for the "About This Mac" easter egg (see os-apps skill / TODO.md Phase 9) — looked up to open it from the Apple menu, see `MenuBar.tsx`. */
 export const ABOUT_THIS_MAC_APP_ID = "about-this-mac";
 
+/** Well-known id for the "Réglages Système" app — looked up to open it from the Apple menu's "Réglages Système…" item, see `MenuBar.tsx`/`menu-bar.ts`. */
+export const SETTINGS_APP_ID = "settings";
+
 const Finder = dynamic(() => import("@/components/apps/finder/Finder").then((mod) => mod.Finder));
 const Notes = dynamic(() => import("@/components/apps/notes/Notes").then((mod) => mod.Notes));
 const NotesMobile = dynamic(() =>
@@ -95,6 +99,12 @@ const AboutThisMac = dynamic(() =>
 );
 const Terminal = dynamic(() =>
   import("@/components/apps/terminal/Terminal").then((mod) => mod.Terminal),
+);
+const Settings = dynamic(() =>
+  import("@/components/apps/settings/Settings").then((mod) => mod.Settings),
+);
+const SettingsMobile = dynamic(() =>
+  import("@/components/apps/settings/SettingsMobile").then((mod) => mod.SettingsMobile),
 );
 
 /**
@@ -146,6 +156,25 @@ export const SYSTEM_APPS: AppDefinition[] = [
     minSize: { width: 480, height: 340 },
     // Same chrome as Finder (own sidebar carries the traffic lights) — the
     // Trash is technically a Finder window, see os-apps skill.
+    windowStyle: "unified",
+  },
+  {
+    id: SETTINGS_APP_ID,
+    name: "Réglages Système",
+    icon: SettingsIcon,
+    type: "component",
+    component: Settings,
+    // iOS gets its own grouped-list layout (SettingsMobile), not a scaled-down
+    // window (see TODO-settings.md Phase 9) — reachable from the Dock, the
+    // Apple menu, Spotlight and, on mobile, the springboard.
+    mobileComponent: SettingsMobile,
+    showOnDesktop: false,
+    showOnMobile: true,
+    pinnedToDock: true,
+    defaultSize: { width: 720, height: 560 },
+    minSize: { width: 560, height: 420 },
+    // Same chrome as Finder/Notes (own sidebar carries the traffic lights) —
+    // see os-apps skill.
     windowStyle: "unified",
   },
   {

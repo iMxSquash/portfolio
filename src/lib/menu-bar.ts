@@ -3,11 +3,11 @@ import type { MenuDefinition } from "./apps";
 export type AppleMenuEntry =
   { id: "about" | "preferences" | "lock"; label: string } | { id: `separator-${number}` };
 
-/** Apple-menu equivalent (logo dropdown). "about" opens the About-This-Mac easter egg, "lock" reuses the boot lock screen — "preferences" stays a non-functional stub. */
+/** Apple-menu equivalent (logo dropdown). "about" opens the About-This-Mac easter egg, "preferences" opens Réglages Système, "lock" reuses the boot lock screen. */
 export const APPLE_MENU_ITEMS: AppleMenuEntry[] = [
   { id: "about", label: "À propos de ce Mac" },
   { id: "separator-1" },
-  { id: "preferences", label: "Préférences…" },
+  { id: "preferences", label: "Réglages Système…" },
   { id: "separator-2" },
   { id: "lock", label: "Verrouiller l'écran" },
 ];

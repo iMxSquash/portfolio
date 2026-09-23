@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { IconUser } from "@tabler/icons-react";
 import { DISPLAY_NAME, UNLOCK_DURATION_S, UNLOCK_DURATION_S_REDUCED } from "@/lib/boot";
 import { LOCK_SCREEN_GLASS } from "@/lib/glass-presets";
 import { QL_CONTENT_FLEX_COL_CENTER, useLiquidGlass } from "@/lib/use-liquid-glass";
+import { useReduceMotion } from "@/lib/use-reduce-motion";
 
 export function LoginScreen({
   unlocking,
@@ -18,7 +19,7 @@ export function LoginScreen({
 }) {
   const avatarRef = useRef<HTMLButtonElement>(null);
   const [scrimEl, setScrimEl] = useState<HTMLDivElement | null>(null);
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReduceMotion();
   const duration = reducedMotion ? UNLOCK_DURATION_S_REDUCED : UNLOCK_DURATION_S;
 
   // Full-viewport scrim behind the login card (see `LOCK_SCREEN_GLASS`'s own

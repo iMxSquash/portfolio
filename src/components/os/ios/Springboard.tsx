@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { findFirstImageIconId, getMobileApps, type AppDefinition } from "@/lib/apps";
 import {
   chunkIntoPages,
@@ -13,6 +13,7 @@ import {
   SPRINGBOARD_MAX_ROWS_TABLET,
 } from "@/lib/ios";
 import { useMediaQuery } from "@/lib/use-media-query";
+import { useReduceMotion } from "@/lib/use-reduce-motion";
 import { SpringboardIcon } from "./SpringboardIcon";
 
 type SpringboardProps = {
@@ -31,7 +32,7 @@ const PAGE_BOTTOM_INSET = "calc(var(--ios-dock-height) + env(safe-area-inset-bot
  * current, for the dots.
  */
 export function Springboard({ apps }: SpringboardProps) {
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReduceMotion();
   const isTablet = useMediaQuery(IOS_TABLET_MIN_WIDTH_QUERY);
   const [currentPage, setCurrentPage] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);

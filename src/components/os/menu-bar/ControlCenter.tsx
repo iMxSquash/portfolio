@@ -2,14 +2,8 @@
 
 import { useState } from "react";
 import { IconAdjustmentsHorizontal, IconSun } from "@tabler/icons-react";
+import { THEME_MODE_OPTIONS } from "@/lib/theme";
 import { useThemeStore } from "@/stores/useThemeStore";
-import type { ThemeMode } from "@/lib/theme";
-
-const THEME_OPTIONS: Array<{ mode: ThemeMode; label: string }> = [
-  { mode: "light", label: "Clair" },
-  { mode: "dark", label: "Sombre" },
-  { mode: "system", label: "Système" },
-];
 
 export function ControlCenterIcon({ className }: { className?: string }) {
   return <IconAdjustmentsHorizontal className={className} stroke={2} aria-hidden="true" />;
@@ -31,7 +25,7 @@ export function ControlCenterContent() {
         <p className="mb-1.5 px-1 text-xs font-medium opacity-60">Apparence</p>
         {/* Track: rounded-lg (8px) + p-1 (4px) padding -> buttons rounded-[4px] (concentric, see apple-design skill). */}
         <div className="flex rounded-lg bg-black/10 p-1 dark:bg-white/10">
-          {THEME_OPTIONS.map((option) => (
+          {THEME_MODE_OPTIONS.map((option) => (
             <button
               key={option.mode}
               type="button"

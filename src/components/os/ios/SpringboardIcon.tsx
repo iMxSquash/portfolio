@@ -1,9 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { AppIcon } from "@/components/os/AppIcon";
 import { launchApp, type AppDefinition } from "@/lib/apps";
 import { IOS_MORPH_TRANSITION, IOS_MORPH_TRANSITION_REDUCED } from "@/lib/ios";
+import { useReduceMotion } from "@/lib/use-reduce-motion";
 import { useIOSAppStore } from "@/stores/useIOSAppStore";
 
 type SpringboardIconProps = {
@@ -21,7 +22,7 @@ type SpringboardIconProps = {
  */
 export function SpringboardIcon({ app, priority = false }: SpringboardIconProps) {
   const openApp = useIOSAppStore((state) => state.openApp);
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReduceMotion();
 
   return (
     <button
