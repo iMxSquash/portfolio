@@ -93,6 +93,13 @@ export const SETTINGS_PANE_SECTIONS: SettingsPaneId[][] = [
   ["desktop-dock", "wallpaper", "sound"],
 ];
 
+/**
+ * Panes with no iOS equivalent (real iOS has no desktop/Dock concept) —
+ * `SettingsMobile.tsx` filters these out of its own pane list, dropping any
+ * section left empty.
+ */
+export const DESKTOP_ONLY_PANE_IDS: SettingsPaneId[] = ["desktop-dock"];
+
 export function getSettingsPane(id: SettingsPaneId): SettingsPane {
   const pane = SETTINGS_PANES.find((candidate) => candidate.id === id);
   if (!pane) {

@@ -103,6 +103,9 @@ const Terminal = dynamic(() =>
 const Settings = dynamic(() =>
   import("@/components/apps/settings/Settings").then((mod) => mod.Settings),
 );
+const SettingsMobile = dynamic(() =>
+  import("@/components/apps/settings/SettingsMobile").then((mod) => mod.SettingsMobile),
+);
 
 /**
  * System apps, declared statically — never sourced from Supabase (see
@@ -161,10 +164,12 @@ export const SYSTEM_APPS: AppDefinition[] = [
     icon: SettingsIcon,
     type: "component",
     component: Settings,
-    // Desktop only in v1 (see TODO-settings.md Phase 9 for the optional iOS
-    // version) — reachable from the Dock, the Apple menu and Spotlight.
+    // iOS gets its own grouped-list layout (SettingsMobile), not a scaled-down
+    // window (see TODO-settings.md Phase 9) — reachable from the Dock, the
+    // Apple menu, Spotlight and, on mobile, the springboard.
+    mobileComponent: SettingsMobile,
     showOnDesktop: false,
-    showOnMobile: false,
+    showOnMobile: true,
     pinnedToDock: true,
     defaultSize: { width: 720, height: 560 },
     minSize: { width: 560, height: 420 },

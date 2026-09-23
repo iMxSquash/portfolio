@@ -137,9 +137,9 @@ Dans `src/components/apps/settings/controls/`, accessibles (vrais `<button>`, `<
 
 ## Phase 9 (optionnelle) : Version iOS
 
-- [ ] `mobileComponent` façon Réglages iOS : liste groupée en encarts, navigation empilée (liste → panneau) comme `NotesMobile`
-- [ ] `showOnMobile: true`, présence sur le springboard
-- [ ] Masquer les panneaux sans sens sur iOS (Bureau et Dock, fond d'écran macOS → fond d'écran iOS)
+- [x] `mobileComponent` façon Réglages iOS (`SettingsMobile.tsx`) : liste groupée en encarts, navigation empilée (liste → panneau), même transition que `NotesMobile`. Réutilise directement les composants de panneau du bureau (aucun d'eux ne dépend de `useWindowChrome()`) plutôt que de dupliquer un seul réglage
+- [x] `showOnMobile: true`, présence sur le springboard. Effet de bord observé : l'algorithme existant du dock iOS (les 4 premières apps mobiles dans l'ordre du registre, `getIOSDockApps`) place désormais Réglages Système dans le dock à la place de la 4ᵉ app projet, comme il l'aurait fait pour n'importe quelle 2ᵉ app système rendue visible sur mobile. Pas modifié : cet algorithme est antérieur à cette phase et hors périmètre
+- [x] Masquer les panneaux sans sens sur iOS : `DESKTOP_ONLY_PANE_IDS` (`settings-panes.ts`) exclut « Bureau et Dock » des sections mobiles ; `WallpaperPane`/`LiquidGlassPane` lisent `useOSStore` pour utiliser les fonds iOS plutôt que macOS (au lieu d'un `os` codé en dur) ; `GeneralPane` masque la ligne « À propos de ce Mac » sur iOS (pas d'équivalent, et son bouton s'appuie sur le gestionnaire de fenêtres macOS)
 
 ---
 

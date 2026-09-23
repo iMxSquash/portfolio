@@ -12,6 +12,7 @@ import {
 } from "@/lib/settings";
 import { useLiquidGlass } from "@/lib/use-liquid-glass";
 import { getDefaultWallpaper, getWallpaper } from "@/lib/wallpapers";
+import { useOSStore } from "@/stores/useOSStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 import { useWallpaperStore } from "@/stores/useWallpaperStore";
 import { SegmentedControl } from "../controls/SegmentedControl";
@@ -45,8 +46,12 @@ export function LiquidGlassPane() {
   const glass = useSettingsStore((state) => state.glass);
   const updateGlass = useSettingsStore((state) => state.updateGlass);
   const resetSection = useSettingsStore((state) => state.resetSection);
-  const wallpaperId = useWallpaperStore((state) => state.selected.macos);
-  const wallpaper = getWallpaper(wallpaperId) ?? getDefaultWallpaper("macos");
+  // Whichever OS's wallpaper is actually on screen behind this preview
+  // (see WallpaperPane.tsx: the pane is reachable from both SettingsView
+  // and SettingsMobile).
+  const os = useOSStore((state) => state.mode);
+  const wallpaperId = useWallpaperStore((state) => state.selected[os]);
+  const wallpaper = getWallpaper(wallpaperId) ?? getDefaultWallpaper(os);
 
   const [previewEl, setPreviewEl] = useState<HTMLDivElement | null>(null);
   // Same preset family as the Dock — the live preview reacts to every
