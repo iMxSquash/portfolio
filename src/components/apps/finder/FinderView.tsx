@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { IconChevronLeft, IconChevronRight, IconLayoutGrid, IconList } from "@tabler/icons-react";
 import type { TrashItem } from "@/components/apps/trash/trash-content";
+import { ToolbarCluster } from "@/components/os/window/ToolbarCluster";
 import { useWindowChrome } from "@/components/os/window/WindowChromeContext";
 import {
   getDesktopApps,
@@ -14,7 +15,6 @@ import {
 } from "@/lib/apps";
 import { FINDER_FAVORITES, type FinderFavoriteId } from "@/lib/finder";
 import {
-  FINDER_TOOLBAR_CLUSTER_GLASS,
   SIDEBAR_CHROME_GLASS,
   SIDEBAR_CHROME_TINT_DARK,
   SIDEBAR_CHROME_TINT_LIGHT,
@@ -230,17 +230,6 @@ export function FinderView({ initialFavoriteId }: FinderViewProps) {
           />
         </div>
       </div>
-    </div>
-  );
-}
-
-/** Individually actionable Liquid Glass pill wrapper — back/forward, view-mode toggle, empty-trash (see apple-design skill). */
-function ToolbarCluster({ children }: { children: ReactNode }) {
-  const [el, setEl] = useState<HTMLElement | null>(null);
-  useLiquidGlass(el, FINDER_TOOLBAR_CLUSTER_GLASS);
-  return (
-    <div ref={setEl} className="p-0.5">
-      {children}
     </div>
   );
 }

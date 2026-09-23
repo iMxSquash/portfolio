@@ -8,6 +8,7 @@ import {
   getApp,
   isMenuSeparator,
   launchApp,
+  SETTINGS_APP_ID,
   type AppDefinition,
 } from "@/lib/apps";
 import { relockSession } from "@/lib/boot";
@@ -117,6 +118,9 @@ export function MenuBar({ apps }: MenuBarProps) {
                 } else if (item.id === "about") {
                   const aboutApp = getApp(apps, ABOUT_THIS_MAC_APP_ID);
                   if (aboutApp) launchApp(aboutApp, openWindow);
+                } else if (item.id === "preferences") {
+                  const settingsApp = getApp(apps, SETTINGS_APP_ID);
+                  if (settingsApp) launchApp(settingsApp, openWindow);
                 }
               }}
             />
