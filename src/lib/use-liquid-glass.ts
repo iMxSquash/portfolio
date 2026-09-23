@@ -50,8 +50,21 @@ type UseLiquidGlassOptions = {
  *
  * `LiquidGlassEngine`'s own constructor already applies the config passed to
  * it, so the mount effect below never needs a same-commit `setConfig` call
- * to "catch up" — the sync effect only exists for config/appearance changes
- * on subsequent renders, hence the `isInitialMount` guard.
+ * to "catch up". The sync effect below still unconditionally calls
+ * `setConfig` on every dep change regardless: `setConfig` diffs against its
+ * own previous config and no-ops immediately when nothing changed, so
+ * calling it right after construction is harmless. A previous version tried
+ * to skip that redundant call with an `isInitialMount` ref set by the mount
+ * effect — but for a host that starts `null` (`useState` + callback ref,
+ * required below since `el` is a value, not a stable ref object), the mount
+ * and sync effects land in different commits: the sync effect runs once on
+ * the `null`-host render and flips the ref to `false`, then the mount
+ * effect runs on the next commit (once the node exists) and flips it back
+ * to `true` without the sync effect running again in that same commit. The
+ * next real config/appearance change then read a stale `true` and skipped
+ * its `setConfig` call, silently swallowing the first update after every
+ * mount (e.g. the first theme toggle, or Spotlight's first pill/card
+ * morph) until a second change flipped the ref back to `false`.
  *
  * **Host children invariant**: on mount, the engine reparents whatever
  * direct children the host element has into its own internal content layer
@@ -93,11 +106,9 @@ export function useLiquidGlass(
     [config, glass, accessibility],
   );
   const engineRef = useRef<LiquidGlassEngine | null>(null);
-  const isInitialMount = useRef(true);
 
   useEffect(() => {
     if (!el) return;
-    isInitialMount.current = true;
     const engine = new LiquidGlassEngine(el, { ...resolvedConfig, appearance });
     engineRef.current = engine;
     // Mutated via `engine.getElement()`, not the `el` parameter itself — hook
@@ -113,10 +124,6 @@ export function useLiquidGlass(
   }, [el]);
 
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
     engineRef.current?.setConfig({ ...resolvedConfig, appearance });
   }, [resolvedConfig, appearance]);
 }
