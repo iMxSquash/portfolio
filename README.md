@@ -25,7 +25,7 @@ _A portfolio that behaves like a real OS, not a website pretending to be one_
 - **Window manager**: drag, resize, minimize, focus/z-index and stacking, all driven by a single Zustand store
 - **macOS desktop UI**: menu bar, dock, traffic lights, desktop icons, boot/login screen
 - **iOS mode**: full-screen springboard, status bar, gestures and safe-area handling on mobile/tablet, auto-detected from pointer type and width
-- **System apps**: Finder, Notes, Terminal, Trash, and an "About This Mac" easter egg, each a real component, not a static mockup
+- **System apps**: Finder, Notes, Terminal, Trash, Réglages Système, and an "About This Mac" easter egg, each a real component, not a static mockup
 - **Project windows**: each showcased project (Photoshop, Illustrator, Premiere Pro, ...) runs on its own subdomain and opens hybrid: embedded `iframe` or `external` tab, picked per project
 - **Backoffice** (`/admin`): Supabase-backed CRUD for projects (name, description, tech, logo, display mode), behind a single-account auth
 - **Liquid Glass everywhere**: every actionable surface (dock, buttons, sidebars, segmented controls) gets real refraction via [`quick-liquid`](https://www.npmjs.com/package/quick-liquid), centralized in one typed preset registry
@@ -98,7 +98,7 @@ src/
 ├── app/            # Routes (App Router): home, /admin backoffice, 404 catch-all
 ├── components/
 │   ├── os/         # Window manager, menu bar, dock, desktop, iOS springboard, boot screen
-│   ├── apps/       # System apps (Finder, Notes, Terminal, Trash, About This Mac) + iframe app shell
+│   ├── apps/       # System apps (Finder, Notes, Terminal, Trash, Réglages Système, About This Mac) + iframe app shell
 │   └── seo/        # Server-rendered fallback content for crawlers
 ├── lib/            # App registry, glass presets, Supabase clients, SEO/JSON-LD, window types
 └── stores/         # Zustand stores (window manager, ...)
