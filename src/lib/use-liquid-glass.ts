@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { LiquidGlassEngine, type LiquidGlassConfig } from "quick-liquid";
+import { useShallow } from "zustand/react/shallow";
+import { resolveGlassConfig } from "@/lib/glass-settings";
+import { useSettingsStore } from "@/stores/useSettingsStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 
 type UseLiquidGlassOptions = {
@@ -39,6 +42,12 @@ type UseLiquidGlassOptions = {
  * `appearance: "auto"`, which is exactly that OS-level check, so it stays
  * reactive to system theme changes without any extra listener here.
  *
+ * Also threads the user's Réglages Système glass/accessibility preferences
+ * (`useSettingsStore`) through `resolveGlassConfig` (see `glass-settings.ts`)
+ * before the config ever reaches the engine: the one integration point
+ * between `glass-presets.ts`'s role presets and the user's own settings, so
+ * no consumer of this hook needs to know the settings layer exists.
+ *
  * `LiquidGlassEngine`'s own constructor already applies the config passed to
  * it, so the mount effect below never needs a same-commit `setConfig` call
  * to "catch up" — the sync effect only exists for config/appearance changes
@@ -72,13 +81,24 @@ export function useLiquidGlass(
 ) {
   const mode = useThemeStore((state) => state.mode);
   const appearance = mode === "system" ? "auto" : mode;
+  // Single shallow-compared selector rather than two separate subscriptions —
+  // this hook mounts on every glass surface in the app (Dock, Spotlight,
+  // every window, sidebar, menu, tooltip), so halving the subscription count
+  // here is a real, cheap win.
+  const { glass, accessibility } = useSettingsStore(
+    useShallow((state) => ({ glass: state.glass, accessibility: state.accessibility })),
+  );
+  const resolvedConfig = useMemo(
+    () => resolveGlassConfig(config, glass, accessibility),
+    [config, glass, accessibility],
+  );
   const engineRef = useRef<LiquidGlassEngine | null>(null);
   const isInitialMount = useRef(true);
 
   useEffect(() => {
     if (!el) return;
     isInitialMount.current = true;
-    const engine = new LiquidGlassEngine(el, { ...config, appearance });
+    const engine = new LiquidGlassEngine(el, { ...resolvedConfig, appearance });
     engineRef.current = engine;
     // Mutated via `engine.getElement()`, not the `el` parameter itself — hook
     // arguments are treated as immutable (see the lint rule this trips), and
@@ -97,6 +117,6 @@ export function useLiquidGlass(
       isInitialMount.current = false;
       return;
     }
-    engineRef.current?.setConfig({ ...config, appearance });
-  }, [config, appearance]);
+    engineRef.current?.setConfig({ ...resolvedConfig, appearance });
+  }, [resolvedConfig, appearance]);
 }
