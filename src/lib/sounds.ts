@@ -1,3 +1,5 @@
+import { useSettingsStore } from "@/stores/useSettingsStore";
+
 type SystemSound = "startup" | "close" | "minimize";
 
 type Note = { frequency: number; start: number; duration: number; volume: number };
@@ -32,10 +34,16 @@ function getAudioContext(): AudioContext | null {
 
 /**
  * Plays a short synthesized system-sound easter egg (see TODO.md Phase 9).
+ * Reads Réglages Système's Son settings imperatively (`useSettingsStore.
+ * getState()`, same pattern as `useDockIconStore.getState()` elsewhere) so
+ * this stays a plain function callable from any event handler, not a hook.
  * Must be called from a user-gesture handler — browsers block `AudioContext`
  * otherwise — and silently no-ops without Web Audio support.
  */
 export function playSystemSound(sound: SystemSound): void {
+  const { systemSoundsEnabled, volume } = useSettingsStore.getState().sound;
+  if (!systemSoundsEnabled) return;
+
   const ctx = getAudioContext();
   if (!ctx) return;
   if (ctx.state === "suspended") void ctx.resume();
@@ -47,7 +55,7 @@ export function playSystemSound(sound: SystemSound): void {
     oscillator.type = "sine";
     oscillator.frequency.setValueAtTime(note.frequency, now + note.start);
     gain.gain.setValueAtTime(0, now + note.start);
-    gain.gain.linearRampToValueAtTime(note.volume, now + note.start + 0.01);
+    gain.gain.linearRampToValueAtTime(note.volume * volume, now + note.start + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.001, now + note.start + note.duration);
     oscillator.connect(gain);
     gain.connect(ctx.destination);

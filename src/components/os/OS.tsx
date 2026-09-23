@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MotionConfig } from "framer-motion";
 import { mergeAppRegistry, type AppDefinition } from "@/lib/apps";
 import {
   MOBILE_MAX_WIDTH_QUERY,
@@ -11,6 +12,7 @@ import {
 import { useAppsStore } from "@/stores/useAppsStore";
 import { useBootStore } from "@/stores/useBootStore";
 import { useOSStore } from "@/stores/useOSStore";
+import { useSettingsStore } from "@/stores/useSettingsStore";
 import { BootScreen } from "./BootScreen";
 import { IframeAppChannelListener } from "./iframe-app-channel/IframeAppChannelListener";
 import { MacOS } from "./MacOS";
@@ -27,6 +29,7 @@ export function OS({
   const setStoreMode = useOSStore((state) => state.setMode);
   const bootStage = useBootStore((state) => state.stage);
   const setApps = useAppsStore((state) => state.setApps);
+  const reduceMotion = useSettingsStore((state) => state.accessibility.reduceMotion);
 
   // Hydrates the store once with the full registry (system apps + Supabase
   // projects) — see useAppsStore. Stays a store (not local state passed as a
@@ -61,7 +64,10 @@ export function OS({
   }, [initialMode, setStoreMode]);
 
   return (
-    <>
+    // "Réduire les animations" (Accessibilité pane): forces every existing
+    // `useReducedMotion()` call in the tree to report true, with no change
+    // needed at any of those call sites (see os-window-manager skill).
+    <MotionConfig reducedMotion={reduceMotion ? "always" : "user"}>
       <IframeAppChannelListener />
       {mode === "ios" ? (
         <>
@@ -74,6 +80,6 @@ export function OS({
           <BootScreen mode="macos" />
         </>
       )}
-    </>
+    </MotionConfig>
   );
 }

@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useMotionValue } from "framer-motion";
 import { getApp, getDockApps, TRASH_APP_ID, type AppDefinition } from "@/lib/apps";
-import { DOCK_HEIGHT, DOCK_PADDING_Y } from "@/lib/dock";
+import { DOCK_PADDING_Y, getDockHeight } from "@/lib/dock";
 import { DOCK_GLASS } from "@/lib/glass-presets";
 import { useLiquidGlass } from "@/lib/use-liquid-glass";
+import { useSettingsStore } from "@/stores/useSettingsStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 import { DockIcon } from "./DockIcon";
 
@@ -26,6 +27,8 @@ type DockProps = {
 export function Dock({ apps }: DockProps) {
   const mouseX = useMotionValue(Infinity);
   const windows = useWindowStore((state) => state.windows);
+  const dock = useSettingsStore((state) => state.dock);
+  const dockHeight = getDockHeight(dock.iconSize);
   const [dockEl, setDockEl] = useState<HTMLDivElement | null>(null);
   // The dock must let magnified icons pop out above the glass like real
   // macOS (its inner layers each clip themselves independently, so this
@@ -55,7 +58,7 @@ export function Dock({ apps }: DockProps) {
   return (
     <div
       ref={setDockEl}
-      style={{ height: DOCK_HEIGHT }}
+      style={{ height: dockHeight }}
       className="fixed bottom-(--dock-margin-bottom-max) left-1/2 z-[1000] -translate-x-1/2"
     >
       {/*
@@ -68,15 +71,21 @@ export function Dock({ apps }: DockProps) {
       <div
         onMouseMove={(event) => mouseX.set(event.clientX)}
         onMouseLeave={() => mouseX.set(Infinity)}
-        style={{ height: DOCK_HEIGHT, paddingBlock: DOCK_PADDING_Y }}
+        style={{ height: dockHeight, paddingBlock: DOCK_PADDING_Y }}
         className="flex items-end gap-2 px-3"
       >
         {pinnedApps.map((app) => (
-          <DockIcon key={app.id} app={app} mouseX={mouseX} isOpen={Boolean(windows[app.id])} />
+          <DockIcon
+            key={app.id}
+            app={app}
+            mouseX={mouseX}
+            isOpen={Boolean(windows[app.id])}
+            dock={dock}
+          />
         ))}
 
         {runningUnpinnedApps.map((app) => (
-          <DockIcon key={app.id} app={app} mouseX={mouseX} isOpen />
+          <DockIcon key={app.id} app={app} mouseX={mouseX} isOpen dock={dock} />
         ))}
 
         {(pinnedApps.length > 0 || runningUnpinnedApps.length > 0) && trashApp ? (
@@ -84,7 +93,12 @@ export function Dock({ apps }: DockProps) {
         ) : null}
 
         {trashApp ? (
-          <DockIcon app={trashApp} mouseX={mouseX} isOpen={Boolean(windows[trashApp.id])} />
+          <DockIcon
+            app={trashApp}
+            mouseX={mouseX}
+            isOpen={Boolean(windows[trashApp.id])}
+            dock={dock}
+          />
         ) : null}
       </div>
     </div>

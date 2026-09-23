@@ -79,6 +79,78 @@
   --window-canvas: #1e1f20;
 }
 
+/*
+ * Accent color (Réglages Système > Apparence, see `SettingsEffectsProvider`)
+ * — redefines `--system-blue` per accent, same override pattern as `.dark`
+ * above. "Multicolore" sets no `data-accent` at all, so it falls through to
+ * the default value already declared above. The light-mode "jaune" value is
+ * deliberately darkened for text contrast — see the comment on
+ * `ACCENT_COLORS` in `src/lib/settings.ts`.
+ */
+[data-accent="blue"] {
+  --system-blue: #007aff;
+}
+.dark[data-accent="blue"] {
+  --system-blue: #0a84ff;
+}
+[data-accent="purple"] {
+  --system-blue: #8944ab;
+}
+.dark[data-accent="purple"] {
+  --system-blue: #bf5af2;
+}
+[data-accent="pink"] {
+  --system-blue: #d30f65;
+}
+.dark[data-accent="pink"] {
+  --system-blue: #ff375f;
+}
+[data-accent="red"] {
+  --system-blue: #d70015;
+}
+.dark[data-accent="red"] {
+  --system-blue: #ff453a;
+}
+[data-accent="orange"] {
+  --system-blue: #c93400;
+}
+.dark[data-accent="orange"] {
+  --system-blue: #ff9f0a;
+}
+[data-accent="yellow"] {
+  --system-blue: #8a6a00;
+}
+.dark[data-accent="yellow"] {
+  --system-blue: #ffd60a;
+}
+[data-accent="green"] {
+  --system-blue: #1f7a1f;
+}
+.dark[data-accent="green"] {
+  --system-blue: #32d74b;
+}
+[data-accent="graphite"] {
+  --system-blue: #6e6e73;
+}
+.dark[data-accent="graphite"] {
+  --system-blue: #98989d;
+}
+
+/*
+ * "Augmenter le contraste" (Accessibilité pane) — deliberately minimal: it
+ * strengthens the OS's single most prominent hairline, the window edge,
+ * rather than rewriting every individual `border-black/10`-style utility
+ * used across the app.
+ */
+.increase-contrast {
+  --shadow-window-focused: 0 0 0 1.5px rgb(0 0 0 / 0.55), 0 20px 60px rgb(0 0 0 / 0.35);
+  --shadow-window-unfocused: 0 0 0 1px rgb(0 0 0 / 0.35), 0 8px 24px rgb(0 0 0 / 0.2);
+}
+.dark.increase-contrast {
+  --shadow-window-focused: 0 0 0 1.5px rgb(255 255 255 / 0.4), 0 20px 60px rgb(0 0 0 / 0.5);
+  --shadow-window-unfocused: 0 0 0 1px rgb(255 255 255 / 0.25), 0 8px 24px rgb(0 0 0 / 0.3);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
