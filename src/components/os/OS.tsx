@@ -64,9 +64,13 @@ export function OS({
   }, [initialMode, setStoreMode]);
 
   return (
-    // "Réduire les animations" (Accessibilité pane): forces every existing
-    // `useReducedMotion()` call in the tree to report true, with no change
-    // needed at any of those call sites (see os-window-manager skill).
+    // "Réduire les animations" (Accessibilité pane): every explicit duration
+    // choice in the tree reads it through `useReduceMotion()` instead (see
+    // `use-reduce-motion.ts`) — framer-motion's own `useReducedMotion()`
+    // ignores this context entirely, it only reads the OS preference once.
+    // `MotionConfig` still covers framer-motion's own internal defaults for
+    // `motion.*` components that don't set an explicit `transition` (e.g.
+    // the springboard/full-screen `layoutId` morph's fallback behavior).
     <MotionConfig reducedMotion={reduceMotion ? "always" : "user"}>
       <IframeAppChannelListener />
       {mode === "ios" ? (

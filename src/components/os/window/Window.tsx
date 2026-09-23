@@ -6,11 +6,12 @@ import type {
   PointerEvent as ReactPointerEvent,
   ReactNode,
 } from "react";
-import { motion, useMotionValue, useReducedMotion } from "framer-motion";
+import { motion, useMotionValue } from "framer-motion";
 import type { AppDefinition } from "@/lib/apps";
 import { TITLE_BAR_GLASS, TITLE_BAR_GLASS_INACTIVE } from "@/lib/glass-presets";
 import { playSystemSound } from "@/lib/sounds";
 import { useLiquidGlass } from "@/lib/use-liquid-glass";
+import { useReduceMotion } from "@/lib/use-reduce-motion";
 import {
   WINDOW_OPEN_TRANSITION,
   WINDOW_CLOSE_TRANSITION,
@@ -51,7 +52,7 @@ export function Window({ app, state, children, titleBarTrailing }: WindowProps) 
   const setInteracting = useWindowStore((s) => s.setInteracting);
   const isInteracting = useWindowStore((s) => s.isInteracting);
 
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReduceMotion();
   const focused = focusedAppId === app.id;
 
   const [titleBarEl, setTitleBarEl] = useState<HTMLDivElement | null>(null);
