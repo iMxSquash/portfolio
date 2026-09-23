@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ComponentType } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { IOS_STATUS_BAR_CLEARANCE } from "@/lib/ios";
 import {
@@ -22,6 +22,13 @@ import { WallpaperPane } from "./panes/WallpaperPane";
 // Same push/pop curve as NotesMobile's own list -> detail navigation.
 const NAV_TRANSITION = { type: "tween", duration: 0.32, ease: [0.32, 0.72, 0, 1] } as const;
 const NAV_TRANSITION_REDUCED = { duration: 0 } as const;
+
+// Same edge-swipe-back geometry as NotesMobile: real iOS only recognizes the
+// gesture when the touch starts within a narrow strip of the screen edge,
+// not anywhere on the page, so a normal rightward scroll inside a pane never
+// triggers it.
+const EDGE_SWIPE_ZONE_WIDTH = 24;
+const EDGE_SWIPE_BACK_THRESHOLD_PX = 60;
 
 /** No iOS equivalent for "Bureau et Dock", so a mobile section left empty after filtering it out is dropped entirely. */
 const MOBILE_PANE_SECTIONS = SETTINGS_PANE_SECTIONS.map((section) =>
@@ -50,6 +57,15 @@ export function SettingsMobile() {
   const transition = reducedMotion ? NAV_TRANSITION_REDUCED : NAV_TRANSITION;
   const selectedPane = selectedPaneId ? getSettingsPane(selectedPaneId) : null;
   const SelectedPaneComponent = selectedPaneId ? PANE_COMPONENTS[selectedPaneId] : undefined;
+
+  // Framer's `onPanEnd` (unlike its `drag` prop) recognizes the gesture
+  // without moving the element itself and without manual pointer capture —
+  // see NotesMobile.tsx, the same edge-swipe-back pattern.
+  function handleEdgeSwipeEnd(_event: PointerEvent | MouseEvent | TouchEvent, info: PanInfo) {
+    if (info.offset.x > EDGE_SWIPE_BACK_THRESHOLD_PX) {
+      setSelectedPaneId(null);
+    }
+  }
 
   return (
     <AnimatePresence initial={false}>
@@ -80,6 +96,15 @@ export function SettingsMobile() {
           <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-8">
             <SelectedPaneComponent />
           </div>
+
+          {/* Swipe-from-left-edge-to-go-back hit zone, below the header so
+              it never steals taps from the back button above it. */}
+          <motion.div
+            onPanEnd={handleEdgeSwipeEnd}
+            aria-hidden="true"
+            className="absolute top-12 bottom-0 left-0 touch-none"
+            style={{ width: EDGE_SWIPE_ZONE_WIDTH }}
+          />
         </motion.div>
       ) : (
         <motion.div
