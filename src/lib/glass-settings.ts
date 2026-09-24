@@ -55,6 +55,8 @@ export function resolveGlassConfig(
   accessibility: AccessibilitySettings,
 ): Partial<LiquidGlassConfig> {
   const config: Partial<LiquidGlassConfig> = { ...preset };
+  
+  config.respectPreferences = false;
   const baseTintOpacity = preset.tintOpacity ?? DEFAULT_CONFIG.tintOpacity;
 
   config.blur = resolveBaseValue(preset, "blur") * glass.blurScale;

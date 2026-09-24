@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { LiquidGlassEngine, type LiquidGlassConfig } from "quick-liquid";
 import { useShallow } from "zustand/react/shallow";
 import { resolveGlassConfig } from "@/lib/glass-settings";
+import { useReduceMotion } from "@/lib/use-reduce-motion";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 
@@ -101,9 +102,10 @@ export function useLiquidGlass(
   const { glass, accessibility } = useSettingsStore(
     useShallow((state) => ({ glass: state.glass, accessibility: state.accessibility })),
   );
+  const reduceMotion = useReduceMotion();
   const resolvedConfig = useMemo(
-    () => resolveGlassConfig(config, glass, accessibility),
-    [config, glass, accessibility],
+    () => resolveGlassConfig(config, glass, { ...accessibility, reduceMotion }),
+    [config, glass, accessibility, reduceMotion],
   );
   const engineRef = useRef<LiquidGlassEngine | null>(null);
 
