@@ -215,7 +215,7 @@ export function Terminal() {
 
   return (
     <div
-      className="flex h-full flex-col gap-1 overflow-y-auto bg-black p-3 font-mono text-[13px] text-[#5CFF5C]"
+      className="flex h-full flex-col gap-1 overflow-y-auto bg-black p-3 font-mono text-[13px] text-[#5CFF5C] [--scrollbar-thumb-hover:#ffffff99] [--scrollbar-thumb:#ffffff66]"
       onClick={() => inputRef.current?.focus()}
     >
       {lines.map((line) => (
