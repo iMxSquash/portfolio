@@ -9,9 +9,9 @@ export default async function NotFoundRedirect({
 }: {
   params: Promise<{ notFoundPath: string[] }>;
 }) {
-  const notFoundUrl = process.env["404_URL"];
+  const notFoundUrl = process.env.NOT_FOUND_URL;
   if (!notFoundUrl) {
-    throw new Error("Missing 404_URL environment variable");
+    throw new Error("Missing NOT_FOUND_URL environment variable");
   }
 
   const { notFoundPath } = await params;

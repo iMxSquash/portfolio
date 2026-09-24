@@ -70,7 +70,7 @@ Fill in `.env.local`:
 | ------------------------------- | -------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL (dashboard → Settings → API)                                |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key (same page)                                               |
-| `404_URL`                       | Where unknown routes redirect to (the `introuvable` mini-game, server-side only) |
+| `NOT_FOUND_URL`                 | Where unknown routes redirect to (the `introuvable` mini-game, server-side only) |
 
 ### Run locally
 
