@@ -63,9 +63,10 @@
      theme, not the OS one. */
   color-scheme: light;
 
-  /* macOS overlay scrollbar thumb. */
+  /* macOS overlay scrollbar thumb / AppKit slider track. */
   --scrollbar-thumb: rgb(0 0 0 / 0.42);
   --scrollbar-thumb-hover: rgb(0 0 0 / 0.6);
+  --range-track: rgb(0 0 0 / 0.14);
 }
 
 @theme inline {
@@ -88,6 +89,7 @@
   color-scheme: dark;
   --scrollbar-thumb: rgb(255 255 255 / 0.4);
   --scrollbar-thumb-hover: rgb(255 255 255 / 0.6);
+  --range-track: rgb(255 255 255 / 0.22);
 }
 
 /*
@@ -244,5 +246,85 @@ body {
     :is(.classic-scrollbars, .classic-scrollbars *)::-webkit-scrollbar-thumb:hover {
       background-color: var(--scrollbar-thumb-hover);
     }
+  }
+}
+
+/*
+ * AppKit-style slider, on every platform so it never depends on the browser's
+ * own range rendering. The filled part needs the value as a 0..1
+ * `--range-fraction` custom property (see `getRangeStyle` in
+ * src/lib/range.ts): WebKit/Blink can't style the "progress" side of a range
+ * natively, only Firefox can (`::-moz-range-progress`). In `@layer base` so
+ * utilities (`w-full`, `disabled:opacity-40`) keep winning.
+ */
+@layer base {
+  input[type="range"] {
+    --range-thumb-size: 20px;
+    --range-track-height: 4px;
+    --range-thumb-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.12), 0 1px 3px rgb(0 0 0 / 0.3);
+    --range-thumb-shadow-focus:
+      0 0 0 3px color-mix(in srgb, var(--system-blue) 55%, transparent), 0 1px 3px rgb(0 0 0 / 0.3);
+    --range-fraction: 0;
+    /* Thumb travel is (100% - thumb size), so the fill ends under the thumb centre. */
+    --range-fill: calc(
+      var(--range-thumb-size) / 2 + (100% - var(--range-thumb-size)) * var(--range-fraction)
+    );
+    appearance: none;
+    height: var(--range-thumb-size);
+    margin: 0;
+    background: transparent;
+    outline: none;
+    cursor: default;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: var(--range-track-height);
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      var(--system-blue) var(--range-fill),
+      var(--range-track) var(--range-fill)
+    );
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: var(--range-thumb-size);
+    height: var(--range-thumb-size);
+    margin-top: calc((var(--range-track-height) - var(--range-thumb-size)) / 2);
+    border: 0;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: var(--range-thumb-shadow);
+  }
+
+  input[type="range"]::-moz-range-track {
+    height: var(--range-track-height);
+    border-radius: 999px;
+    background: var(--range-track);
+  }
+
+  input[type="range"]::-moz-range-progress {
+    height: var(--range-track-height);
+    border-radius: 999px;
+    background: var(--system-blue);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    box-sizing: border-box;
+    width: var(--range-thumb-size);
+    height: var(--range-thumb-size);
+    border: 0;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: var(--range-thumb-shadow);
+  }
+
+  input[type="range"]:focus-visible::-webkit-slider-thumb {
+    box-shadow: var(--range-thumb-shadow-focus);
+  }
+
+  input[type="range"]:focus-visible::-moz-range-thumb {
+    box-shadow: var(--range-thumb-shadow-focus);
   }
 }

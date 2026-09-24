@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { IconAdjustmentsHorizontal, IconSun } from "@tabler/icons-react";
+import { getRangeStyle } from "@/lib/range";
 import { THEME_MODE_OPTIONS } from "@/lib/theme";
 import { useThemeStore } from "@/stores/useThemeStore";
 
@@ -51,7 +52,8 @@ export function ControlCenterContent() {
             value={brightness}
             onChange={(event) => setBrightness(Number(event.target.value))}
             aria-label="Luminosité (factice, sans effet réel)"
-            className="w-full accent-system-blue"
+            style={getRangeStyle(brightness, 0, 100)}
+            className="w-full"
           />
           <SunIcon className="size-4" />
         </div>

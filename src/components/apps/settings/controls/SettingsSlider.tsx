@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ChangeEvent } from "react";
+import { getRangeStyle } from "@/lib/range";
 import type { SliderRange } from "@/lib/settings";
 
 type SettingsSliderProps = {
@@ -65,7 +66,8 @@ export function SettingsSlider({
         onPointerUp={commit}
         onKeyUp={commit}
         onBlur={commit}
-        className="accent-system-blue w-full disabled:opacity-40"
+        style={getRangeStyle(localValue, range.min, range.max)}
+        className="w-full disabled:opacity-40"
       />
       {formatValue ? (
         <span
