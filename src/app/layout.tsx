@@ -87,6 +87,21 @@ const settingsInitScript = `(function () {
   } catch (e) {}
 })();`;
 
+// Flags platforms whose browser renders classic (layout-taking) scrollbars,
+// i.e. Windows/Linux, so globals.css restyles them like macOS overlay ones.
+// Feature-detected rather than UA-sniffed: macOS/iOS/Android overlay
+// scrollbars measure 0 and keep their native rendering.
+const scrollbarInitScript = `(function () {
+  try {
+    var probe = document.createElement("div");
+    probe.style.cssText = "position:absolute;top:-9999px;width:100px;height:100px;overflow:scroll";
+    document.documentElement.appendChild(probe);
+    var hasClassicScrollbars = probe.offsetWidth - probe.clientWidth > 0;
+    document.documentElement.removeChild(probe);
+    if (hasClassicScrollbars) document.documentElement.classList.add("classic-scrollbars");
+  } catch (e) {}
+})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -107,6 +122,9 @@ export default function RootLayout({
         </Script>
         <Script id="settings-init" strategy="beforeInteractive">
           {settingsInitScript}
+        </Script>
+        <Script id="scrollbar-init" strategy="beforeInteractive">
+          {scrollbarInitScript}
         </Script>
         <ThemeProvider />
         <SettingsEffectsProvider />

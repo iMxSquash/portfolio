@@ -62,6 +62,10 @@
   /* Native form controls (scrollbars, file inputs, checkboxes) follow the app
      theme, not the OS one. */
   color-scheme: light;
+
+  /* macOS overlay scrollbar thumb. */
+  --scrollbar-thumb: rgb(0 0 0 / 0.42);
+  --scrollbar-thumb-hover: rgb(0 0 0 / 0.6);
 }
 
 @theme inline {
@@ -82,6 +86,8 @@
   --system-yellow: #ffd60a;
   --window-canvas: #1e1f20;
   color-scheme: dark;
+  --scrollbar-thumb: rgb(255 255 255 / 0.4);
+  --scrollbar-thumb-hover: rgb(255 255 255 / 0.6);
 }
 
 /*
@@ -188,3 +194,55 @@ body {
  * the one accessibility fallback the engine doesn't cover itself; add it
  * per-surface if a glass element ever needs it (see apple-design skill).
  */
+
+/*
+ * macOS-style scrollbars on platforms with classic (always visible, layout
+ * taking) scrollbars, i.e. Windows/Linux. `classic-scrollbars` is set on
+ * <html> by the blocking script in layout.tsx only when the browser really
+ * renders such scrollbars, so macOS, iOS and Android keep their native
+ * overlay ones. In `@layer base` so utilities like `scrollbar-width:none`
+ * (iOS springboard) still win. Chromium ignores `::-webkit-scrollbar` as soon
+ * as `scrollbar-width`/`scrollbar-color` are non-auto, hence the @supports
+ * split: the standard properties are the Firefox path only.
+ */
+@layer base {
+  .classic-scrollbars,
+  .classic-scrollbars * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+
+  @supports selector(::-webkit-scrollbar) {
+    .classic-scrollbars,
+    .classic-scrollbars * {
+      scrollbar-width: auto;
+      scrollbar-color: auto;
+    }
+
+    :is(.classic-scrollbars, .classic-scrollbars *)::-webkit-scrollbar {
+      width: 13px;
+      height: 13px;
+      background: transparent;
+    }
+
+    :is(.classic-scrollbars, .classic-scrollbars *)::-webkit-scrollbar-track,
+    :is(.classic-scrollbars, .classic-scrollbars *)::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+
+    /* Transparent border + padding-box clip = a pill inset from the edge,
+       like the AppKit overlay thumb, without needing an extra element. */
+    :is(.classic-scrollbars, .classic-scrollbars *)::-webkit-scrollbar-thumb {
+      min-width: 28px;
+      min-height: 28px;
+      border: 3px solid transparent;
+      border-radius: 999px;
+      background-color: var(--scrollbar-thumb);
+      background-clip: padding-box;
+    }
+
+    :is(.classic-scrollbars, .classic-scrollbars *)::-webkit-scrollbar-thumb:hover {
+      background-color: var(--scrollbar-thumb-hover);
+    }
+  }
+}
