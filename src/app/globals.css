@@ -58,6 +58,10 @@
   --ios-springboard-icon-size: 60px;
   --ios-home-indicator-width: 134px;
   --ios-home-indicator-height: 5px;
+
+  /* Native form controls (scrollbars, file inputs, checkboxes) follow the app
+     theme, not the OS one. */
+  color-scheme: light;
 }
 
 @theme inline {
@@ -77,6 +81,7 @@
   --system-blue: #0a84ff;
   --system-yellow: #ffd60a;
   --window-canvas: #1e1f20;
+  color-scheme: dark;
 }
 
 /*
