@@ -23,3 +23,15 @@ export const DOCK_TOOLTIP_DELAY_S = 0.3;
 export function getDockHeight(iconSize: number): number {
   return iconSize + DOCK_PADDING_Y * 2;
 }
+
+/** Breathing room kept between the desktop icons and the top of the dock. */
+const DESKTOP_ICONS_DOCK_GAP = 16;
+
+/**
+ * Bottom padding of the desktop icon column: the dock's footprint (its height
+ * plus its distance from the screen edge, `--dock-margin-bottom-max`) and a
+ * gap, so icons wrap into another column instead of sliding under the dock.
+ */
+export function getDesktopIconsBottomInset(dockIconSize: number): string {
+  return `calc(var(--dock-margin-bottom-max) + ${getDockHeight(dockIconSize)}px + ${DESKTOP_ICONS_DOCK_GAP}px)`;
+}
