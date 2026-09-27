@@ -7,7 +7,7 @@ import { IconWifi } from "@tabler/icons-react";
  */
 export function StatusIcons() {
   return (
-    <div className="flex items-center gap-1.5" aria-hidden="true">
+    <div className="flex items-center gap-4 px-2" aria-hidden="true">
       <IconWifi size={15} stroke={2.2} />
       <BatteryIcon />
     </div>
