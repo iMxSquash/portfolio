@@ -6,10 +6,7 @@
 
 _A portfolio that behaves like a real OS, not a website pretending to be one_
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/iMxSquash/portfolio/ci.yml?style=flat-square&label=CI)](https://github.com/iMxSquash/portfolio/actions)
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black?style=flat-square&logo=vercel)](https://elwen.dev)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/iMxSquash/portfolio/ci.yml?style=flat-square&label=CI)](https://github.com/iMxSquash/portfolio/actions) [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org) [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org) [![wakatime](https://wakatime.com/badge/user/76faf8e3-9c7d-4ce7-bcc8-6edac1144799/project/b7687f06-526e-4729-922f-a47bd2f99547.svg)](https://wakatime.com/badge/user/76faf8e3-9c7d-4ce7-bcc8-6edac1144799/project/b7687f06-526e-4729-922f-a47bd2f99547)
 
 [Features](#features) • [Architecture](#architecture) • [Getting started](#getting-started) • [Project structure](#project-structure) • [Deployment](#deployment)
 
