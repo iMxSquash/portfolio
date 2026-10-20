@@ -15,6 +15,11 @@ const LOGO_SIZE = 72;
 const LINK_CLASS =
   "font-medium text-[var(--system-blue)] underline-offset-4 hover:underline focus-visible:underline";
 
+// Explicit instead of the generated `PageProps` helper: CI type-checks before any build generates it.
+interface ProjectPageProps {
+  params: Promise<{ slug: string }>;
+}
+
 export async function generateStaticParams() {
   const projects = await getVisibleProjectRows();
   return projects.map((project) => ({ slug: project.slug }));
@@ -26,9 +31,7 @@ function describeProject(project: { name: string; description: string | null }):
   return text.length <= DESCRIPTION_MAX ? text : `${text.slice(0, DESCRIPTION_MAX - 1).trimEnd()}…`;
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/projets/[slug]">): Promise<Metadata> {
+export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const { slug } = await params;
   const project = await getVisibleProjectBySlug(slug);
   if (!project) return { title: "Projet introuvable", robots: { index: false } };
@@ -43,7 +46,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProjectPage({ params }: PageProps<"/projets/[slug]">) {
+export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
   const project = await getVisibleProjectBySlug(slug);
   if (!project) notFound();
