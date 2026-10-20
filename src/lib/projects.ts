@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { PROJECT_APP_DEFAULT_SIZE, PROJECT_APP_MIN_SIZE, type AppDefinition } from "@/lib/apps";
 import { createPublicClient } from "@/lib/supabase/public";
 import { createClient } from "@/lib/supabase/server";
@@ -94,3 +95,9 @@ export async function getProjectRowById(id: string): Promise<ProjectRow | null> 
 
   return data as ProjectRow | null;
 }
+
+/** One visible project by slug, or `undefined`; the list is deduplicated per request so metadata and page share one query. */
+export const getVisibleProjectBySlug = cache(async (slug: string) => {
+  const rows = await getVisibleProjectRows();
+  return rows.find((row) => row.slug === slug);
+});

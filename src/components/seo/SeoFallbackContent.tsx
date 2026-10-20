@@ -6,6 +6,7 @@ import {
   buildSiteJsonLd,
   CONTACT_EMAIL,
   CV_URL,
+  projectPath,
   safeJsonLdStringify,
   SITE_TAGLINE,
 } from "@/lib/seo";
@@ -63,10 +64,11 @@ export function SeoFallbackContent({ projects }: SeoFallbackContentProps) {
           <ul>
             {projects.map((project) => (
               <li key={project.id}>
+                <a href={projectPath(project.slug)}>{project.name}</a> (
                 <a href={project.url} target="_blank" rel="noopener noreferrer">
-                  {project.name}
+                  site du projet
                 </a>
-                {project.description ? <p>{project.description}</p> : null}
+                ){project.description ? <p>{project.description}</p> : null}
                 {project.tech.length > 0 ? <p>Technologies : {project.tech.join(", ")}</p> : null}
               </li>
             ))}
