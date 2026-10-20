@@ -5,6 +5,7 @@ import {
   buildProjectsJsonLd,
   buildSiteJsonLd,
   CONTACT_EMAIL,
+  CV_URL,
   safeJsonLdStringify,
   SITE_TAGLINE,
 } from "@/lib/seo";
@@ -72,6 +73,11 @@ export function SeoFallbackContent({ projects }: SeoFallbackContentProps) {
           </ul>
         </section>
       ) : null}
+
+      <p>
+        <a href={CV_URL}>CV en ligne d&apos;{DISPLAY_NAME}</a> : parcours, expériences, formations
+        et compétences.
+      </p>
 
       <p>Contact : {CONTACT_EMAIL}</p>
 
