@@ -12,6 +12,9 @@ export const SITE_DESCRIPTION =
 /** Public contact address — the portfolio's own mailbox, not a personal one. Single source of truth, reused by the JSON-LD, the SEO fallback content and `llms.txt`. */
 export const CONTACT_EMAIL = "contact@elwen.dev";
 
+/** The resume lives on its own subdomain (own SEO, own sitemap): linked here so engines tie both sites to the same `Person`. */
+export const CV_URL = "https://cv.elwen.dev";
+
 /** Elwen's other profiles — labeled so Notes.app's "Contact" note can list them by name; feeds the `Person` JSON-LD's `sameAs` (bare URLs only) so search/AI engines can cross-reference the same entity across sites (see seo-geo-boost skill). */
 export const SOCIAL_LINKS = [
   { label: "GitHub", href: "https://github.com/iMxSquash" },
@@ -30,7 +33,7 @@ export function buildSiteJsonLd() {
         url: SITE_URL,
         jobTitle: "Développeur full-stack",
         email: `mailto:${CONTACT_EMAIL}`,
-        sameAs: SOCIAL_LINKS.map((link) => link.href),
+        sameAs: [...SOCIAL_LINKS.map((link) => link.href), CV_URL],
         address: {
           "@type": "PostalAddress",
           addressLocality: "Herblay",

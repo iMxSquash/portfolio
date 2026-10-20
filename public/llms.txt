@@ -8,6 +8,8 @@ Elwen Coussot est développeur full-stack, actuellement en alternance chez SP Fo
 
 - [Accueil](https://elwen.dev/): le portfolio lui-même, bureau macOS ou springboard iOS selon l'appareil, avec le parcours, les compétences et les projets d'Elwen accessibles depuis les fenêtres/apps (voir l'app Notes : À propos, Parcours, Compétences, Contact).
 
+- [CV en ligne](https://cv.elwen.dev/): le CV d'Elwen (parcours, expériences, formations, compétences, langues), hébergé sur son propre sous-domaine avec son propre référencement. Version anglaise : https://cv.elwen.dev/en. Une version Markdown complète est disponible sur https://cv.elwen.dev/llms.txt.
+
 ## Notes
 
 - Les projets présentés (Photoshop, Illustrator, Premiere Pro, etc.) sont chacun hébergés sur leur propre sous-domaine (`<projet>.elwen.dev`) et disposent de leur propre référencement.
