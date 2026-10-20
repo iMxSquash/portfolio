@@ -107,3 +107,41 @@ export function buildProjectsJsonLd(projects: ProjectRow[]) {
     })),
   };
 }
+
+/** Path of a project's own indexable page. */
+export function projectPath(slug: string): string {
+  return `/projets/${slug}`;
+}
+
+/**
+ * Page of one project: `CreativeWork` authored by the site owner (same
+ * `#person` entity as the home page) plus its breadcrumb. `url` is the
+ * project's own site, which is where its SEO is credited.
+ */
+export function buildProjectPageJsonLd(project: ProjectRow) {
+  const pageUrl = `${SITE_URL}${projectPath(project.slug)}`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CreativeWork",
+        "@id": `${pageUrl}#project`,
+        name: project.name,
+        description: project.description ?? undefined,
+        url: project.url,
+        mainEntityOfPage: pageUrl,
+        keywords: project.tech.length > 0 ? project.tech.join(", ") : undefined,
+        image: project.logo_url,
+        author: { "@id": `${SITE_URL}/#person` },
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: SITE_NAME, item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: project.name, item: pageUrl },
+        ],
+      },
+    ],
+  };
+}
